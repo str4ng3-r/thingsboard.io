@@ -1,4 +1,41 @@
 ---
 ---
 
-<meta http-equiv="refresh" content="0;url=/docs/getting-started/" />
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Redirecting...</title>
+	<script is:inline>
+		(function() {
+			// Check for stored language preference
+			const storedLang = localStorage.getItem('docs-preferred-lang');
+
+			if (storedLang === 'uk') {
+				window.location.replace('/uk/docs/getting-started/');
+				return;
+			}
+
+			if (!storedLang) {
+				// Detect browser language
+				const browserLang = navigator.language || navigator.languages?.[0] || 'en';
+				const primaryLang = browserLang.split('-')[0].toLowerCase();
+
+				if (primaryLang === 'uk') {
+					localStorage.setItem('docs-preferred-lang', 'uk');
+					window.location.replace('/uk/docs/getting-started/');
+					return;
+				}
+			}
+
+			// Default to English
+			window.location.replace('/docs/getting-started/');
+		})();
+	</script>
+	<noscript>
+		<meta http-equiv="refresh" content="0;url=/docs/getting-started/" />
+	</noscript>
+</head>
+<body>
+	<p>Redirecting to documentation...</p>
+</body>
+</html>

@@ -6,6 +6,7 @@ import type { StarlightRouteData } from '@astrojs/starlight/route-data';
 import { stripLeadingAndTrailingSlashes } from 'node_modules/@astrojs/starlight/utils/path';
 import { isSubPage } from '~/util/isSubPage';
 import VersionSwitcher from '~/components/VersionSwitcher.astro';
+import LanguageSwitcher from '~/components/LanguageSwitcher.astro';
 import Sponsors from '../LeftSidebar/Sponsors.astro';
 import TabbedContent from '../tabs/TabbedContent.astro';
 import TabListItem from '../tabs/TabListItem.astro';
@@ -54,7 +55,8 @@ const isCurrent = (sidebar: SidebarEntry[]): boolean =>
 		.some((entry) => entry === true);
 ---
 
-<div class="version-switcher-wrapper">
+<div class="switchers-wrapper">
+	<LanguageSwitcher />
 	<VersionSwitcher />
 </div>
 
@@ -88,7 +90,10 @@ const isCurrent = (sidebar: SidebarEntry[]): boolean =>
 </div>
 
 <style>
-	.version-switcher-wrapper {
+	.switchers-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 		padding: 0.5rem 0;
 		margin-bottom: 0.75rem;
 		border-bottom: 1px solid var(--sl-color-hairline-light);

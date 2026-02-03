@@ -23,7 +23,10 @@ const categories = [
  * @returns The category for the current page as used by Algolia DocSearch to group search results.
  */
 export function getPageCategory(url: { pathname: string }) {
-	const path = url.pathname.replace(/^\/docs\//, '');
+	// Remove language prefix (/uk/) and /docs/ prefix
+	let path = url.pathname;
+	if (path.startsWith('/uk/')) path = path.slice(4);
+	path = path.replace(/^\/docs\//, '');
 	for (const [prefix, label] of categories) {
 		if (path.startsWith(prefix)) return label;
 	}

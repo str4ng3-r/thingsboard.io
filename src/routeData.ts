@@ -1,37 +1,45 @@
 import type { APIContext } from 'astro';
 import { defineRouteMiddleware, type StarlightRouteData } from '@astrojs/starlight/route-data';
 import { tutorialPages as pages } from '~/content';
-import { getVersionFromSlug, type ProductVersion } from '~/util/path-utils';
+import {
+	getVersionFromSlug,
+	getLanguageFromSlug,
+	stripLanguagePrefix,
+	type ProductVersion,
+	type SupportedLanguage,
+} from '~/util/path-utils';
 import { getOgImageUrl } from '~/util/getOgImageUrl';
 import { getTutorialPages } from '~/util/getTutorialPages';
 
 export const onRequest = defineRouteMiddleware((context) => {
 	updateHead(context);
-	filterSidebarByVersion(context.locals.starlightRoute);
+	filterSidebarByVersionAndLanguage(context.locals.starlightRoute);
 	updateTutorialPagination(context.locals.starlightRoute);
 });
 
 /**
- * Filter sidebar entries to only show items for the current product version.
+ * Filter sidebar entries to only show items for the current product version and language.
  */
-function filterSidebarByVersion(starlightRoute: StarlightRouteData) {
+function filterSidebarByVersionAndLanguage(starlightRoute: StarlightRouteData) {
 	const version = getVersionFromSlug(starlightRoute.id);
+	const lang = getLanguageFromSlug(starlightRoute.id);
 
 	starlightRoute.sidebar = starlightRoute.sidebar.filter((entry) =>
-		sidebarEntryMatchesVersion(entry, version)
+		sidebarEntryMatchesVersionAndLanguage(entry, version, lang)
 	);
 }
 
-function sidebarEntryMatchesVersion(
+function sidebarEntryMatchesVersionAndLanguage(
 	entry: StarlightRouteData['sidebar'][number],
-	version: ProductVersion
+	version: ProductVersion,
+	lang: SupportedLanguage
 ): boolean {
 	if (entry.type === 'link') {
-		return linkMatchesVersion(entry.href, version);
+		return linkMatchesVersion(entry.href, version) && linkMatchesLanguage(entry.href, lang);
 	}
 	if (entry.type === 'group') {
 		entry.entries = entry.entries.filter((child) =>
-			sidebarEntryMatchesVersion(child, version)
+			sidebarEntryMatchesVersionAndLanguage(child, version, lang)
 		);
 		return entry.entries.length > 0;
 	}
@@ -39,10 +47,18 @@ function sidebarEntryMatchesVersion(
 }
 
 function linkMatchesVersion(href: string, version: ProductVersion): boolean {
-	const path = href.replace(/^\/docs\/?/, '');
+	let path = href;
+	if (path.startsWith('/uk/')) path = path.slice(4);
+	path = path.replace(/^\/docs\/?/, '');
+
 	if (version === 'pe') return path.startsWith('pe/');
 	if (version === 'paas') return path.startsWith('paas/');
 	return !path.startsWith('pe/') && !path.startsWith('paas/');
+}
+
+function linkMatchesLanguage(href: string, lang: SupportedLanguage): boolean {
+	if (lang === 'uk') return href.startsWith('/uk/');
+	return !href.startsWith('/uk/');
 }
 
 function updateHead(context: APIContext) {
@@ -85,10 +101,14 @@ function updateTutorialPagination(starlightRoute: StarlightRouteData) {
 	const tutorialPages = getTutorialPages(pages);
 	const i = tutorialPages.findIndex((p) => p.id === entry.id);
 
+	const lang = getLanguageFromSlug(entry.id);
+	const langPrefix = lang === 'uk' ? '/uk' : '';
+
 	if (tutorialPages[i - 1]) {
 		const prevPage = tutorialPages[i - 1];
+		const prevPath = stripLanguagePrefix(prevPage.id);
 		pagination.prev = {
-			href: `/docs/${prevPage.id}/`,
+			href: `${langPrefix}/${prevPath}/`,
 			isCurrent: false,
 			label: prevPage.data.title,
 			type: 'link',
@@ -99,8 +119,9 @@ function updateTutorialPagination(starlightRoute: StarlightRouteData) {
 
 	if (tutorialPages[i + 1]) {
 		const nextPage = tutorialPages[i + 1];
+		const nextPath = stripLanguagePrefix(nextPage.id);
 		pagination.next = {
-			href: `/docs/${nextPage.id}/`,
+			href: `${langPrefix}/${nextPath}/`,
 			isCurrent: false,
 			label: nextPage.data.title,
 			type: 'link',
@@ -111,5 +132,6 @@ function updateTutorialPagination(starlightRoute: StarlightRouteData) {
 }
 
 function isTutorialEntry(entry: StarlightRouteData['entry']) {
-	return entry.id.startsWith('tutorial/');
+	const slug = stripLanguagePrefix(entry.id);
+	return slug.startsWith('docs/tutorial/');
 }

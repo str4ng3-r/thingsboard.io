@@ -2,86 +2,94 @@ import type { StarlightUserConfig } from '@astrojs/starlight/types';
 
 type SidebarConfig = NonNullable<StarlightUserConfig['sidebar']>;
 
-/** OpenSource documentation sidebar (pages at /docs/) */
 export const opensourceSidebar: SidebarConfig = [
 	{
 		label: 'Getting Started',
+		translations: { uk: 'Початок роботи' },
 		items: [
-			'getting-started',
+			'docs/getting-started',
 			{
 				label: 'Welcome',
+				translations: { uk: 'Ласкаво просимо' },
 				items: [
-					'concepts/why-astro',
-					'concepts/islands',
-					'tutorial/0-introduction',
-					'astro-courses',
+					'docs/concepts/why-astro',
+					'docs/concepts/islands',
+					'docs/tutorial/0-introduction',
+					'docs/astro-courses',
 				],
 			},
 			{
 				label: 'New Project',
-				items: ['install-and-setup', 'basics/project-structure', 'develop-and-build'],
+				translations: { uk: 'Новий проект' },
+				items: ['docs/install-and-setup', 'docs/basics/project-structure', 'docs/develop-and-build'],
 			},
 			{
 				label: 'Configuration',
+				translations: { uk: 'Конфігурація' },
 				items: [
-					'guides/configuring-astro',
-					'editor-setup',
-					'guides/typescript',
-					'guides/environment-variables',
-					'guides/build-with-ai',
-					'guides/dev-toolbar',
+					'docs/guides/configuring-astro',
+					'docs/editor-setup',
+					'docs/guides/typescript',
+					'docs/guides/environment-variables',
+					'docs/guides/build-with-ai',
+					'docs/guides/dev-toolbar',
 				],
 			},
 		],
 	},
 	{
 		label: 'Guides',
+		translations: { uk: 'Посібники' },
 		items: [
 			{
 				label: 'Routing',
+				translations: { uk: 'Маршрутизація' },
 				items: [
-					'basics/astro-pages',
-					'guides/routing',
-					'guides/endpoints',
-					'guides/middleware',
-					'guides/internationalization',
-					'guides/prefetch',
-					'guides/view-transitions',
+					'docs/basics/astro-pages',
+					'docs/guides/routing',
+					'docs/guides/endpoints',
+					'docs/guides/middleware',
+					'docs/guides/internationalization',
+					'docs/guides/prefetch',
+					'docs/guides/view-transitions',
 				],
 			},
 			{
 				label: 'UI',
+				translations: { uk: 'Інтерфейс' },
 				items: [
-					'basics/astro-components',
-					'basics/layouts',
-					'guides/styling',
-					'guides/fonts',
-					'guides/syntax-highlighting',
-					'guides/client-side-scripts',
-					'guides/framework-components',
+					'docs/basics/astro-components',
+					'docs/basics/layouts',
+					'docs/guides/styling',
+					'docs/guides/fonts',
+					'docs/guides/syntax-highlighting',
+					'docs/guides/client-side-scripts',
+					'docs/guides/framework-components',
 				],
 			},
 			{
 				label: 'Content',
+				translations: { uk: 'Контент' },
 				items: [
-					'guides/markdown-content',
-					'guides/content-collections',
-					'guides/images',
-					'guides/data-fetching',
-					'guides/astro-db',
+					'docs/guides/markdown-content',
+					'docs/guides/content-collections',
+					'docs/guides/images',
+					'docs/guides/data-fetching',
+					'docs/guides/astro-db',
 				],
 			},
-			'guides/troubleshooting',
-			'contribute',
+			'docs/guides/troubleshooting',
+			'docs/contribute',
 		],
 	},
 	{
 		label: 'Reference',
+		translations: { uk: 'Довідник' },
 		items: [
-			'reference/configuration-reference',
-			'reference/cli-reference',
-			'reference/api-reference',
-			'reference/error-reference',
+			'docs/reference/configuration-reference',
+			'docs/reference/cli-reference',
+			'docs/reference/api-reference',
+			'docs/reference/error-reference',
 		],
 	},
 ];
@@ -90,11 +98,13 @@ export const opensourceSidebar: SidebarConfig = [
 export const peSidebar: SidebarConfig = [
 	{
 		label: 'Getting Started',
-		items: ['pe/getting-started'],
+		translations: { uk: 'Початок роботи' },
+		items: ['docs/pe/getting-started'],
 	},
 	{
 		label: 'PE Features',
-		autogenerate: { directory: 'pe/guides' },
+		translations: { uk: 'Функції PE' },
+		autogenerate: { directory: 'docs/pe/guides' },
 	},
 ];
 
@@ -102,11 +112,13 @@ export const peSidebar: SidebarConfig = [
 export const paasSidebar: SidebarConfig = [
 	{
 		label: 'Getting Started',
-		items: ['paas/getting-started'],
+		translations: { uk: 'Початок роботи' },
+		items: ['docs/paas/getting-started'],
 	},
 	{
 		label: 'Cloud Features',
-		autogenerate: { directory: 'paas/guides' },
+		translations: { uk: 'Функції Cloud' },
+		autogenerate: { directory: 'docs/paas/guides' },
 	},
 ];
 

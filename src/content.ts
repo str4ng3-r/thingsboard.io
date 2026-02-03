@@ -1,7 +1,11 @@
 import { getCollection } from 'astro:content';
 import { isRecipeEntry, isTutorialEntry } from './content.config';
+import { getLanguageFromSlug } from '~/util/path-utils';
 
 export const allPages = await getCollection('docs');
-export const tutorialPages = allPages.filter(isTutorialEntry);
-export const recipePages = allPages.filter(isRecipeEntry);
-export const englishPages = allPages; // All pages are English now
+
+export const englishPages = allPages.filter((page) => getLanguageFromSlug(page.id) === 'en');
+export const ukrainianPages = allPages.filter((page) => getLanguageFromSlug(page.id) === 'uk');
+
+export const tutorialPages = englishPages.filter(isTutorialEntry);
+export const recipePages = englishPages.filter(isRecipeEntry);

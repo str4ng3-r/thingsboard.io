@@ -1,3 +1,12 @@
+// Language system
+export type SupportedLanguage = 'en' | 'uk';
+
+/** Language configuration */
+export const supportedLanguages: Record<SupportedLanguage, { label: string; prefix: string }> = {
+	en: { label: 'English', prefix: '' },
+	uk: { label: 'Українська', prefix: 'uk/' },
+};
+
 // Product version system
 export type ProductVersion = 'opensource' | 'pe' | 'paas';
 
@@ -8,19 +17,58 @@ export const productVersions: Record<ProductVersion, { label: string; prefix: st
 	paas: { label: 'Cloud', prefix: 'paas/' },
 };
 
-/** Detect product version from a URL pathname (after /docs/ base). */
+/** Detect language from a URL pathname. */
+export function getLanguageFromURL(pathname: string): SupportedLanguage {
+	if (pathname.startsWith('/uk/')) return 'uk';
+	return 'en';
+}
+
+/** Detect language from a content entry slug. */
+export function getLanguageFromSlug(slug: string): SupportedLanguage {
+	if (slug.startsWith('uk/')) return 'uk';
+	return 'en';
+}
+
+/** Get the URL prefix for a language. */
+export function getLanguagePrefix(lang: SupportedLanguage): string {
+	return supportedLanguages[lang].prefix;
+}
+
+/** Strip language prefix from path. */
+export function stripLanguagePrefix(path: string): string {
+	if (path.startsWith('uk/')) return path.slice(3);
+	return path;
+}
+
+/**
+ * Detect product version from a URL pathname.
+ * URL structure: /docs/pe/... or /uk/docs/pe/...
+ */
 export function getVersionFromURL(pathname: string): ProductVersion {
-	// Remove /docs/ base prefix if present
-	const path = pathname.replace(/^\/docs\/?/, '');
+	let path = pathname;
+	// Remove language prefix if present
+	if (path.startsWith('/uk/')) path = path.slice(3);
+	// Remove /docs/ prefix
+	path = path.replace(/^\/docs\/?/, '');
+
 	if (path.startsWith('pe/')) return 'pe';
 	if (path.startsWith('paas/')) return 'paas';
 	return 'opensource';
 }
 
-/** Detect product version from a content entry slug. */
+/**
+ * Detect product version from a content entry slug.
+ * Slug structure: docs/pe/... or uk/docs/pe/...
+ */
 export function getVersionFromSlug(slug: string): ProductVersion {
-	if (slug.startsWith('pe/')) return 'pe';
-	if (slug.startsWith('paas/')) return 'paas';
+	let path = slug;
+	// Remove language prefix
+	path = stripLanguagePrefix(path);
+	// Remove docs/ prefix
+	if (path.startsWith('docs/')) path = path.slice(5);
+
+	if (path.startsWith('pe/')) return 'pe';
+	if (path.startsWith('paas/')) return 'paas';
 	return 'opensource';
 }
 
@@ -29,38 +77,51 @@ export function getVersionPrefix(version: ProductVersion): string {
 	return productVersions[version].prefix;
 }
 
-/** Get the base/landing URL for a product version. */
-export function getVersionBaseURL(version: ProductVersion): string {
-	const prefix = getVersionPrefix(version);
-	return `/docs/${prefix}getting-started/`;
+/** Get the base/landing URL for a product version (in English). */
+export function getVersionBaseURL(version: ProductVersion, lang: SupportedLanguage = 'en'): string {
+	const langPrefix = getLanguagePrefix(lang);
+	const versionPrefix = getVersionPrefix(version);
+	return `/${langPrefix}docs/${versionPrefix}getting-started/`;
 }
 
 /**
- * Get the page slug (without version prefix) from a URL pathname.
- * E.g. '/docs/pe/guides/routing/' => 'guides/routing'
+ * Get the page slug (without language, docs, and version prefix) from a URL pathname.
+ * E.g. '/uk/docs/pe/guides/routing/' => 'guides/routing'
  */
 export function getPageSlugFromURL(pathname: string): string {
-	let path = pathname.replace(/^\/docs\/?/, '');
+	let path = pathname;
+	// Remove language prefix (keep leading slash)
+	if (path.startsWith('/uk/')) path = path.slice(3);
+	// Remove /docs/ prefix
+	path = path.replace(/^\/docs\/?/, '');
+	// Remove version prefix
 	if (path.startsWith('pe/')) path = path.slice(3);
 	else if (path.startsWith('paas/')) path = path.slice(5);
 	return path.replace(/^\/|\/$/g, '');
 }
 
 /**
- * Switch the current path to a different product version.
- * E.g. switchVersion('/docs/getting-started/', 'pe') => '/docs/pe/getting-started/'
+ * Switch the current path to a different product version, preserving language.
+ * E.g. switchVersion('/uk/docs/getting-started/', 'pe') => '/uk/docs/pe/getting-started/'
  */
 export function switchVersion(pathname: string, targetVersion: ProductVersion): string {
-	// Remove /docs/ base
-	let path = pathname.replace(/^\/docs\/?/, '');
+	const lang = getLanguageFromURL(pathname);
+	const pageSlug = getPageSlugFromURL(pathname);
+	const langPrefix = getLanguagePrefix(lang);
+	const versionPrefix = getVersionPrefix(targetVersion);
+	return `/${langPrefix}docs/${versionPrefix}${pageSlug}/`;
+}
 
-	// Remove current version prefix
-	if (path.startsWith('pe/')) path = path.slice(3);
-	else if (path.startsWith('paas/')) path = path.slice(5);
-
-	// Add target version prefix
-	const prefix = getVersionPrefix(targetVersion);
-	return `/docs/${prefix}${path || ''}`;
+/**
+ * Switch the current path to a different language, preserving version.
+ * E.g. switchLanguage('/docs/pe/getting-started/', 'uk') => '/uk/docs/pe/getting-started/'
+ */
+export function switchLanguage(pathname: string, targetLang: SupportedLanguage): string {
+	const version = getVersionFromURL(pathname);
+	const pageSlug = getPageSlugFromURL(pathname);
+	const langPrefix = getLanguagePrefix(targetLang);
+	const versionPrefix = getVersionPrefix(version);
+	return `/${langPrefix}docs/${versionPrefix}${pageSlug}/`;
 }
 
 /**
@@ -75,16 +136,48 @@ export function switchVersionWithFallback(
 	targetVersion: ProductVersion,
 	existingPageIds: Set<string>
 ): string {
+	const lang = getLanguageFromURL(pathname);
 	const pageSlug = getPageSlugFromURL(pathname);
-	const targetPrefix = getVersionPrefix(targetVersion);
+	const langPrefix = getLanguagePrefix(lang);
+	const versionPrefix = getVersionPrefix(targetVersion);
 
-	// Build the target content ID
-	const targetId = targetPrefix ? `${targetPrefix}${pageSlug}` : pageSlug;
+	// Build the target content ID (slug format: docs/... or uk/docs/...)
+	const docsPrefix = lang === 'uk' ? 'uk/docs/' : 'docs/';
+	const targetId = `${docsPrefix}${versionPrefix}${pageSlug}`;
 
 	if (existingPageIds.has(targetId)) {
-		return `/docs/${targetPrefix}${pageSlug}/`;
+		return `/${langPrefix}docs/${versionPrefix}${pageSlug}/`;
 	}
 
 	// Fallback to the base page of the target version
-	return getVersionBaseURL(targetVersion);
+	return getVersionBaseURL(targetVersion, lang);
+}
+
+/**
+ * Build language switch URL, falling back to English if the page doesn't exist in target language.
+ * @param pathname - current URL pathname
+ * @param targetLang - language to switch to
+ * @param existingPageIds - set of all existing content page IDs (slugs)
+ */
+export function switchLanguageWithFallback(
+	pathname: string,
+	targetLang: SupportedLanguage,
+	existingPageIds: Set<string>
+): { url: string; isFallback: boolean } {
+	const version = getVersionFromURL(pathname);
+	const pageSlug = getPageSlugFromURL(pathname);
+	const versionPrefix = getVersionPrefix(version);
+
+	if (targetLang === 'uk') {
+		// Check if Ukrainian version exists
+		const ukContentId = `uk/docs/${versionPrefix}${pageSlug}`;
+		if (existingPageIds.has(ukContentId)) {
+			return { url: `/uk/docs/${versionPrefix}${pageSlug}/`, isFallback: false };
+		}
+		// Fallback to English URL
+		return { url: `/docs/${versionPrefix}${pageSlug}/`, isFallback: true };
+	}
+
+	// English always exists
+	return { url: `/docs/${versionPrefix}${pageSlug}/`, isFallback: false };
 }

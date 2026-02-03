@@ -17,7 +17,7 @@ const site = NETLIFY_PREVIEW_SITE || 'https://docs.astro.build/';
 // https://astro.build/config
 export default defineConfig({
 	site,
-	base: '/docs',
+	base: '/',
 	integrations: [
 		devServerFileWatcher([
 			'./config/**', // Custom plugins and integrations
@@ -50,6 +50,7 @@ export default defineConfig({
 			defaultLocale: 'root',
 			locales: {
 				root: { label: 'English', lang: 'en' },
+				uk: { label: 'Українська', lang: 'uk' },
 			},
 			sidebar,
 			social: [
