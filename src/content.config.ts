@@ -3,6 +3,8 @@ import { docsSchema, i18nSchema } from '@astrojs/starlight/schema';
 import { defineCollection, z, type CollectionEntry } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { logoKeys } from './data/logos';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export const baseSchema = z.object({
 	type: z.literal('base').optional().default('base'),
@@ -205,7 +207,13 @@ export const collections = {
 		schema: z.object({ avatar_url: z.string() }),
 	}),
 	devices: defineCollection({
-		loader: glob({ pattern: '**/*.mdx', base: './src/content/devices' }),
+		loader: async () => {
+			// loader: glob({ pattern: '**/*.mdx', base: './src/content/devices' }),
+			const filePath = path.join(process.cwd(), 'src/data/devices.json');
+			const fileContent = fs.readFileSync(filePath, 'utf-8');
+			const data = JSON.parse(fileContent);
+			return data;
+		},
 		schema: deviceSchema,
 	}),
 };
