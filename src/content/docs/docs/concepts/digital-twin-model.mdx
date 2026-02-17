@@ -3,14 +3,10 @@ title: Digital Twin Model
 description: Learn about tenants and customers
 ---
 
-Defines how physical hardware is represented in the cloud.
+import DigitalTwin from '@includes/docs/concepts/digital-twin-model.mdx'
+import { Products } from '~/models/site.models'
 
-- **[Devices](/docs/user-guide/devices/):** Physical or virtual entity publishing telemetry (sensors) or receiving commands (actuators).
-- **[Device Profiles](/docs/user-guide/device-profiles/):** Shared configuration for a fleet of devices. Defines transport protocols (MQTT, HTTP, LwM2M) and default processing.
-- **[Assets](/docs/user-guide/assets):** Abstract entity used to group devices into logical structures (e.g., "Factory Floor" or "Building A").
-- **[Attributes](/docs/user-guide/attributes):** Entity metadata (serial number, firmware version, location).
-- **[Telemetry](/docs/user-guide/ui/users/):** Time-series data points (temperature, humidity, voltage).
-- **[RPC](/docs/user-guide/rpc/):** Remote Procedure Call mechanism to send commands from the platform back to the device and vice-versa.
+<DigitalTwin product={Products.CE}/>
 
 :::note
 **[Relations](/docs/user-guide/relations/):** are the "glue" between these entities, allowing you to build parent-child hierarchies like Building (Asset) -> Floor (Asset) -> Thermostat (Device).
