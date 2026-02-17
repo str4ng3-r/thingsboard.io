@@ -1,4 +1,5 @@
 import DocLink from '@components/DocLink.astro';
+import { Aside } from '@astrojs/starlight/components';
 
 Defines who owns what and how users access the system.
 
@@ -7,4 +8,8 @@ Defines who owns what and how users access the system.
 - <DocLink product={props.product} path='user-guide/ui/customer/'>Customer:</DocLink> Logical sub-organization within Tenant. Used to isolate devices, assets, and dashboards for secure data sharing and delegated management.
 - <DocLink product={props.product} path='user-guide/ui/users/'>Users:</DocLink> Authenticated account with permissions. Can belong to either a Tenant or a Customer.
 
+<Aside type="tip">
+Use **Customers** to securely delegate access. A Customer User can only interact with entities specifically assigned to their Customer account.
+</Aside>
 
+TODO: diagram

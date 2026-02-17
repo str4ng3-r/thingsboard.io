@@ -111,10 +111,10 @@ export const peSidebar: SidebarConfig = [
 				translations: { uk: 'Новий проект' },
 				items: [
 					'docs/pe/concepts/multi-tenancy',
-					// 'docs/concepts/digital-twin-model',
-					// 'docs/concepts/data-processing',
-					// 'docs/concepts/alerts-and-notifications',
-					// 'docs/concepts/data-visualization'
+					'docs/pe/concepts/digital-twin-model',
+					'docs/pe/concepts/data-processing',
+					'docs/pe/concepts/alerts-and-notifications',
+					'docs/pe/concepts/data-visualization'
 				],
 		  }
 		],
