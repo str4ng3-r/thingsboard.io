@@ -2,9 +2,14 @@ import DocLink from '@components/DocLink.astro';
 
 Defines incoming telemetry processing and workflows.
 
-- <DocLink product={props.product} path='user-guide/ui/system/'>System:</DocLink> Global entity managing platform settings and tenants. Controls system-wide resources without owning specific IoT entities.
-- <DocLink product={props.product} path='user-guide/ui/tenants/'>Tenant:</DocLink> Top-level organizational entity representing company or business unit. Owns and manages scoped resources (devices, assets, dashboards) and defines primary security boundaries.
-- <DocLink product={props.product} path='user-guide/ui/customer/'>Customer:</DocLink> Logical sub-organization within Tenant. Used to isolate devices, assets, and dashboards for secure data sharing and delegated management.
-- <DocLink product={props.product} path='user-guide/ui/users/'>Users:</DocLink> Authenticated account with permissions. Can belong to either a Tenant or a Customer.
+- <DocLink product={props.product} path='TODO'>Calculated Fields:</DocLink> Virtual telemetry or attributes derived from incoming data. Used for data transformations and enrichment.
+- <DocLink product={props.product} path='TODO'>Rule Engine:</DocLink> Framework for data processing, workflow automation, and external system integration.
+  - <DocLink product={props.product} path='TODO'>Rule Chain:</DocLink> Directed graph of connected Rule Nodes defining sequential data processing logic and execution paths.
+  - <DocLink product={props.product} path='TODO'>Rule Node:</DocLink> Atomic processing component used to filter, transform, or route messages. Examples include data filtering, script execution, and external API calls.
+  - <DocLink product={props.product} path='TODO'>Queues:</DocLink> Message persistence and delivery mechanism ensuring load balancing, fault tolerance, and guaranteed processing of telemetry.
+- <DocLink product={props.product} path='TODO'>AI Models:</DocLink> Integrated AI models invoked via Rule Engine nodes for anomaly detection, pattern recognition, and Natural Language Generation (NLG) for telemetry.
+
+
+TODO: diagram
 
 
