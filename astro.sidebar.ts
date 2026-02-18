@@ -7,7 +7,7 @@ export const opensourceSidebar: SidebarConfig = [
 		label: 'Getting Started',
 		translations: { uk: 'Початок роботи' },
 		items: [
-			'docs/introduction',
+			'docs',
 			{
 				label: 'Welcome to IoT!',
 				translations: { uk: 'Новий проект' },
@@ -105,7 +105,15 @@ export const peSidebar: SidebarConfig = [
 		label: 'Getting Started',
 		translations: { uk: 'Початок роботи' },
 		items: [
-			'docs/pe/getting-started',
+			'docs/pe',
+			{
+				label: 'Welcome to IoT!',
+				translations: { uk: 'Новий проект' },
+				items: [
+					'docs/pe/why-thingsboard',
+					// 'docs/pe/tutorial/0-introduction'
+				],
+			},			
 			{
 				label: 'Key concepts',
 				translations: { uk: 'Новий проект' },
