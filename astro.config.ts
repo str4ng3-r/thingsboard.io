@@ -83,7 +83,7 @@ export default defineConfig({
 			},
 			routeMiddleware: './src/routeData.ts',
 			editLink: {
-				baseUrl: 'https://github.com/withastro/docs/edit/main',
+				baseUrl: 'https://github.com/thingsboard/thingsboard.io/edit/main',
 			},
 			defaultLocale: 'root',
 			locales: {
@@ -91,10 +91,6 @@ export default defineConfig({
 				uk: { label: 'Українська', lang: 'uk' },
 			},
 			sidebar,
-			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/astro' },
-				{ icon: 'discord', label: 'Discord', href: 'https://astro.build/chat' },
-			],
 			pagefind: false,
 			head: [
 				{
