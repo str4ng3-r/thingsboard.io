@@ -70,6 +70,7 @@ export default defineConfig({
 			markdown: {
 				processedDirs: ['./src/content/_includes'],
 			},
+			tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
 			components: {
 				EditLink: './src/components/starlight/EditLink.astro',
 				Hero: './src/components/starlight/Hero.astro',
