@@ -58,7 +58,18 @@ const guideItems = (prefix: string) => [
 	{
 		label: 'Data Processing',
 		items: [
-			`${prefix}/calculated-fields`,
+			{
+				label: 'Calculated Fields',
+				items: [
+					`${prefix}/calculated-fields`,
+					`${prefix}/calculated-fields/simple`,
+					`${prefix}/calculated-fields/script`,
+					`${prefix}/calculated-fields/propagation`,
+					`${prefix}/calculated-fields/geofencing`,
+					`${prefix}/calculated-fields/related-entities-aggregation`,
+					`${prefix}/calculated-fields/time-series-data-aggregation`,
+				],
+			},
 			`${prefix}/rule-engine`,
 			`${prefix}/rule-nodes`,
 		],
@@ -219,7 +230,7 @@ export const opensourceSidebar: SidebarConfig = [
 				items: [
 					'docs/why-thingsboard',
 					'docs/tutorial/getting-started'
-				],
+				]
 			},
 			{
 				label: 'Key concepts',
@@ -230,25 +241,25 @@ export const opensourceSidebar: SidebarConfig = [
 					'docs/concepts/data-processing',
 					'docs/concepts/alerts-and-notifications',
 					'docs/concepts/data-visualization'
-				],
+				]
 			}
 		],
 	},
 	{
 		label: 'Guides',
 		translations: { uk: 'Посібники' },
-		items: guideItems('docs/user-guide'),
+		items: guideItems('docs/user-guide')
 	},
 	{
 		label: 'Recipes',
 		translations: { uk: 'Рецепти' },
-		items: recipeItems('docs/recipes'),
+		items: recipeItems('docs/recipes')
 	},
 	{
 		label: 'Reference',
 		translations: { uk: 'Довідник' },
-		items: referenceItems('docs/reference'),
-	},
+		items: referenceItems('docs/reference')
+	}
 ];
 
 /** Professional Edition documentation sidebar (pages at /docs/pe/) */

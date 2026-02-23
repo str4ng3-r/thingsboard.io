@@ -1,1 +1,351 @@
-{/* TODO: Add content */}
+import DocLink from '@components/DocLink.astro';
+import { Steps, Aside } from '@astrojs/starlight/components';
+import YouTubeVideo from '~/components/YouTubeVideo.astro';
+
+export const PEOnly = () => (
+  <span style="display:inline-block;background:#3b82f6;color:white;padding:2px 10px;border-radius:999px;font-size:0.75em;font-weight:600;white-space:nowrap">PE / Cloud only</span>
+);
+
+Calculated fields transform raw sensor data into actionable insights in real time.
+Instead of just storing telemetry, you define a calculation rule and ThingsBoard automatically
+generates derived values — stored as time series or attributes — the moment data arrives.
+
+Calculations draw from **multiple sources**: incoming telemetry, entity attributes, or data from
+related assets and devices. Results are immediately ready for dashboards, alarms, and automation.
+Executions can be **chained**: the output of one field triggers the next, enabling multi-step
+processing pipelines.
+
+Calculated fields apply at two levels:
+
+- **Entity level** — applied to a single <DocLink product={props.product} path="user-guide/ui/devices">Device</DocLink> or <DocLink product={props.product} path="user-guide/ui/assets">Asset</DocLink>.
+- **Profile level** — defined in a <DocLink product={props.product} path="user-guide/device-profiles">Device profile</DocLink> or <DocLink product={props.product} path="user-guide/asset-profiles">Asset profile</DocLink> and inherited by every entity using that profile.
+
+## Types
+
+| Type | Best for |
+|------|----------|
+| <DocLink product={props.product} path="user-guide/calculated-fields/simple">Simple</DocLink> | Single math expression: `+`, `-`, `*`, `/`, `sqrt`, `pow`, `abs`, `min`, `max` |
+| <DocLink product={props.product} path="user-guide/calculated-fields/script">Script</DocLink> | Multi-step logic, conditionals, rolling windows, multiple outputs (TBEL) |
+| <DocLink product={props.product} path="user-guide/calculated-fields/propagation">Propagation</DocLink> | Copy or compute values and push them to related entities via relations |
+| <DocLink product={props.product} path="user-guide/calculated-fields/geofencing">Geofencing</DocLink> | GPS zone detection — INSIDE/OUTSIDE status and ENTERED/LEFT events |
+| <DocLink product={props.product} path="user-guide/calculated-fields/related-entities-aggregation">Related entities aggregation</DocLink> | Avg, min, max, sum, count across multiple child or parent entities |
+| <DocLink product={props.product} path="user-guide/calculated-fields/time-series-data-aggregation">Time series data aggregation</DocLink> | Hourly/daily/weekly KPIs from historical telemetry of the current entity |
+
+## Creating a Calculated Field
+
+The creation process is identical for Devices, Assets, Device profiles, and Asset profiles.
+
+<Steps>
+1. Open the **Calculated fields** tab on the entity or profile.
+2. Click the **+** button in the top-right corner.
+3. Select **Create new calculated field** from the dropdown menu.
+4. Configure the [General](#general), [Arguments](#arguments), calculation, and [Output](#output) sections.
+5. Click **Add** to save.
+</Steps>
+
+## Configuration
+
+### General
+
+| Field | Description |
+|-------|-------------|
+| **Title** | Descriptive name reflecting the field's purpose |
+| **Entity type** | The device, asset, or profile to which the field is applied |
+| **Type** | The [calculated field type](#types) — determines which configuration sections are available |
+
+### Arguments
+
+Arguments define which data the calculated field reads and exposes as named variables for the calculation.
+Each argument maps a specific data source (attribute or telemetry key) to a variable name.
+
+Click **Add argument** and configure:
+
+**Entity type** — where data is read from:
+
+| Entity type | Description |
+|------------|-------------|
+| **Current entity** | The device or asset the field is applied to. At profile level, each associated entity is evaluated independently. |
+| **Device / Asset** | A specific referenced entity |
+| **Customer** | The associated customer |
+| **Current tenant** | The current tenant entity |
+| **Current owner** | The owner of the current entity |
+| **Related entities** | Entities resolved dynamically via configured relations (specific field types only) |
+
+**Argument types:**
+
+#### Attribute
+
+Reads a single attribute value from the configured entity:
+
+| Field | Description |
+|-------|-------------|
+| **Attribute scope** | Server, Client, or Shared |
+| **Attribute key** | The attribute name |
+| **Argument name** | Variable name used in the calculation |
+| **Default value** | Fallback when the attribute is missing |
+
+#### Latest Telemetry
+
+Reads the most recent value of a telemetry key:
+
+| Field | Description |
+|-------|-------------|
+| **Time series key** | The telemetry key name |
+| **Argument name** | Variable name used in the calculation |
+| **Default value** | Fallback when no data exists |
+
+#### Time Series Rolling
+
+Reads a sliding historical window of telemetry values. Available for **Script**,
+**Propagation** (Calculation result mode), and specific aggregation types.
+
+| Field | Description |
+|-------|-------------|
+| **Time series key** | The telemetry key name |
+| **Argument name** | Variable name used in the calculation |
+| **Time window** | Duration of the sliding window (e.g., 15 minutes) |
+
+The rolling argument exposes:
+
+- `.timeWindow` — `{ startTs, endTs }` of the window
+- `.values` — array of `{ ts, value }` records
+- Built-in methods: `mean()`, `avg()`, `sum()`, `min()`, `max()`, `std()`, `median()`, `count()`, `first()`, `last()`
+- Merge methods: `merge(other, settings?)`, `mergeAll(others, settings?)`
+
+### Calculation
+
+The calculation block depends on the selected [type](#types):
+
+| Type | Calculation model |
+|------|-------------------|
+| Simple | Single mathematical expression |
+| Script | TBEL function returning a JSON object or array |
+| Propagation | Arguments-only (direct copy) or TBEL script |
+| Geofencing | Zone group configuration |
+| Related entities aggregation | Aggregation metrics (avg, min, max, sum, count) |
+| Time series data aggregation | Aggregation metrics over historical intervals |
+
+See each type's page for full details and examples.
+
+### Output
+
+All field types store results as either **time series** or **attributes**:
+
+| Storage type | Content | Notes |
+|-------------|---------|-------|
+| Time series | JSON object or array, with or without a timestamp | Enable **Use latest timestamp** to align with argument data time |
+| Attribute | JSON object without timestamp | Stored in **Server** or **Shared** scope |
+
+### Output Strategy
+
+Controls how the result is processed after calculation:
+
+| Strategy | Behavior |
+|----------|----------|
+| **Process immediately** (default) | Result is stored directly, bypassing Rule Chains |
+| **Process via Rule Chains** | Result is passed to the entity's Default Rule Chain for routing or transformation |
+
+## Debug
+
+### Enable Debug Mode
+
+Each calculated field has a **Debug** toggle. When enabled, ThingsBoard records execution details
+for every run — the resolved argument values and timestamps that triggered execution, plus the
+result or any error.
+
+Enable debug mode during field creation or toggle it on an existing field using the **Debug** button in the row.
+
+<Aside type="caution">
+  Debug mode records every execution. Disable it in production once the field is validated.
+</Aside>
+
+### Review Debug Events
+
+Click the **Events** icon in the calculated field row to inspect recorded events:
+
+| Field | Description |
+|-------|-------------|
+| **Entity ID** | The entity where the field executed |
+| **Message ID** | Unique execution identifier |
+| **Message type** | What triggered the execution (telemetry update, attribute update, etc.) |
+| **Arguments** | Resolved argument values and timestamps |
+| **Result** | Output generated by the field |
+| **Error** | Failure reason (only shown when execution failed) |
+
+### Testing Mode
+
+For Script and Propagation (Calculation result mode) fields, click **Test with this message**
+in an event row to open the interactive testing panel:
+
+- **Left panel** — TBEL script editor; modify the script without saving changes
+- **Top-right panel** — Argument list; adjust values and timestamps to simulate different inputs
+- **Bottom-right panel** — Execution output or error
+
+<Steps>
+1. Modify the script or argument values as needed.
+2. Click **Test** to execute the function with the provided inputs.
+3. Review the output JSON structure and values.
+4. Click **Save** to keep changes.
+5. Apply the changes to the calculated field configuration to activate the updated logic.
+</Steps>
+
+## Rule Engine Integration
+
+Calculated fields integrate with the ThingsBoard <DocLink product={props.product} path="user-guide/rule-engine-2-0/overview">Rule Engine</DocLink>.
+Execution is triggered automatically whenever telemetry or attributes are processed by:
+
+- **Save Time Series** node — triggers when new telemetry is persisted
+- **Save Attributes** node — triggers when client, shared, or server-side attributes are updated
+- **Calculated Fields** node — dedicated node for manual invocation or complex chaining
+
+## Data Reprocessing
+
+<Aside type="note">
+  <PEOnly /> This feature is available in **ThingsBoard PE** and **ThingsBoard Cloud** only.
+</Aside>
+
+Calculated field reprocessing applies the current calculation logic to **historical telemetry**.
+Use it when you add a new field and want results backfilled for data that arrived before it was
+created, or when you modify an existing field and need to regenerate historical results.
+
+**Requirement:** the field must include at least one time series–based argument (Latest telemetry
+or Time series rolling). Fields using only attribute arguments cannot be reprocessed.
+
+<Steps>
+1. Go to the **Calculated fields** tab of the target entity or profile.
+2. Click the **Reprocess calculated field** icon next to the desired field.
+3. Define the time interval for reprocessing.
+4. Click **Reprocess** — the system recalculates and updates historical telemetry.
+5. Click **Finish** when the process completes.
+</Steps>
+
+**Example:** A Smart Device has been sending `temperature` and `humidity` for weeks. You add a
+`dewPoint` calculated field today. Without reprocessing, `dewPoint` appears only from this moment.
+After reprocessing, `dewPoint` is backfilled for the entire selected historical period.
+
+### Task Manager
+
+The Task manager shows the status of all reprocessing tasks — progress, completion, and any errors.
+
+## Built-in Methods for Rolling Arguments
+
+Rolling arguments expose aggregation methods that accept an optional `ignoreNaN` boolean (default `true`):
+
+| Method | `ignoreNaN = true` (default) | `ignoreNaN = false` |
+|--------|------------------------------|---------------------|
+| `max()` | Highest value, ignoring NaN | NaN if any NaN exists |
+| `min()` | Lowest value, ignoring NaN | NaN if any NaN exists |
+| `mean()`, `avg()` | Average, ignoring NaN | NaN if any NaN exists |
+| `std()` | Standard deviation, ignoring NaN | NaN if any NaN exists |
+| `median()` | Median, ignoring NaN | NaN if any NaN exists |
+| `count()` | Count of values, ignoring NaN | Count including NaN |
+| `last()` | Most recent non-NaN value | Last value even if NaN |
+| `first()` | Oldest non-NaN value | First value even if NaN |
+| `sum()` | Total sum, ignoring NaN | NaN if any NaN exists |
+
+**Given this rolling argument:**
+
+```json
+{
+  "temperature": {
+    "timeWindow": { "startTs": 1740643762896, "endTs": 1740644662896 },
+    "values": [
+      { "ts": 1740644350000, "value": 72.32 },
+      { "ts": 1740644360000, "value": 72.86 },
+      { "ts": 1740644370000, "value": 73.58 },
+      { "ts": 1740644380000, "value": "NaN" }
+    ]
+  }
+}
+```
+
+**Usage:**
+
+```js
+var avgTemp = temperature.mean();        // 72.92
+var tempMax = temperature.max();         // 73.58
+var valueCount = temperature.count();    // 3
+
+var avgTempNaN = temperature.mean(false);     // NaN
+var tempMaxNaN = temperature.max(false);      // NaN
+var valueCountNaN = temperature.count(false); // 4
+```
+
+## Merging Time Series Arguments
+
+Rolling arguments can be merged to align timestamps across multiple telemetry streams.
+Missing values at a given timestamp are filled with the most recent known value for that argument;
+if no previous value exists, `NaN` is used.
+
+| Method | Description |
+|--------|-------------|
+| `merge(other, settings?)` | Merge with one other rolling argument |
+| `mergeAll(others, settings?)` | Merge with an array of rolling arguments |
+
+`settings` (optional): `{ ignoreNaN: boolean, timeWindow: { startTs, endTs } }`
+
+**Example — merge two arguments:**
+
+```js
+var merged = temperature.merge(humidity, { ignoreNaN: false });
+// merged.values[i] = { ts, values: [tempValue, humidityValue] }
+```
+
+**Example — mergeAll three arguments:**
+
+```js
+var merged = temperature.mergeAll([humidity, pressure], { ignoreNaN: true });
+// merged.values[i] = { ts, values: [tempValue, humidityValue, pressureValue] }
+```
+
+**Common use cases:** sensor data synchronization, anomaly detection across multiple streams,
+predictive maintenance combining vibration, temperature, and operational status data.
+
+## Export / Import
+
+Calculated field configurations can be exported as JSON and imported into any ThingsBoard instance.
+
+**Export:**
+
+<Steps>
+1. Go to the **Calculated fields** page.
+2. Click the **Export** icon in the calculated field row.
+</Steps>
+
+**Import:**
+
+<Steps>
+1. Go to the **Calculated fields** page.
+2. Click the **+** icon and select **Import calculated field**.
+3. Upload the JSON configuration file and click **Import**.
+4. Specify the entity or profile to which the field will be applied.
+5. Review any highlighted argument errors.
+6. Click **Add** to complete the import.
+</Steps>
+
+<Aside type="note">
+  If a referenced entity doesn't exist in the current tenant, the affected argument is highlighted
+  as an error. If the referenced entity is the current tenant and you import into another tenant,
+  it adjusts automatically.
+</Aside>
+
+## Managing Calculated Fields
+
+The **Calculated fields** page lists all fields for the selected entity or profile.
+Each row includes an action panel:
+
+| Action | Description |
+|--------|-------------|
+| **Reprocess** | Apply field logic to historical data <PEOnly /> |
+| **Copy** | Duplicate the configuration to quickly create a similar field |
+| **Export** | Download configuration as JSON |
+| **Events** | View execution events and errors |
+| **Debug** | Toggle debug mode |
+| **Delete** | Remove the field |
+
+Click a field row to view its full details. To edit, click the orange **pencil** icon;
+click the orange **check** to apply changes.
+
+## Overview Video
+
+<YouTubeVideo videoId="wBUcWMSH4QI" title="Calculated Fields in ThingsBoard" />
