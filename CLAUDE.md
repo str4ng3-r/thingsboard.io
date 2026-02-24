@@ -64,12 +64,14 @@ Landing page components are in `src/components/Landing/` (Card, ListCard, SplitC
 `src/components/ImageGallery.astro` — responsive image grid with a built-in lightbox.
 
 **Features:**
-- Thumbnail grid (3 columns desktop, 2 on mobile)
+- **Single image mode**: 1 image renders as a centered clickable figure (zoom-in cursor, opens lightbox) — no grid
+- **Multi image mode**: thumbnail grid (3 columns desktop, 2 on mobile)
 - Lightbox with zoom-from-thumbnail open/close animation
 - Navigation by clicking, keyboard arrows, and Prev/Next buttons
 - Caption tooltip on thumbnail hover; caption + counter shown in lightbox footer
 - Respects `prefers-reduced-motion`
 - Images processed at build time via `astro:assets` → optimized WebP (thumb: 800px/80q, full: 90q)
+- Supports `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`
 - Lightbox teleported to `document.body` to escape any stacking context
 
 **Props:**
@@ -91,7 +93,7 @@ interface Props {
 **Usage in MDX:**
 
 ```mdx
-import ImageGallery from '@components/ImageGallery.astro';
+import ImageGallery from '~/components/ImageGallery.astro';
 
 <ImageGallery images={[
   {
@@ -116,6 +118,61 @@ import ImageGallery from '@components/ImageGallery.astro';
   ]} />
 )}
 ```
+
+### DocImage Component
+
+`src/components/DocImage.astro` — single optimized image with optional width and alignment.
+
+**Features:**
+- Images processed at build time via `astro:assets` → WebP at quality 85
+- Numeric `width` resizes the image via `getImage`; string `width` (e.g. `"50%"`) applies as CSS `max-width`
+- `align` controls horizontal positioning (`left` / `center` / `right`); default is `center`
+- Row layout: wrap multiple `DocImage` in `<div class="doc-image-row">` for side-by-side display; stacks to 100% on ≤640px
+- Supports `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`
+
+**Props:**
+
+```ts
+interface Props {
+  src: string;                         // Absolute path from project root, e.g. /src/assets/images/foo.png
+  alt: string;                         // Required alt text
+  width?: number | string;             // number → resize (px); string → CSS max-width (e.g. "50%", "400px")
+  align?: 'left' | 'center' | 'right'; // Default: 'center'
+}
+```
+
+**Important:** Images must live inside `/src/assets/` — the component uses `import.meta.glob` over that directory only.
+
+**Usage in MDX:**
+
+```mdx
+import DocImage from '~/components/DocImage.astro';
+
+{/* Basic — centered, full width */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" />
+
+{/* Constrained width, centered */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width="60%" />
+
+{/* Pixel resize (passed to getImage) */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width={800} />
+
+{/* Alignment */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width="50%" align="left" />
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width="50%" align="right" />
+```
+
+**Row layout — two or more images side by side:**
+
+```mdx
+<div class="doc-image-row">
+  <DocImage src="/src/assets/images/step-1.png" alt="Step 1" />
+  <DocImage src="/src/assets/images/step-2.png" alt="Step 2" />
+  <DocImage src="/src/assets/images/step-3.png" alt="Step 3" />
+</div>
+```
+
+Images inside `.doc-image-row` share equal width (`flex: 1`) and stack vertically on screens ≤640px. The `.doc-image-row` styles are defined inside `DocImage.astro` via `:global()` and are available on any page that renders a `DocImage`.
 
 ### YouTubeVideo Component
 

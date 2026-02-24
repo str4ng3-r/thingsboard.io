@@ -5,6 +5,7 @@ description: How to get involved and contribute to Astro.
 import ContributorList from '~/components/ContributorList.astro'
 import ImageGallery from '~/components/ImageGallery.astro'
 import YouTubeVideo from '~/components/YouTubeVideo.astro'
+import DocImage from '~/components/DocImage.astro'
 import { Tabs, TabItem } from '@astrojs/starlight/components'
 
 We welcome contributions of any size and contributors of any skill level. As an open-source project, we believe in giving back to our contributors. We are happy to help with guidance on PRs, technical writing, and turning any feature idea into a reality.
@@ -66,6 +67,45 @@ Below is a demo of the `ImageGallery` component. Click any thumbnail to open a f
     { src: '/src/assets/images/delete-domain-step-1.png', alt: 'Delete domain — step 1', caption: 'Step 1: open domain settings' },
     { src: '/src/assets/images/delete-domain-step-2.png', alt: 'Delete domain — step 2', caption: 'Step 2: confirm deletion' },
   ]}
+/>
+
+## DocImage Example
+
+Below is a demo of the `DocImage` component for inserting a single image into a documentation page.
+
+<ImageGallery
+  images={[
+    { src: '/src/assets/images/docs/generic-role.svg', alt: 'Test with svg', caption: 'Test with svg' },
+  ]}
+/>
+
+<ImageGallery
+  images={[
+    { src: '/src/assets/images/add-generic-role.png', alt: 'Test with png', caption: 'Test with png' },
+  ]}
+/>
+
+<DocImage
+  src="/src/assets/images/docs/generic-role.svg" width="60%" align="center"
+  alt="Generic role diagram"
+/>
+<div class="doc-image-row">
+  <DocImage
+    src="/src/assets/images/docs/opc-ua-server-config-2.png"
+    alt="Generic role diagram"
+  />
+  <DocImage
+    src="/src/assets/images/docs/opc-ua-server-config-2.png"
+    alt="Generic role diagram"
+  />
+  <DocImage
+    src="/src/assets/images/docs/opc-ua-server-config-2.png"
+    alt="Generic role diagram"
+  />
+</div>
+<DocImage
+  src="/src/assets/images/add-generic-role.png"
+  alt="Generic role diagram"
 />
 
 ## Code Block — scroll only (maxLines)
