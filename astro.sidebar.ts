@@ -247,6 +247,13 @@ const referenceItems = (prefix: string) => [
 			`${prefix}/gateway-api/claiming`,
 		],
 	},
+	{
+		label: 'Rule Engine',
+		collapsed: true,
+		items: [
+			`${prefix}/rule-engine/message-types`,
+		],
+	},
 ];
 
 export const opensourceSidebar: SidebarConfig = [
