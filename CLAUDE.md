@@ -64,12 +64,14 @@ Landing page components are in `src/components/Landing/` (Card, ListCard, SplitC
 `src/components/ImageGallery.astro` — responsive image grid with a built-in lightbox.
 
 **Features:**
-- Thumbnail grid (3 columns desktop, 2 on mobile)
+- **Single image mode**: 1 image renders as a centered clickable figure (zoom-in cursor, opens lightbox) — no grid
+- **Multi image mode**: thumbnail grid (3 columns desktop, 2 on mobile)
 - Lightbox with zoom-from-thumbnail open/close animation
 - Navigation by clicking, keyboard arrows, and Prev/Next buttons
 - Caption tooltip on thumbnail hover; caption + counter shown in lightbox footer
 - Respects `prefers-reduced-motion`
 - Images processed at build time via `astro:assets` → optimized WebP (thumb: 800px/80q, full: 90q)
+- Supports `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`
 - Lightbox teleported to `document.body` to escape any stacking context
 
 **Props:**
@@ -91,7 +93,7 @@ interface Props {
 **Usage in MDX:**
 
 ```mdx
-import ImageGallery from '@components/ImageGallery.astro';
+import ImageGallery from '~/components/ImageGallery.astro';
 
 <ImageGallery images={[
   {
@@ -116,6 +118,61 @@ import ImageGallery from '@components/ImageGallery.astro';
   ]} />
 )}
 ```
+
+### DocImage Component
+
+`src/components/DocImage.astro` — single optimized image with optional width and alignment.
+
+**Features:**
+- Images processed at build time via `astro:assets` → WebP at quality 85
+- Numeric `width` resizes the image via `getImage`; string `width` (e.g. `"50%"`) applies as CSS `max-width`
+- `align` controls horizontal positioning (`left` / `center` / `right`); default is `center`
+- Row layout: wrap multiple `DocImage` in `<div class="doc-image-row">` for side-by-side display; stacks to 100% on ≤640px
+- Supports `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`
+
+**Props:**
+
+```ts
+interface Props {
+  src: string;                         // Absolute path from project root, e.g. /src/assets/images/foo.png
+  alt: string;                         // Required alt text
+  width?: number | string;             // number → resize (px); string → CSS max-width (e.g. "50%", "400px")
+  align?: 'left' | 'center' | 'right'; // Default: 'center'
+}
+```
+
+**Important:** Images must live inside `/src/assets/` — the component uses `import.meta.glob` over that directory only.
+
+**Usage in MDX:**
+
+```mdx
+import DocImage from '~/components/DocImage.astro';
+
+{/* Basic — centered, full width */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" />
+
+{/* Constrained width, centered */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width="60%" />
+
+{/* Pixel resize (passed to getImage) */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width={800} />
+
+{/* Alignment */}
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width="50%" align="left" />
+<DocImage src="/src/assets/images/diagram.png" alt="System diagram" width="50%" align="right" />
+```
+
+**Row layout — two or more images side by side:**
+
+```mdx
+<div class="doc-image-row">
+  <DocImage src="/src/assets/images/step-1.png" alt="Step 1" />
+  <DocImage src="/src/assets/images/step-2.png" alt="Step 2" />
+  <DocImage src="/src/assets/images/step-3.png" alt="Step 3" />
+</div>
+```
+
+Images inside `.doc-image-row` share equal width (`flex: 1`) and stack vertically on screens ≤640px. The `.doc-image-row` styles are defined inside `DocImage.astro` via `:global()` and are available on any page that renders a `DocImage`.
 
 ### YouTubeVideo Component
 
@@ -146,7 +203,7 @@ import YouTubeVideo from '~/components/YouTubeVideo.astro';
 
 ### Code Block Meta Options (pluginMaxLines)
 
-`config/plugins/expressive-code-max-lines.ts` — custom Expressive Code plugin that adds two independent meta options to fenced code blocks.
+`config/plugins/expressive-code-max-lines.ts` — custom Expressive Code plugin that adds independent meta options to fenced code blocks.
 
 **Meta options:**
 
@@ -154,8 +211,9 @@ import YouTubeVideo from '~/components/YouTubeVideo.astro';
 |--------|------|-------------|
 | `maxLines=N` | number | Limits the visible height to N lines; enables vertical scroll when content overflows |
 | `collapsible` | boolean flag | Adds an ▼ Expand / ▲ Collapse button below the block (requires `maxLines`) |
+| `wrap` | boolean flag | Wraps long lines instead of horizontal scroll; copy button copies original text unchanged |
 
-The two options are independent — `maxLines` alone gives a scrollable block without a button; adding `collapsible` enables the toggle.
+`maxLines` and `collapsible` are independent — `maxLines` alone gives a scrollable block without a button; adding `collapsible` enables the toggle. `wrap` can be used alone or combined with `maxLines`.
 
 **Usage in MDX fenced code blocks:**
 
@@ -170,6 +228,14 @@ The two options are independent — `maxLines` alone gives a scrollable block wi
 
 ```js maxLines=15 collapsible title="script.js"
 // can be combined with other EC meta options
+```
+
+```bash wrap
+// long lines wrap visually; copy button copies the original single-line text
+```
+
+```bash wrap maxLines=5
+// wrap + maxLines can be combined
 ```
 ````
 
@@ -405,6 +471,28 @@ Configuration reference and error docs are auto-generated from the Astro source 
 - `src/content/docs/` — documentation pages rendered by Starlight
 - `src/pages/` — special routes: root redirect, language redirects, 404, OG image generation
 - `src/pages/[lang]/` — dynamic per-language routes (index, install, tutorial redirects)
+
+### Static Files (public/)
+
+Files that must be served as-is (not processed by the build) go in the `public/` directory. They are copied to `dist/` preserving the path structure, and are available at the root URL.
+
+**Use `public/` for:**
+- JSON files available for download
+- PDFs or other binary assets linked from docs
+- Any file referenced by a direct URL (not via `astro:assets`)
+
+**Do NOT put these in `src/assets/`** — that directory is for images processed via `astro:assets` (optimization, format conversion).
+
+**Example — downloadable JSON:**
+
+File location: `public/resources/airconditioners_dashboard.json`
+
+Link in MDX:
+```html
+<a href="/resources/airconditioners_dashboard.json" download="airconditioners_dashboard.json">
+  airconditioners_dashboard.json
+</a>
+```
 
 ## Code Style
 

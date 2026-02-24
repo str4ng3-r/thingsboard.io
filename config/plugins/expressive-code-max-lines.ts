@@ -3,6 +3,7 @@
  *
  *   maxLines=N    — limits the visible height to N lines with a scrollbar
  *   collapsible   — adds an Expand / Collapse button (requires maxLines)
+ *   wrap          — wraps long lines instead of horizontal scroll; copy is unaffected
  *
  * Usage examples:
  *   ```js maxLines=15
@@ -10,6 +11,9 @@
  *
  *   ```js maxLines=15 collapsible
  *   ```                          ← height-limited + scrollable + Expand/Collapse button
+ *
+ *   ```bash wrap
+ *   ```                          ← long lines wrap; copy copies original text unchanged
  *
  * Notes on HAST conventions:
  *   - Classes → properties.className (array), NOT properties.class
@@ -157,6 +161,33 @@ export function pluginMaxLines(): EcPlugin {
 				const collapsible = codeBlock.metaOptions.getBoolean('collapsible');
 				if (collapsible) {
 					appendClassName(renderData.blockAst, 'ec-collapsible');
+				}
+			},
+		},
+	};
+}
+
+export function pluginWrap(): EcPlugin {
+	return {
+		name: 'Wrap',
+
+		baseStyles: `
+			/* wrap: long lines wrap instead of scrolling horizontally */
+			.ec-wrap pre {
+				white-space: pre-wrap;
+				overflow-wrap: anywhere;
+			}
+			.ec-wrap .ec-line {
+				white-space: pre-wrap;
+				word-break: break-word;
+			}
+		`,
+
+		hooks: {
+			postprocessRenderedBlock: ({ codeBlock, renderData }) => {
+				const wrap = codeBlock.metaOptions.getBoolean('wrap');
+				if (wrap) {
+					appendClassName(renderData.blockAst, 'ec-wrap');
 				}
 			},
 		},

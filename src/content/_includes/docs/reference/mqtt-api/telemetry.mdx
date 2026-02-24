@@ -47,6 +47,6 @@ Send multiple readings at different timestamps in a single publish.
 
 ## Example
 
-```bash
+```bash wrap
 mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST" -p 1883 -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN" -m '{"temperature": 22.5, "humidity": 61}'
 ```
