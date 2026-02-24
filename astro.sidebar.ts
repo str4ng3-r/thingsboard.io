@@ -94,6 +94,12 @@ const guideItems = (prefix: string) => [
 		collapsed: true,
 		items: [
 			`${prefix}/reporting`,
+			`${prefix}/reporting/getting-started`,
+			`${prefix}/reporting/scheduling`,
+			`${prefix}/reporting/notifications`,
+			`${prefix}/reporting/charts`,
+			`${prefix}/reporting/dashboards`,
+			`${prefix}/reporting/subreports`,
 		],
 	},
 	{
