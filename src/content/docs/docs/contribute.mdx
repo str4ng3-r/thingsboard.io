@@ -110,7 +110,7 @@ Below is a demo of the `DocImage` component for inserting a single image into a 
 
 ## Code Block — scroll only (maxLines)
 
-```js maxLines=8 title="airconditioner-decoder.js"
+```js maxLines=8 title="airconditioner-decoder.js" wrap
 var data = decodeToJson(payload);
 var deviceName = metadata['opcUaNode_name'];
 var namespaceIndex = metadata['opcUaNode_namespaceIndex'];
@@ -267,6 +267,10 @@ if (data.state != null) {
 /** Helper functions 'decodeToString' and 'decodeToJson' are already built-in **/
 
 return result;
+```
+
+```bash wrap
+mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST" -p 1883 -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN" -m '{"temperature": 22.5, "humidity": 61}'
 ```
 
 <a href="/resources/docs/airconditioners_dashboard.json" download="airconditioners_dashboard.json">

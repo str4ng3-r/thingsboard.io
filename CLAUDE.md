@@ -203,7 +203,7 @@ import YouTubeVideo from '~/components/YouTubeVideo.astro';
 
 ### Code Block Meta Options (pluginMaxLines)
 
-`config/plugins/expressive-code-max-lines.ts` — custom Expressive Code plugin that adds two independent meta options to fenced code blocks.
+`config/plugins/expressive-code-max-lines.ts` — custom Expressive Code plugin that adds independent meta options to fenced code blocks.
 
 **Meta options:**
 
@@ -211,8 +211,9 @@ import YouTubeVideo from '~/components/YouTubeVideo.astro';
 |--------|------|-------------|
 | `maxLines=N` | number | Limits the visible height to N lines; enables vertical scroll when content overflows |
 | `collapsible` | boolean flag | Adds an ▼ Expand / ▲ Collapse button below the block (requires `maxLines`) |
+| `wrap` | boolean flag | Wraps long lines instead of horizontal scroll; copy button copies original text unchanged |
 
-The two options are independent — `maxLines` alone gives a scrollable block without a button; adding `collapsible` enables the toggle.
+`maxLines` and `collapsible` are independent — `maxLines` alone gives a scrollable block without a button; adding `collapsible` enables the toggle. `wrap` can be used alone or combined with `maxLines`.
 
 **Usage in MDX fenced code blocks:**
 
@@ -227,6 +228,14 @@ The two options are independent — `maxLines` alone gives a scrollable block wi
 
 ```js maxLines=15 collapsible title="script.js"
 // can be combined with other EC meta options
+```
+
+```bash wrap
+// long lines wrap visually; copy button copies the original single-line text
+```
+
+```bash wrap maxLines=5
+// wrap + maxLines can be combined
 ```
 ````
 
