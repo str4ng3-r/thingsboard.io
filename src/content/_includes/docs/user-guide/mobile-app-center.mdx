@@ -2,6 +2,7 @@ import DocLink from '@components/DocLink.astro';
 import { Steps, Aside } from '@astrojs/starlight/components';
 import { Products } from '~/models/site.models';
 import ImageGallery from '~/components/ImageGallery.astro';
+import MultiProductImageGallery from '~/components/MultiProductImageGallery.astro';
 
 The **Mobile App Center** is a hub for building, configuring, and managing mobile apps in ThingsBoard. Whether you are starting from scratch or preparing to publish the ThingsBoard Mobile Application to the Google Play Store or App Store, this tool guides you through every step.
 
@@ -33,33 +34,17 @@ The following settings are available:
 
 A new settings dialog will open.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-1-ce.png', alt: 'Add bundle button', caption: 'Click + Add bundle to create a new bundle.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-1.png', alt: 'Add bundle button', caption: 'Click + Add bundle to create a new bundle.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-1-pe.png', alt: 'Add bundle button', caption: 'Click + Add bundle to create a new bundle.' },
-]} />
-)}
 
 ### Basic settings
 
 Enter a name for your bundle and select existing Android/iOS apps, or [create new ones](#creating-an-application) directly from this window.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/basic-settings-1-ce.png', alt: 'Bundle basic settings', caption: 'Enter the bundle name and select or create applications.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/basic-settings-1.png', alt: 'Bundle basic settings', caption: 'Enter the bundle name and select or create applications.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/basic-settings-1-pe.png', alt: 'Bundle basic settings', caption: 'Enter the bundle name and select or create applications.' },
-]} />
-)}
 
 <Aside type="tip">
   You can add applications even after the bundle is created.
@@ -83,21 +68,11 @@ Enter a name for your bundle and select existing Android/iOS apps, or [create ne
 7. Click **Add** to save the application.
 </Steps>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-application-1-ce.png', alt: 'Create new application', caption: 'Click Create new to add a new mobile application.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/android-application-2-ce.png', alt: 'Android application settings', caption: 'Configure the Android application package, status, and store information.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/ios-application-2-ce.png', alt: 'iOS application settings', caption: 'Configure the iOS application package, status, and store information.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/add-application-1.png', alt: 'Create new application', caption: 'Click Create new to add a new mobile application.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/android-application-2.png', alt: 'Android application settings', caption: 'Configure the Android application package, status, and store information.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/ios-application-2.png', alt: 'iOS application settings', caption: 'Configure the iOS application package, status, and store information.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-application-1-pe.png', alt: 'Create new application', caption: 'Click Create new to add a new mobile application.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/android-application-2-pe.png', alt: 'Android application settings', caption: 'Configure the Android application package, status, and store information.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/ios-application-2-pe.png', alt: 'iOS application settings', caption: 'Configure the iOS application package, status, and store information.' },
-]} />
-)}
 
 Then, click **Next**.
 
@@ -108,19 +83,10 @@ Specify an already configured OAuth 2.0 client or <DocLink product={props.produc
 
 You can also disable OAuth 2.0 for mobile devices.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/specify-oauth-clients-1-ce.png', alt: 'OAuth 2.0 client selection', caption: 'Select or configure OAuth 2.0 clients for the mobile app.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/specify-oauth-clients-2-ce.png', alt: 'OAuth 2.0 configured', caption: 'OAuth 2.0 configuration complete.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/specify-oauth-clients-1.png', alt: 'OAuth 2.0 client selection', caption: 'Select or configure OAuth 2.0 clients for the mobile app.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/specify-oauth-clients-2.png', alt: 'OAuth 2.0 configured', caption: 'OAuth 2.0 configuration complete.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/specify-oauth-clients-1-pe.png', alt: 'OAuth 2.0 client selection', caption: 'Select or configure OAuth 2.0 clients for the mobile app.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/specify-oauth-clients-2-pe.png', alt: 'OAuth 2.0 configured', caption: 'OAuth 2.0 configuration complete.' },
-]} />
-)}
 
 After completing the OAuth 2.0 configuration, click **Next**.
 
@@ -128,19 +94,10 @@ After completing the OAuth 2.0 configuration, click **Next**.
 
 Set up quick access to the features and dashboards you use most frequently. Add menu items, change icons and item names, and reorganize the navigation menu.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-1-ce.png', alt: 'Layout configuration', caption: 'Customize the mobile app navigation menu.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-2-ce.png', alt: 'Layout menu items', caption: 'Add and reorder menu items.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-1.png', alt: 'Layout configuration', caption: 'Customize the mobile app navigation menu.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-2.png', alt: 'Layout menu items', caption: 'Add and reorder menu items.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-1-pe.png', alt: 'Layout configuration', caption: 'Customize the mobile app navigation menu.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-2-pe.png', alt: 'Layout menu items', caption: 'Add and reorder menu items.' },
-]} />
-)}
 
 To add a new menu item:
 
@@ -155,21 +112,11 @@ To add a new menu item:
 5. Click **Add**.
 </Steps>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-1-ce.png', alt: 'Add specific page', caption: 'Click + Add specific page to add a new menu item.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-2-ce.png', alt: 'Select page type', caption: 'Select the page type: Dashboard, Webview, or Custom.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-3-ce.png', alt: 'Page type added', caption: 'The new menu item is added to the layout.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-1.png', alt: 'Add specific page', caption: 'Click + Add specific page to add a new menu item.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-2.png', alt: 'Select page type', caption: 'Select the page type: Dashboard, Webview, or Custom.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-3.png', alt: 'Page type added', caption: 'The new menu item is added to the layout.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-1-pe.png', alt: 'Add specific page', caption: 'Click + Add specific page to add a new menu item.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-2-pe.png', alt: 'Select page type', caption: 'Select the page type: Dashboard, Webview, or Custom.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/custom-page-type-3-pe.png', alt: 'Page type added', caption: 'The new menu item is added to the layout.' },
-]} />
-)}
 
 The following routes are available for the **Custom** page type:
 
@@ -198,19 +145,10 @@ The following routes are available for the **Custom** page type:
 
 The number of menu items displayed in the bottom navigation menu depends on the screen size of the mobile device. Items that do not fit will be available under the **More** page.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-3-ce.png', alt: 'More page on mobile', caption: 'Items that do not fit the navigation bar appear under More.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-4-ce.png', alt: 'More page expanded', caption: 'The More page shows additional menu items.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-3.png', alt: 'More page on mobile', caption: 'Items that do not fit the navigation bar appear under More.' },
+  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-4.png', alt: 'More page expanded', caption: 'The More page shows additional menu items.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-3-pe.png', alt: 'More page on mobile', caption: 'Items that do not fit the navigation bar appear under More.' },
-  { src: '/src/assets/images/user-guide/mobile-app-center/mobile-layout-4-pe.png', alt: 'More page expanded', caption: 'The More page shows additional menu items.' },
-]} />
-)}
 
 {props.product !== Products.CE && (<>
 
@@ -313,17 +251,9 @@ Click **Add** to complete the bundle creation.
 After creating the bundle, a configuration dialog opens with basic configuration settings for the ThingsBoard Mobile Application.
 Continue configuring your new mobile app using the provided instructions, or skip this step if you already have a mobile app configured. Click **Close**.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-2-ce.png', alt: 'Configuration dialog', caption: 'Configuration dialog with setup instructions for the mobile app.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-2.png', alt: 'Configuration dialog', caption: 'Configuration dialog with setup instructions for the mobile app.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-2-pe.png', alt: 'Configuration dialog', caption: 'Configuration dialog with setup instructions for the mobile app.' },
-]} />
-)}
 
 <Aside type="tip">
   For more information on launching your new app, refer to the <DocLink product={props.product} path="TODO">Getting started with the ThingsBoard Mobile Application</DocLink> documentation.
@@ -331,14 +261,6 @@ Continue configuring your new mobile app using the provided instructions, or ski
 
 The bundle has been added. The applications specified in the bundle now use the defined settings.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-3-ce.png', alt: 'Bundle added', caption: 'The bundle is created and applications use the defined settings.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-3.png', alt: 'Bundle added', caption: 'The bundle is created and applications use the defined settings.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/mobile-app-center/add-new-bundle-3-pe.png', alt: 'Bundle added', caption: 'The bundle is created and applications use the defined settings.' },
-]} />
-)}

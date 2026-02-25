@@ -2,6 +2,7 @@ import DocLink from '@components/DocLink.astro';
 import { Steps, Aside } from '@astrojs/starlight/components';
 import { Products } from '~/models/site.models';
 import ImageGallery from '~/components/ImageGallery.astro';
+import MultiProductImageGallery from '~/components/MultiProductImageGallery.astro';
 
 API keys provide a simpler alternative to password-based authentication for the ThingsBoard REST API.
 Unlike JWT tokens that require a login request and periodically expire, API keys are long-lived credentials that remain valid until their configured expiration date or until they are manually revoked.
@@ -34,27 +35,14 @@ API keys can be created for **your own account** or for **other platform users**
   Copy and save the generated API key immediately — it will not be displayed again.
 </Aside>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-1-ce.png', alt: 'Open account menu', caption: 'Click the three-dot menu and select Account.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-2-ce.png', alt: 'Security tab', caption: 'Navigate to the Security tab.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-3-ce.png', alt: 'Manage API keys', caption: 'Click Manage in the API keys section.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-4-ce.png', alt: 'Generate API key', caption: 'Click + Generate, enter a description, and set the expiration.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-5-ce.png', alt: 'API key generated', caption: 'Copy the generated API key — it will not be shown again.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-6-ce.png', alt: 'API key in list', caption: 'The new API key appears in the list.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-1.png', alt: 'Open account menu', caption: 'Click the three-dot menu and select Account.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-2.png', alt: 'Security tab', caption: 'Navigate to the Security tab.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-3.png', alt: 'Manage API keys', caption: 'Click Manage in the API keys section.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-4.png', alt: 'Generate API key', caption: 'Click + Generate, enter a description, and set the expiration.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-5.png', alt: 'API key generated', caption: 'Copy the generated API key — it will not be shown again.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-6.png', alt: 'API key in list', caption: 'The new API key appears in the list.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-1-pe.png', alt: 'Open account menu', caption: 'Click the three-dot menu and select Account.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-2-pe.png', alt: 'Security tab', caption: 'Navigate to the Security tab.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-3-pe.png', alt: 'Manage API keys', caption: 'Click Manage in the API keys section.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-4-pe.png', alt: 'Generate API key', caption: 'Click + Generate, enter a description, and set the expiration.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-5-pe.png', alt: 'API key generated', caption: 'Copy the generated API key — it will not be shown again.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-our-account-6-pe.png', alt: 'API key in list', caption: 'The new API key appears in the list.' },
-]} />
-)}
 
 ### Creating an API key for another user
 
@@ -74,23 +62,12 @@ A system administrator can create API keys for any tenant users, and a tenant ad
   The API key inherits all permissions of the user for whom it was created.
 </Aside>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-1-ce.png', alt: 'Open user details', caption: 'Navigate to the Users section and click on a user.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-2-ce.png', alt: 'API keys tab', caption: 'Go to the API keys tab.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-3-ce.png', alt: 'Generate key for user', caption: 'Click + Generate, enter a description, and set the expiration.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-4-ce.png', alt: 'Key generated for user', caption: 'The API key is created for the selected user.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-1.png', alt: 'Open user details', caption: 'Navigate to the Users section and click on a user.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-2.png', alt: 'API keys tab', caption: 'Go to the API keys tab.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-3.png', alt: 'Generate key for user', caption: 'Click + Generate, enter a description, and set the expiration.' },
+  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-4.png', alt: 'Key generated for user', caption: 'The API key is created for the selected user.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-1-pe.png', alt: 'Open user details', caption: 'Navigate to the Users section and click on a user.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-2-pe.png', alt: 'API keys tab', caption: 'Go to the API keys tab.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-3-pe.png', alt: 'Generate key for user', caption: 'Click + Generate, enter a description, and set the expiration.' },
-  { src: '/src/assets/images/user-guide/security/api-keys/creating-api-key-for-another-user-4-pe.png', alt: 'Key generated for user', caption: 'The API key is created for the selected user.' },
-]} />
-)}
 
 ## Using API keys
 
@@ -150,17 +127,9 @@ Each API key in the table displays:
 | **Status** | Whether the key is active or disabled. |
 | **Expiration time** | The date and time when the key will expire. |
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/managing-api-keys-1-ce.png', alt: 'API keys table', caption: 'API keys table showing status, description, and expiration.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/security/api-keys/managing-api-keys-1.png', alt: 'API keys table', caption: 'API keys table showing status, description, and expiration.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/managing-api-keys-1-pe.png', alt: 'API keys table', caption: 'API keys table showing status, description, and expiration.' },
-]} />
-)}
 
 Available actions for each API key:
 
@@ -168,14 +137,6 @@ Available actions for each API key:
 - **Delete** — click the delete icon to permanently remove a key. This action cannot be undone.
 - **Edit description** — click the edit icon to update the key's description.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/managing-api-keys-2-ce.png', alt: 'API key actions', caption: 'Enable, disable, edit, or delete API keys.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/security/api-keys/managing-api-keys-2.png', alt: 'API key actions', caption: 'Enable, disable, edit, or delete API keys.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/security/api-keys/managing-api-keys-2-pe.png', alt: 'API key actions', caption: 'Enable, disable, edit, or delete API keys.' },
-]} />
-)}

@@ -1,7 +1,7 @@
 import DocLink from '@components/DocLink.astro';
 import { Steps, Aside } from '@astrojs/starlight/components';
 import { Products } from '~/models/site.models';
-import ImageGallery from '~/components/ImageGallery.astro';
+import MultiProductImageGallery from '~/components/MultiProductImageGallery.astro';
 
 **AI models** are machine learning or large language models that process data, generate predictions, detect anomalies, or produce human-like responses.
 By integrating external AI providers (OpenAI, Google Gemini, Azure OpenAI, Amazon Bedrock, and others), you can:
@@ -26,21 +26,11 @@ Once configured, AI models are available for use in the <DocLink product={props.
 4. Click **Save**.
 </Steps>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-1-ce.png', alt: 'AI models settings page', caption: 'Go to the AI models tab of the Settings page and click Add model.' },
-  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-2-ce.png', alt: 'AI model configuration form', caption: 'Fill in the model name, provider, model ID, and optional advanced settings.' },
-  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-3-ce.png', alt: 'AI model saved', caption: 'The model is now available for use in the AI request rule node.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-1.png', alt: 'AI models settings page', caption: 'Go to the AI models tab of the Settings page and click Add model.' },
+  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-2.png', alt: 'AI model configuration form', caption: 'Fill in the model name, provider, model ID, and optional advanced settings.' },
+  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-3.png', alt: 'AI model saved', caption: 'The model is now available for use in the AI request rule node.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-1-pe.png', alt: 'AI models settings page', caption: 'Go to the AI models tab of the Settings page and click Add model.' },
-  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-2-pe.png', alt: 'AI model configuration form', caption: 'Fill in the model name, provider, model ID, and optional advanced settings.' },
-  { src: '/src/assets/images/user-guide/ai-models/adding-ai-model-3-pe.png', alt: 'AI model saved', caption: 'The model is now available for use in the AI request rule node.' },
-]} />
-)}
 
 ## Provider configuration
 
@@ -54,17 +44,9 @@ In the **Provider** section, select the AI provider, specify the base URL (requi
 
 ### Supported AI providers
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/ai-provider-configuration-1-ce.png', alt: 'AI provider dropdown', caption: 'Supported AI providers in ThingsBoard.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/ai-models/ai-provider-configuration-1.png', alt: 'AI provider dropdown', caption: 'Supported AI providers in ThingsBoard.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/ai-provider-configuration-1-pe.png', alt: 'AI provider dropdown', caption: 'Supported AI providers in ThingsBoard.' },
-]} />
-)}
 
 #### OpenAI
 
@@ -190,17 +172,9 @@ You are not limited to this list — specify any model ID supported by the provi
   For production usage, use model snapshots to ensure predictable performance. Model aliases may be updated by the provider to point to a new snapshot, which can change response quality.
 </Aside>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-id-1-ce.png', alt: 'Model ID configuration', caption: 'Select or type the model ID. Autocomplete is available for some providers.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/ai-models/ai-model-id-1.png', alt: 'Model ID configuration', caption: 'Select or type the model ID. Autocomplete is available for some providers.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-id-1-pe.png', alt: 'Model ID configuration', caption: 'Select or type the model ID. Autocomplete is available for some providers.' },
-]} />
-)}
 
 ### Advanced model settings
 
@@ -220,17 +194,9 @@ Some models support additional configuration parameters (depending on the provid
   If advanced settings cause errors, try removing their values so defaults are applied. This often resolves incompatibility issues for certain models.
 </Aside>
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/advanced-model-settings-1-ce.png', alt: 'Advanced model settings', caption: 'Configure temperature, top P, max tokens, and other parameters.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/ai-models/advanced-model-settings-1.png', alt: 'Advanced model settings', caption: 'Configure temperature, top P, max tokens, and other parameters.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/advanced-model-settings-1-pe.png', alt: 'Advanced model settings', caption: 'Configure temperature, top P, max tokens, and other parameters.' },
-]} />
-)}
 
 ## Connectivity test
 
@@ -239,21 +205,11 @@ A test request is sent to the provider API using the supplied credentials and mo
 
 A successful test shows a green checkmark. If an error occurs (invalid API key, non-existing model, etc.), an error message with details is displayed.
 
-{props.product === Products.CE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-1-ce.png', alt: 'Connectivity test button', caption: 'Click Check connectivity to validate your configuration.' },
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-2-ce.png', alt: 'Successful connectivity test', caption: 'A green checkmark confirms the configuration is valid.' },
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-3-ce.png', alt: 'Failed connectivity test', caption: 'An error message is displayed if the test fails.' },
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-1.png', alt: 'Connectivity test button', caption: 'Click Check connectivity to validate your configuration.' },
+  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-2.png', alt: 'Successful connectivity test', caption: 'A green checkmark confirms the configuration is valid.' },
+  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-3.png', alt: 'Failed connectivity test', caption: 'An error message is displayed if the test fails.' },
 ]} />
-)}
-
-{props.product === Products.PE && (
-<ImageGallery images={[
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-1-pe.png', alt: 'Connectivity test button', caption: 'Click Check connectivity to validate your configuration.' },
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-2-pe.png', alt: 'Successful connectivity test', caption: 'A green checkmark confirms the configuration is valid.' },
-  { src: '/src/assets/images/user-guide/ai-models/ai-model-check-connectivity-3-pe.png', alt: 'Failed connectivity test', caption: 'An error message is displayed if the test fails.' },
-]} />
-)}
 
 <Aside type="tip">
   Always run the connectivity check after configuring a provider to prevent runtime errors.
