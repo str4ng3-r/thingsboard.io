@@ -119,6 +119,54 @@ import ImageGallery from '~/components/ImageGallery.astro';
 )}
 ```
 
+### MultiProductImageGallery Component
+
+`src/components/MultiProductImageGallery.astro` — thin wrapper around `ImageGallery` that automatically appends a product suffix (`-ce`, `-pe`, `-paas`, etc.) to each image `src` before the file extension.
+
+**When to use:** Any time the same screenshot set exists for multiple products with identical alt text and captions, differing only by a `-ce`/`-pe`/`-paas` filename suffix. Replaces duplicated `{props.product === Products.CE && (...)}` / `{props.product === Products.PE && (...)}` blocks.
+
+**Props:**
+
+```ts
+interface ImageItem {
+  src: string;           // Base path WITHOUT product suffix, e.g. /src/assets/images/guide/step-1.png
+  alt: string;           // Required alt text
+  caption?: string;      // Optional caption
+  products?: Products[]; // If set, include this image only for the listed products
+}
+
+interface Props {
+  images: ImageItem[];
+  product: Products;     // Current product — determines the suffix
+}
+```
+
+**Suffix mapping:** CE → `-ce`, PE → `-pe`, PASS → `-paas`, PASS_EU → `-paas-eu`, EDGE → `-edge`, EDGE_PE → `-edge-pe`, GW → `-gw`, TRENDZ → `-trendz`, MOBILE → `-mobile`, MOBILE_PE → `-mobile-pe`, TBMQ → `-tbmq`, TBMQ_PE → `-tbmq-pe`, LICENSE → `-license`.
+
+**Example:** `src="/src/assets/images/guide/step-1.png"` with `product=PE` resolves to `/src/assets/images/guide/step-1-pe.png`.
+
+**Usage in MDX (include files):**
+
+```mdx
+import MultiProductImageGallery from '~/components/MultiProductImageGallery.astro';
+import { Products } from '~/models/site.models';
+
+{/* All images shared across products — same alt/caption, auto-suffixed src */}
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/guide/step-1.png', alt: 'Step 1', caption: 'First step.' },
+  { src: '/src/assets/images/guide/step-2.png', alt: 'Step 2', caption: 'Second step.' },
+]} />
+
+{/* Mixed: shared images + product-specific images */}
+<MultiProductImageGallery product={props.product} images={[
+  { src: '/src/assets/images/guide/step-1.png', alt: 'Step 1', caption: 'Shared step.' },
+  { src: '/src/assets/images/guide/step-2-ce-only.png', alt: 'CE result', caption: 'CE only.', products: [Products.CE] },
+  { src: '/src/assets/images/guide/step-2-pe-only.png', alt: 'PE result', caption: 'PE only.', products: [Products.PE] },
+]} />
+```
+
+**Important:** The actual image files on disk must include the product suffix (e.g., `step-1-ce.png`, `step-1-pe.png`). The `src` prop in MDX is the base name without the suffix.
+
 ### DocImage Component
 
 `src/components/DocImage.astro` — single optimized image with optional width and alignment.
