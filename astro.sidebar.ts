@@ -195,6 +195,16 @@ const recipeItems = (prefix: string) => [
 const referenceItems = (prefix: string) => [
 	`${prefix}/configuration-reference`,
 	{
+		label: 'Widgets',
+		collapsed: true,
+		items: [
+			`${prefix}/widgets/chart-widget`,
+			`${prefix}/widgets/map-widgets`,
+			`${prefix}/widgets/entity-table-widget`,
+			`${prefix}/widgets/markdown-html-card`,
+		],
+	},
+	{
 		label: 'Device API',
 		collapsed: true,
 		items: [
