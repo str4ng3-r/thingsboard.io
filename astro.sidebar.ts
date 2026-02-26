@@ -291,6 +291,7 @@ const referenceItems = (prefix: string) => [
 						label: 'Filter',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/filter` },
 							`${prefix}/rule-engine/nodes/filter/alarm-status-filter`,
 							`${prefix}/rule-engine/nodes/filter/asset-profile-switch`,
 							`${prefix}/rule-engine/nodes/filter/check-fields-presence`,
@@ -309,6 +310,7 @@ const referenceItems = (prefix: string) => [
 						label: 'Enrichment',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/enrichment` },
 							`${prefix}/rule-engine/nodes/enrichment/calculate-delta`,
 							`${prefix}/rule-engine/nodes/enrichment/customer-attributes`,
 							`${prefix}/rule-engine/nodes/enrichment/customer-details`,
@@ -326,6 +328,7 @@ const referenceItems = (prefix: string) => [
 						label: 'Transformation',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/transformation` },
 							`${prefix}/rule-engine/nodes/transformation/change-originator`,
 							`${prefix}/rule-engine/nodes/transformation/copy-key-value-pairs`,
 							`${prefix}/rule-engine/nodes/transformation/deduplication`,
@@ -344,6 +347,7 @@ const referenceItems = (prefix: string) => [
 						label: 'Action',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/action` },
 							`${prefix}/rule-engine/nodes/action/add-to-group`,
 							`${prefix}/rule-engine/nodes/action/assign-to-customer`,
 							`${prefix}/rule-engine/nodes/action/calculated-fields`,
@@ -381,6 +385,7 @@ const referenceItems = (prefix: string) => [
 						label: 'External',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/external` },
 							`${prefix}/rule-engine/nodes/external/ai-request`,
 							`${prefix}/rule-engine/nodes/external/aws-lambda`,
 							`${prefix}/rule-engine/nodes/external/aws-sns`,
@@ -403,6 +408,7 @@ const referenceItems = (prefix: string) => [
 						label: 'Flow',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/flow` },
 							`${prefix}/rule-engine/nodes/flow/acknowledge`,
 							`${prefix}/rule-engine/nodes/flow/checkpoint`,
 							`${prefix}/rule-engine/nodes/flow/output`,
@@ -413,6 +419,7 @@ const referenceItems = (prefix: string) => [
 						label: 'Analytics',
 						collapsed: true,
 						items: [
+							{ label: 'Overview', slug: `${prefix}/rule-engine/nodes/analytics` },
 							`${prefix}/rule-engine/nodes/analytics/aggregate-latest`,
 							`${prefix}/rule-engine/nodes/analytics/aggregate-stream`,
 							`${prefix}/rule-engine/nodes/analytics/alarms-count`,
