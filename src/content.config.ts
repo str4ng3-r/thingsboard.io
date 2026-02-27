@@ -14,6 +14,7 @@ export const baseSchema = z.object({
 	hero: z
 		.object({
 			gridVariant: z.enum(['lines', 'dots']).optional().default('lines'),
+			variant: z.enum(['default', 'simple']).optional().default('default'),
 			activity: z
 				.discriminatedUnion('type', [
 					z.object({

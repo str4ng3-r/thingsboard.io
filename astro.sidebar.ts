@@ -157,6 +157,10 @@ const guideItems = (prefix: string) => [
 	},
 ];
 
+const installationItems = (prefix: string) => [
+	{ label: 'Installation options', slug: `${prefix}/installation` },
+];
+
 const recipeItems = (prefix: string) => [
 	{
 		label: 'Sending Data',
@@ -443,6 +447,11 @@ const mainSidebarItems = (prefix: string, extraRecipeItems: SidebarConfig = []):
 		collapsed: true,
 		translations: { uk: 'Посібники' },
 		items: guideItems(`${prefix}/user-guide`),
+	},
+	{
+		label: 'Installation',
+		collapsed: true,
+		items: installationItems(prefix),
 	},
 	{
 		label: 'Recipes',

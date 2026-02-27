@@ -9,11 +9,11 @@ type HeroActivity =
 	| { type: 'dashboard'; product: Products };
 
 const { hero } = Astro.locals.starlightRoute.entry.data;
-const { title, tagline, actions, gridVariant = 'lines' } = hero!;
+const { title, tagline, actions, gridVariant = 'lines', variant = 'default' } = hero!;
 const { activity } = hero as typeof hero & { activity?: HeroActivity };
 ---
 
-<div class="hero" data-grid-variant={gridVariant}>
+<div class="hero" data-grid-variant={gridVariant} data-hero-variant={variant}>
 	<div class="grid-bg"></div>
 	<div id="_top" class="hero-content stack" style="--stack-gap: 2rem;">
 		<div class="stack" style="--stack-gap: 1rem;">
@@ -187,6 +187,22 @@ const { activity } = hero as typeof hero & { activity?: HeroActivity };
 
 		.hero-content > * {
 			max-width: calc(100% - 22rem);
+		}
+	}
+
+	/* ── Simple variant ── */
+	:global([data-hero-variant='simple']) .hero-content {
+		padding-bottom: 0;
+		padding-left: 0;
+	}
+
+	:global([data-hero-variant='simple']) .hero-content > .stack {
+		max-width: 100%;
+	}
+
+	@media (min-width: 78rem) {
+		:global([data-has-hero]:has([data-hero-variant='simple']) .main-pane) {
+			background: none;
 		}
 	}
 </style>

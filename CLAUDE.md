@@ -288,6 +288,87 @@ sidebar:
 - `variant` — `default` | `note` | `tip` | `caution` | `danger` | `success` (optional, default: `default`)
 - `class` — CSS class, use `tb-badge` for the text-only style
 
+### Product Color CSS Variables
+
+Defined in `src/styles/_variables.scss`. Available globally in all components and pages.
+
+| Variable | Light | Dark |
+|---|---|---|
+| `--color-product-ce` | `#305680` | `#78b4f5` |
+| `--color-product-pe` | `#00695c` | `#3fd9d1` |
+| `--color-product-cloud` | `#3d50f5` | `#b3c7ff` |
+| `--color-product-trendz` | `#2696f3` | `#4caeff` |
+
+Light values are set in `:root`, dark overrides in `[data-theme='dark']` (Starlight applies this attribute to `<html>`).
+
+**Usage:**
+
+```css
+color: var(--color-product-ce);
+border-color: var(--color-product-pe);
+background: var(--color-product-cloud);
+```
+
+### InstallationCardGrid Component
+
+`src/components/InstallationCardGrid.astro` — responsive card grid for installation option pages.
+
+**Features:**
+- 3-column grid (2 on tablet ≤900px, 1 on mobile ≤480px)
+- When exactly **2 cards** are passed, the grid switches to 2 columns so both cards fill the full width
+- SVGs loaded as raw inline HTML (`?raw`) so CSS custom properties (e.g. `fill="var(--sl-color-white)"`) work correctly
+- Three `path` modes: relative doc path, absolute URL, or omitted (→ "Coming soon")
+- "Coming soon" cards render as a non-clickable `<div>`, `opacity: 0.5`, no hover, auto badge "Coming soon"
+- Optional Starlight `<Badge>` positioned absolutely in the top-right corner (`top/right: 1.5rem`) inside the link
+- Accent glow blob in the top-right corner via `--landing-card-accent`
+
+**Props (`CardItem`):**
+
+```ts
+interface CardItem {
+  path?: string;        // Relative: 'installation/docker' → /docs/{prefix}installation/docker/
+                        // Absolute: 'https://...' → used as-is
+                        // Omitted  → Coming soon (non-clickable card)
+  title: string;
+  icon: string;         // SVG path inside /src/assets/, e.g. '/src/assets/images/installation/ubuntu.svg'
+  accent?: string;      // CSS color for the glow blob, e.g. '#e63946'
+  target?: string;      // e.g. '_blank'
+  badge?: string;       // Badge label, e.g. 'NEW'
+  badgeVariant?: 'default' | 'note' | 'tip' | 'caution' | 'danger' | 'success';
+}
+```
+
+**Important:** `icon` paths must be inside `/src/assets/` — the component uses `import.meta.glob` with `?raw` over that directory only.
+
+**Usage in MDX:**
+
+```mdx
+import InstallationCardGrid from '~/components/InstallationCardGrid.astro';
+import { Products } from '~/models/site.models';
+
+<InstallationCardGrid product={props.product} items={[
+  {
+    path: 'installation/ubuntu',
+    title: 'Ubuntu',
+    icon: '/src/assets/images/installation/ubuntu.svg',
+    accent: '#e95420',
+  },
+  {
+    path: 'https://thingsboard.cloud/signup',
+    title: 'ThingsBoard Cloud',
+    icon: '/src/assets/images/installation/trendz-cloud.svg',
+    target: '_blank',
+    badge: 'FREE',
+    badgeVariant: 'tip',
+  },
+  {
+    title: 'OpenShift',
+    icon: '/src/assets/images/installation/open-shift.svg',
+    // no path → Coming soon
+  },
+]} />
+```
+
 ### RuleNodeCardGrid Component
 
 `src/components/RuleNodeCardGrid.astro` — responsive card grid for rule node category overviews.
