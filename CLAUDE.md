@@ -708,10 +708,61 @@ Renders as `<a href="/docs/pe/user-guide/devices/"><b>Devices</b></a>` for PE, `
 
 Props: `product` (required), `path` (required, without trailing slash), `bold` (default `true`), `target`.
 
+#### ConditionalHeading Component
+
+`src/components/ConditionalHeading.astro` — renders a heading with the full Starlight anchor-link structure (`sl-heading-wrapper` + `sl-anchor-link`) for use inside JSX conditional expressions in `_includes` files.
+
+**The problem it solves:** Headings inside `{...}` JSX expressions (`{condition && (<><h3>...</h3></>)}`) are invisible to Starlight's TOC and don't get anchor icons. A markdown `### heading` inside `{...}` renders as plain text. `ConditionalHeading` provides a heading that:
+- Renders the correct HTML structure (identical to what Starlight generates for markdown headings)
+- Gets picked up by `rehype-mdx-include-headings` plugin and injected into the TOC **only for matching products**
+- Has a working anchor link (explicit `id` prop)
+
+**Props:**
+
+```ts
+interface Props {
+  level?: 2 | 3 | 4 | 5 | 6;  // heading level, default 3
+  id: string;                   // anchor id, e.g. "export-dashboard" (required)
+  exclude?: string;             // comma-separated product ids to EXCLUDE (plugin only)
+  showFor?: string;             // comma-separated product ids to INCLUDE (plugin only)
+}
+```
+
+`exclude` and `showFor` are parsed by the `rehype-mdx-include-headings` plugin from raw MDX source — they are not used in rendering.
+
+**Product ids** (for `exclude`/`showFor`): `ce`, `pe`, `paas`, `paas-eu`, `edge`, `edge-pe`, `trendz`, `iot-gateway`, `mqtt-broker`, `mqtt-broker-pe`, `mobile`, `mobile-pe`, `license-server`.
+
+**Usage in MDX `_includes`:**
+
+```mdx
+import ConditionalHeading from '~/components/ConditionalHeading.astro';
+
+{props.product !== Products.CE && (
+  <>
+    <ConditionalHeading level={3} id="export-dashboard" exclude="ce">Export dashboard</ConditionalHeading>
+
+    Content visible only for non-CE products...
+  </>
+)}
+```
+
+**TOC level rules** — the `level` value determines where the heading appears in the right sidebar:
+- `level={2}` → same indentation as `##` headings (top level)
+- `level={3}` → nested under the previous `##` heading (same visual level as `####` siblings due to `injectChild` algorithm — use `level={2}` for top-level placement)
+- `level={4}` → nested one level deeper
+
+**How it works:** The `rehype-mdx-include-headings` plugin (`config/plugins/rehype-mdx-include-headings.ts`):
+1. Determines the current page's product from its file path (`src/content/docs/docs/pe/...` → `pe`)
+2. Skips `### markdown` headings inside `{...}` JSX blocks (they render as plain text anyway)
+3. Parses `<ConditionalHeading>` tags and injects the heading into the TOC only when the page product matches `exclude`/`showFor`
+
+**Important:** If the dev server doesn't pick up a change to `level` or `id` inside an include file, restart it (`pnpm dev`) — hot-reload may miss include file changes when only the include (not the page file) is modified.
+
 ### Custom Plugins
 
 - `config/plugins/remark-fallback-lang.ts` — marks untranslated content
 - `config/plugins/rehype-tasklist-enhancer.ts` — enhanced task lists
+- `config/plugins/rehype-mdx-include-headings.ts` — extracts headings from `_includes` MDX files and injects them into the page TOC; supports `<ConditionalHeading>` for product-conditional headings
 - `config/plugins/llms-txt.ts` — generates llms.txt
 - `config/plugins/smoke-test.ts` — build validation
 
