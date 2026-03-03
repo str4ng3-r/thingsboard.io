@@ -166,15 +166,48 @@ const guideItems = (prefix: string) => [
 	},
 ];
 
-const installationItems = (prefix: string) => [
-	{ label: 'Installation options', slug: `${prefix}/installation` },
-	{ label: 'Upgrade instructions', slug: `${prefix}/installation/upgrade-instructions` },
-	`${prefix}/installation/docker`,
-	`${prefix}/installation/docker-windows`,
-	`${prefix}/installation/ubuntu`,
-	`${prefix}/installation/rhel`,
-	`${prefix}/installation/rpi`,
-];
+const installationItems = (prefix: string) => {
+	const isPE = prefix.includes('/pe');
+	return [
+		{ label: 'Installation options', slug: `${prefix}/installation` },
+		{ label: 'Upgrade instructions', slug: `${prefix}/installation/upgrade-instructions` },
+		{
+			label: 'Standalone',
+			items: [
+				`${prefix}/installation/docker`,
+				`${prefix}/installation/docker-windows`,
+				`${prefix}/installation/ubuntu`,
+				`${prefix}/installation/rhel`,
+				`${prefix}/installation/rpi`,
+			],
+		},
+		{
+			label: 'Cluster',
+			items: [
+				`${prefix}/installation/docker-compose-setup`,
+				`${prefix}/installation/minikube-cluster-setup`,
+				`${prefix}/installation/openshift-cluster-setup`,
+			],
+		},
+		{
+			label: 'Cloud',
+			items: [
+				{
+					label: 'AWS',
+					items: [
+						{ label: 'AWS Installation Options', slug: `${prefix}/installation/aws-index` },
+						`${prefix}/installation/aws${isPE ? '-ec2' : ''}`,
+						...(isPE ? [`${prefix}/installation/aws`] : []),
+						`${prefix}/installation/aws-monolith`,
+						`${prefix}/installation/aws-microservices`,
+					],
+				},
+				`${prefix}/installation/digital-ocean`,
+			],
+		},
+		{ label: 'Building from Sources', slug: `${prefix}/installation/building-from-source` },
+	];
+};
 
 const recipeItems = (prefix: string) => [
 	{
