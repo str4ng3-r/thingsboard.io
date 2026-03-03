@@ -11,12 +11,16 @@
 
 ### Complexity
 
-| Level | Dev time | Description |
-|-------|----------|-------------|
-| **L** (Low) | 2–4 h | Static content, straightforward layout |
-| **M** (Medium) | 5–8 h | Standard pages with typical components |
-| **H** (High) | 9–16 h | Complex layouts, dynamic content, multiple sub-pages |
-| **VH** (Very High) | 17–40 h | Large section requiring infrastructure work |
+| Level | Dev time (solo) | Dev time (Claude-assisted) | Description |
+|-------|-----------------|---------------------------|-------------|
+| **L** (Low) | 2–4 h | 0.5–1 h | Static content, straightforward layout |
+| **M** (Medium) | 5–8 h | 1–2 h | Standard pages with typical components |
+| **H** (High) | 9–16 h | 2–4 h | Complex layouts, dynamic content, multiple sub-pages |
+| **VH** (Very High) | 17–40 h | 4–8 h | Large section requiring infrastructure work |
+
+> **Claude-assisted** = Claude writes code + MDX, human reviews, gathers assets (images/copy), tests visually in browser, and makes design/architecture decisions.
+> Batch content (blog posts, partner pages) gets an extra ~85 % reduction once a template exists.
+> Asset gathering (screenshots from Jekyll, logos, marketing copy) is **not** reduced — human effort only.
 
 ### Status
 
@@ -37,24 +41,24 @@ Typical rule of thumb: **~15% of Dev time**, rounded to the nearest 0.5 h.
 
 ## Section summary
 
-| Section | Pages | Dev (h) | Test (h) | Priority |
-|---------|-------|---------|----------|----------|
-| Homepage (updates) | 1 | 4–6 | 0.5–1 | P1 |
-| Pricing | 1 | 12–20 | 2–3 | P1 |
-| Products — main pages | 9 | 35–55 | 5–8 | P1 |
-| Products — sub-pages | 18 | 28–42 | 4–6 | P2 |
-| Use Cases | 17 | 50–80 | 7–12 | P2 |
-| Industries | 8 | 32–48 | 5–7 | P2 |
-| Services | 6 | 36–54 | 5–8 | P1 |
-| Case Studies | 32 | 70–108 | 10–16 | P2 |
-| Partners | ~65 | 100–175 | 15–26 | P3 |
-| Company / About | 1 | 5–8 | 0.5–1 | P2 |
-| Careers | 1 | 8–12 | 1–2 | P3 |
-| Blog | 61+ posts + infra | 104–187 | 15–28 | P2 |
-| Root-level marketing | 14 | 56–96 | 8–14 | P2 |
-| Miscellaneous pages | 5 | 12–19 | 1–3 | P3 |
-| **Infrastructure** | — | 54–82 | 8–12 | **Pre-req** |
-| **TOTAL** | **~234+** | **~606–992** | **~87–147** | |
+| Section | Pages | Dev solo (h) | Dev Claude (h) | Test solo (h) | Test Claude (h) | Priority |
+|---------|-------|-------------|----------------|--------------|-----------------|----------|
+| Homepage (updates) | 1 | 4–6 | 1–2 | 0.5–1 | 0.5 | P1 |
+| Pricing | 1 | 12–20 | 3–5 | 2–3 | 1 | P1 |
+| Products — main pages | 9 | 56–88 | 12–18 | 5–8 | 2–3 | P1 |
+| Products — sub-pages | 18 | 33–52 | 7–11 | 4–6 | 1–2 | P2 |
+| Use Cases | 17 | 65–105 | 14–22 | 7–12 | 3–5 | P2 |
+| Industries | 8 | 31–50 | 7–11 | 5–7 | 2–3 | P2 |
+| Services | 6 | 36–54 | 8–14 | 5–8 | 2–3 | P1 |
+| Case Studies | 32 | 80–118 | 18–28 | 10–16 | 4–6 | P2 |
+| Partners | ~65 | 101–178 | 18–30 | 15–26 | 5–8 | P3 |
+| Company / About | 1 | 5–8 | 1–2 | 0.5–1 | 0.5 | P2 |
+| Careers | 1 | 8–12 | 2–3 | 1–2 | 0.5–1 | P3 |
+| Blog | 61+ posts + infra | 106–190 | 25–42 | 15–28 | 6–10 | P2 |
+| Root-level marketing | 14 | 57–97 | 12–22 | 8–14 | 3–5 | P2 |
+| Miscellaneous pages | 5 | 12–19 | 3–5 | 1–3 | 0.5–1 | P3 |
+| **Infrastructure** | — | 54–82 | 12–18 | 8–12 | 3–5 | **Pre-req** |
+| **TOTAL** | **~234+** | **~660–1079** | **~143–233** | **~87–147** | **~34–57** | |
 
 ---
 
@@ -458,28 +462,32 @@ Each page: company logo, name, device description, link to Device Library.
 
 ## Overall estimate
 
-| Category | Dev min (h) | Dev max (h) | Test min (h) | Test max (h) |
-|----------|------------|------------|-------------|-------------|
-| Infrastructure | 54 | 82 | 7 | 13 |
-| Homepage updates | 4 | 6 | 0.5 | 1 |
-| Pricing | 12 | 20 | 2 | 3 |
-| Products — main | 56 | 88 | 9 | 11 |
-| Products — sub-pages | 33 | 52 | 4 | 5 |
-| Use Cases | 65 | 105 | 11 | 16 |
-| Industries | 31 | 50 | 5 | 7 |
-| Services | 36 | 54 | 5 | 8 |
-| Case Studies | 80 | 118 | 20 | 27 |
-| Partners — sections | 41 | 63 | 7 | 6 |
-| Partners — individual pages | 60 | 115 | — | — |
-| Company | 5 | 8 | 0.5 | 1 |
-| Careers | 8 | 12 | 1 | 2 |
-| Blog | 106 | 190 | 6 | 10 |
-| Root-level marketing | 57 | 97 | 6 | 7 |
-| Miscellaneous | 12 | 19 | 2 | 2 |
-| **TOTAL** | **~660** | **~1079** | **~86** | **~119** |
+| Category | Solo dev min | Solo dev max | Claude min | Claude max | Test solo | Test Claude |
+|----------|-------------|-------------|------------|------------|-----------|-------------|
+| Infrastructure | 54 | 82 | 12 | 18 | 13 | 5 |
+| Homepage updates | 4 | 6 | 1 | 2 | 1 | 0.5 |
+| Pricing | 12 | 20 | 3 | 5 | 3 | 1 |
+| Products — main | 56 | 88 | 12 | 18 | 11 | 3 |
+| Products — sub-pages | 33 | 52 | 7 | 11 | 5 | 1.5 |
+| Use Cases | 65 | 105 | 14 | 22 | 16 | 5 |
+| Industries | 31 | 50 | 7 | 11 | 7 | 2.5 |
+| Services | 36 | 54 | 8 | 14 | 8 | 2.5 |
+| Case Studies | 80 | 118 | 18 | 28 | 27 | 5 |
+| Partners — sections | 41 | 63 | 9 | 14 | 6 | 2 |
+| Partners — individual pages | 60 | 115 | 9 | 16 | — | — |
+| Company | 5 | 8 | 1 | 2 | 1 | 0.5 |
+| Careers | 8 | 12 | 2 | 3 | 2 | 1 |
+| Blog | 106 | 190 | 25 | 42 | 10 | 4 |
+| Root-level marketing | 57 | 97 | 12 | 22 | 7 | 3 |
+| Miscellaneous | 12 | 19 | 3 | 5 | 2 | 1 |
+| **TOTAL** | **~660** | **~1079** | **~143** | **~233** | **~119** | **~37** |
 
-> **Realistic estimate: 660–1080 h dev + 86–119 h optional dev testing**
-> One developer at full capacity: approximately **4–6 months**.
+> **Solo developer:** 660–1080 h dev · ~4–6 months at full capacity
+>
+> **Claude-assisted:** ~143–233 h of human time — reviewing output, browser testing, decisions, asset gathering.
+> At **3–4 h/day** → **6–10 weeks (~1.5–2.5 months)**.
+>
+> Main bottleneck that cannot be reduced: gathering marketing assets from the Jekyll site (screenshots, copy, partner logos).
 
 ---
 
@@ -536,7 +544,10 @@ Pages that show a filterable/paginated table of ThingsBoard releases.
 
 ## Recommended migration phases
 
-### Phase 1 — Infrastructure (Weeks 1–2)
+> Timelines below are for **Claude-assisted** work (3–4 h of human time per day).
+> Original solo-developer timelines shown in parentheses.
+
+### Phase 1 — Infrastructure (Week 1) *(was: Weeks 1–2)*
 - [ ] Marketing layout (no Starlight)
 - [ ] Header + Navigation
 - [ ] Footer
@@ -544,26 +555,28 @@ Pages that show a filterable/paginated table of ThingsBoard releases.
 - [ ] Forms infrastructure
 - [ ] Routing strategy
 
-### Phase 2 — Core commercial pages (Weeks 3–5)
+### Phase 2 — Core commercial pages (Weeks 2–3) *(was: Weeks 3–5)*
 - [ ] Pricing
 - [ ] Products — 9 main pages
 - [ ] Services (Support, Trainings, Dev Services)
 
-### Phase 3 — Content sections (Weeks 6–10)
+### Phase 3 — Content sections (Weeks 4–5) *(was: Weeks 6–10)*
 - [ ] Use Cases (all 17 — template + content)
 - [ ] Industries (all 8)
 - [ ] Root-level marketing pages
 
-### Phase 4 — Social proof (Weeks 11–14)
+### Phase 4 — Social proof (Weeks 6–7) *(was: Weeks 11–14)*
 - [ ] Case Studies (template + 31 companies)
 - [ ] Company / About
 - [ ] Careers
 
-### Phase 5 — Partners + Blog (Weeks 15–22)
+### Phase 5 — Partners + Blog (Weeks 7–9) *(was: Weeks 15–22)*
 - [ ] Partners (Hardware, Distributors, Marketplace)
 - [ ] Blog infrastructure + post migration
 
-### Phase 6 — Wrap-up (Weeks 23–24)
+### Phase 6 — Wrap-up (Week 10) *(was: Weeks 23–24)*
 - [ ] Product sub-pages (legal, billing)
 - [ ] Miscellaneous pages
 - [ ] Redirects, Analytics, final QA
+
+> **Total Claude-assisted timeline: ~10 weeks (~2.5 months)** vs. 24 weeks solo.
