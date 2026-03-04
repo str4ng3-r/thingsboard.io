@@ -746,6 +746,7 @@ The CE page would be identical but pass `product={Products.CE}`.
   </Steps>
   ```
   Outside of `{...}` JSX expressions (top-level or inside `<ComponentTag>` children), `<Steps>` with a markdown numbered list works normally.
+- To render a literal `${varName}` string in MDX text (not as a JS expression), escape the curly braces: `$\{varName\}` — this renders as `${varName}` without any "varName is not defined" build error
 - Use `props.product` (not `Astro.props`) inside include files since they receive props as a component
 - Conditional blocks: `{props.product === Products.PE && (<>...</>)}` or ternary `{props.product === Products.CE ? <A/> : <B/>}`
 

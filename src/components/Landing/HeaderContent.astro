@@ -74,6 +74,78 @@ const { platformQuery = '' } = Astro.props;
 
 	// Make function available globally
 	(window as any).Burger = Burger;
+
+	// Swipe to open/close mobile menus:
+	//   Starlight sidebar — swipe RIGHT from left edge to open, swipe LEFT to close
+	//   Burger menu      — swipe LEFT from right edge to open, swipe RIGHT to close
+	(function () {
+		const OPEN_EDGE = 30; // px from screen edge that starts an open gesture
+		const MIN_DIST = 60; // minimum horizontal travel to trigger
+		const MAX_ANGLE = 35; // max degrees from horizontal (avoids triggering on scrolls)
+
+		let startX = 0;
+		let startY = 0;
+		let tracking: 'sidebar' | 'burger' | null = null;
+
+		function isSidebarOpen() {
+			return document.body.hasAttribute('data-mobile-menu-expanded');
+		}
+
+		function isBurgerOpen() {
+			return document.querySelector('header.header')?.classList.contains('opened-burger') ?? false;
+		}
+
+		function triggerSidebar() {
+			(document.querySelector('starlight-menu-button button') as HTMLElement)?.click();
+		}
+
+		function triggerBurger() {
+			(window as any).Burger?.();
+		}
+
+		document.addEventListener(
+			'touchstart',
+			(e) => {
+				const t = e.touches[0];
+				startX = t.clientX;
+				startY = t.clientY;
+
+				if (isSidebarOpen()) tracking = 'sidebar';
+				else if (isBurgerOpen()) tracking = 'burger';
+				else if (startX <= OPEN_EDGE) tracking = 'sidebar';
+				else if (startX >= window.innerWidth - OPEN_EDGE) tracking = 'burger';
+				else tracking = null;
+			},
+			{ passive: true }
+		);
+
+		document.addEventListener(
+			'touchend',
+			(e) => {
+				const which = tracking;
+				tracking = null;
+				if (!which) return;
+
+				const t = e.changedTouches[0];
+				const dx = t.clientX - startX;
+				const dy = t.clientY - startY;
+
+				if (Math.abs(dx) < MIN_DIST) return;
+
+				const angle = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * (180 / Math.PI));
+				if (angle > MAX_ANGLE) return;
+
+				if (which === 'sidebar') {
+					if (!isSidebarOpen() && dx > 0) triggerSidebar(); // swipe right → open
+					else if (isSidebarOpen() && dx < 0) triggerSidebar(); // swipe left → close
+				} else {
+					if (!isBurgerOpen() && dx < 0) triggerBurger(); // swipe left from right edge → open
+					else if (isBurgerOpen() && dx > 0) triggerBurger(); // swipe right → close
+				}
+			},
+			{ passive: true }
+		);
+	})();
 </script>
 
 <style lang="scss" is:global>
@@ -511,6 +583,15 @@ const { platformQuery = '' } = Astro.props;
 
 		starlight-menu-button[aria-expanded='true'] button {
 			inset-inline-start: 90%;
+		}
+
+		// On pages with a TOC, the sidebar toggle is embedded inside the TOC bar
+		html[data-has-toc] starlight-menu-button button {
+			display: none;
+		}
+		// But when the sidebar is open it covers the TOC bar, so restore the close button
+		html[data-has-toc] starlight-menu-button[aria-expanded='true'] button {
+			display: flex;
 		}
 	}
 </style>
