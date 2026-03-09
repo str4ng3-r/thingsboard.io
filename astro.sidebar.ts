@@ -166,6 +166,29 @@ const guideItems = (prefix: string) => [
 	},
 ];
 
+const edgeInstallationItems = (prefix: string) => [
+	{ label: 'Installation options', slug: `${prefix}/installation` },
+	{
+		label: 'Single node',
+		items: [
+			`${prefix}/installation/docker`,
+			`${prefix}/installation/docker-windows`,
+			`${prefix}/installation/ubuntu`,
+			`${prefix}/installation/rhel`,
+			`${prefix}/installation/rpi`,
+			`${prefix}/installation/windows`,
+		],
+	},
+	{
+		label: 'Cluster',
+		items: [
+			`${prefix}/installation/docker-compose-setup`,
+		],
+	},
+	{ label: 'Building from Sources', slug: `${prefix}/installation/building-from-source` },
+	{ label: 'Upgrade instructions', slug: `${prefix}/installation/upgrade-instructions` },
+];
+
 const installationItems = (prefix: string) => {
 	const isPE = prefix.includes('/pe');
 	return [
@@ -738,6 +761,10 @@ export const edgeSidebar: SidebarConfig = [
 			},
 		],
 	},
+	{
+		label: 'Installation',
+		items: edgeInstallationItems('docs/edge'),
+	},
 ];
 
 /** Edge Professional Edition sidebar (pages at /docs/edge/pe/) */
@@ -758,6 +785,10 @@ export const edgePeSidebar: SidebarConfig = [
 				],
 			},
 		],
+	},
+	{
+		label: 'Installation',
+		items: edgeInstallationItems('docs/edge/pe'),
 	},
 ];
 
