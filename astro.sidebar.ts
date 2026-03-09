@@ -394,6 +394,8 @@ const apisAndSdksItems = (prefix: string) => [
 		items: [
 			`${prefix}/reference/rest-api`,
 			`${prefix}/reference/websocket-api`,
+			`${prefix}/reference/data-query-api`,
+			`${prefix}/reference/alarm-query-api`,
 		],
 	},
 	{
