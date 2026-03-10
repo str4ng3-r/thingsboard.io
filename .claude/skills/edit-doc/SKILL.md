@@ -827,7 +827,7 @@ import RuleNodeCardGrid from '~/components/RuleNodeCardGrid.astro';
 
 ### Code Blocks
 
-#### Meta options (pluginMaxLines)
+#### Meta options
 
 `config/plugins/expressive-code-max-lines.mjs` — custom Expressive Code plugin that adds independent meta options to fenced code blocks.
 
@@ -836,8 +836,9 @@ import RuleNodeCardGrid from '~/components/RuleNodeCardGrid.astro';
 | `maxLines=N` | number | Limits the visible height to N lines; enables vertical scroll when content overflows |
 | `collapsible` | boolean flag | Adds an ▼ Expand / ▲ Collapse button below the block (requires `maxLines`) |
 | `wrap` | boolean flag | Wraps long lines instead of horizontal scroll; copy button copies original text unchanged |
+| `download='file.ext'` | string | Adds a download button (↓ icon) next to the copy button; clicking it saves the code content as a file with the given filename |
 
-`maxLines` and `collapsible` are independent — `maxLines` alone gives a scrollable block without a button; adding `collapsible` enables the toggle. `wrap` can be used alone or combined with `maxLines`.
+`maxLines` and `collapsible` are independent — `maxLines` alone gives a scrollable block without a button; adding `collapsible` enables the toggle. `wrap` can be used alone or combined with `maxLines`. `download` can be combined with any other option.
 
 **Usage in MDX fenced code blocks:**
 
@@ -861,7 +862,22 @@ import RuleNodeCardGrid from '~/components/RuleNodeCardGrid.astro';
 ```bash wrap maxLines=5
 // wrap + maxLines can be combined
 ```
+
+```json download='config.json'
+// download button appears next to the copy button; saves code as config.json
+```
+
+```yml download='docker-compose.yml' maxLines=30 collapsible
+// download can be combined with other meta options
+```
 ````
+
+**`download` notes:**
+- The filename value must use single quotes: `download='file.ext'`
+- The button uses an inline SVG download icon (↓ arrow) and matches the EC copy button size
+- On click: reads the raw code from the EC copy button's `data-code` attribute, creates a `Blob`, and triggers a browser download with the specified filename
+- Works inside `<Tabs>` / `<TabItem>` — re-initializes when a hidden tab panel becomes visible
+- Also supported via the `<Code>` component: `<Code code={snippet} lang="json" meta="download='config.json'" />`
 
 **Implementation notes:**
 - Plugins registered in `ec.config.mjs` (project root) — **not** in `astro.config.ts`. This separate file is required for the `<Code>` component to work alongside custom plugins.
