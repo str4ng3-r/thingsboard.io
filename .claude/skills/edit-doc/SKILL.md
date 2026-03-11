@@ -606,7 +606,13 @@ import Banner from '~/components/Banner.astro';
 <Banner variant="ce">Some CE-specific note here.</Banner>
 ```
 
-**When to use:** Use `variant="peFeature"` at the top of any include file for a PE/Cloud-only feature. Use the other variants for informational scope notes that apply to all editions. Do NOT use `<Aside type="note">` for these purposes.
+**When to use:** Use `variant="peFeature"` at the top of any include file for a PE/Cloud-only feature. Use the other variants for informational scope notes that apply to all editions.
+
+**Wrong patterns — do NOT use:**
+- `<Banner type="peFeature" />` — wrong prop name (`type` vs `variant`) and missing required `product`/`path` props.
+- `<Aside type="caution">Platform Integrations is a <b>ThingsBoard Professional Edition</b> feature...</Aside>` — use Banner instead.
+- `<Aside type="note"><PEOnly /> ... requires ThingsBoard PE ...</Aside>` — use Banner for page-level PE notes.
+- The `PEOnly` inline badge is only for marking **individual features** inside mixed CE/PE pages (e.g., table cells, list items), never as a page-level banner.
 
 ### Badge & tb-badge
 
