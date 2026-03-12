@@ -284,6 +284,7 @@ const installationItems = (prefix: string) => {
 };
 
 const recipeItems = (prefix: string) => [
+	{ label: 'Recipes', slug: prefix },
 	{
 		label: 'Sending Data',
 		collapsed: true,
