@@ -3,7 +3,6 @@ import type { StarlightUserConfig } from '@astrojs/starlight/types';
 type SidebarConfig = NonNullable<StarlightUserConfig['sidebar']>;
 
 const guideItems = (prefix: string, { isPE = false } = {}) => [
-	{ label: 'Guides', slug: prefix },
 	{
 		label: 'Digital Twins',
 		collapsed: true,
@@ -201,7 +200,6 @@ const edgeInstallationItems = (prefix: string) => [
 const installationItems = (prefix: string) => {
 	const isPE = prefix.includes('/pe');
 	return [
-		{ label: 'Installation options', slug: `${prefix}/installation` },
 		{
 			label: 'On-premises',
 			collapsed: true,
@@ -284,7 +282,6 @@ const installationItems = (prefix: string) => {
 };
 
 const recipeItems = (prefix: string) => [
-	{ label: 'Recipes', slug: prefix },
 	{
 		label: 'Sending Data',
 		collapsed: true,
@@ -308,7 +305,6 @@ const recipeItems = (prefix: string) => [
 ];
 
 const apisAndSdksItems = (prefix: string) => [
-	{ label: 'APIs & SDKs', slug: `${prefix}/reference/apis-and-sdks` },
 	{
 		label: 'Device APIs',
 		collapsed: true,
@@ -429,7 +425,6 @@ const apisAndSdksItems = (prefix: string) => [
 const referenceItems = (prefix: string, extraConfigItems: SidebarConfig = []) => {
 	const basePrefix = prefix.replace('/reference', '');
 	return [
-	{ label: 'Reference', slug: `${prefix}` },
 	{
 		label: 'Architecture',
 		collapsed: true,
@@ -653,7 +648,6 @@ const mainSidebarItems = (prefix: string, extraRecipeItems: SidebarConfig = [], 
 		label: 'Getting Started',
 		translations: { uk: 'Початок роботи' },
 		items: [
-			prefix,
 			{
 				label: 'Welcome to IoT!',
 				translations: { uk: 'Новий проект' },
@@ -985,6 +979,7 @@ export type SidebarTabLinks = Partial<Record<string, string>>;
 export const opensourceSidebarTabLinks: SidebarTabLinks = {
 	'Getting Started': '/docs/',
 	'Guides': '/docs/user-guide/',
+	'Recipes': '/docs/recipes/',
 	'Installation': '/docs/installation/',
 	'APIs & SDKs': '/docs/reference/apis-and-sdks/',
 	'Reference': '/docs/reference/',
@@ -992,6 +987,7 @@ export const opensourceSidebarTabLinks: SidebarTabLinks = {
 export const peSidebarTabLinks: SidebarTabLinks = {
 	'Getting Started': '/docs/pe/',
 	'Guides': '/docs/pe/user-guide/',
+	'Recipes': '/docs/pe/recipes/',
 	'Installation': '/docs/pe/installation/',
 	'APIs & SDKs': '/docs/pe/reference/apis-and-sdks/',
 	'Reference': '/docs/pe/reference/',
