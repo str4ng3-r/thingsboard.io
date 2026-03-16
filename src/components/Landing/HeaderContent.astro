@@ -606,6 +606,19 @@ const { platformQuery = '', gitHubPlatform } = Astro.props;
 		}
 	}
 
+	// Hide divider on pages where theme toggle is hidden but not already handled above
+	#trendz,
+	#partners,
+	#pricing,
+	#use-cases,
+	#docs {
+		header.header {
+			.divider {
+				display: none;
+			}
+		}
+	}
+
 	// Show theme toggle on 404 page
 	#common {
 		theme-toggle {
