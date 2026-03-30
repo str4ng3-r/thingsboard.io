@@ -2269,6 +2269,7 @@ const tbmqGuideItems = (prefix: string): SidebarConfig => {
 							{ label: 'OAuth 2.0', slug: `${prefix}/security/oauth-2-support` },
 							{ label: 'Domains', slug: `${prefix}/security/domains` },
 							{ label: 'Role-based access control', slug: `${prefix}/security/rbac` },
+							{ label: 'Audit logs', slug: `${prefix}/security/audit-log` },
 						]
 					: []),
 			],
@@ -2380,16 +2381,20 @@ const tbmqInstallItems = (prefix: string): SidebarConfig => {
 			{ label: 'GCP', slug: `${prefix}/install/cluster/gcp-cluster-setup` },
 		],
 	},
-	{
-		label: 'Helm',
-		collapsed: true,
-		items: [
-			{ label: 'Minikube', slug: `${prefix}/install/cluster/helm-cluster-setup-minikube` },
-			{ label: 'AWS EKS', slug: `${prefix}/install/cluster/helm-cluster-setup-aws` },
-			{ label: 'Azure AKS', slug: `${prefix}/install/cluster/helm-cluster-setup-azure` },
-			{ label: 'GCP GKE', slug: `${prefix}/install/cluster/helm-cluster-setup-gcp` },
-		],
-	},
+	...(!isPE
+		? [
+				{
+					label: 'Helm',
+					collapsed: true,
+					items: [
+						{ label: 'Minikube', slug: `${prefix}/install/cluster/helm-cluster-setup-minikube` },
+						{ label: 'AWS EKS', slug: `${prefix}/install/cluster/helm-cluster-setup-aws` },
+						{ label: 'Azure AKS', slug: `${prefix}/install/cluster/helm-cluster-setup-azure` },
+						{ label: 'GCP GKE', slug: `${prefix}/install/cluster/helm-cluster-setup-gcp` },
+					],
+				},
+			]
+		: []),
 	{ label: 'Upgrade instructions', slug: `${prefix}/install/upgrade-instructions` },
 	];
 };
