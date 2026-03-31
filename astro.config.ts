@@ -28,8 +28,9 @@ export default defineConfig({
 	vite: {
 		resolve: {
 			alias: {
+				'~': fileURLToPath(new URL('./src', import.meta.url)),
 				'@starlight/icons': fileURLToPath(
-					new URL('./node_modules/@astrojs/starlight/components/Icons.ts', import.meta.url)
+					new URL('./node_modules/@astrojs/starlight/components-internals/Icons.ts', import.meta.url)
 				),
 				'@starlight/rehype-tabs': fileURLToPath(
 					new URL(
@@ -42,7 +43,17 @@ export default defineConfig({
 		css: {
 			preprocessorOptions: {
 				scss: {
-					api: 'modern-compiler',
+					importers: [
+						{
+							findFileUrl(url: string) {
+								if (!url.startsWith('~/')) return null;
+								return new URL(
+									url.slice(2),
+									new URL('./src/', import.meta.url)
+								);
+							},
+						},
+					],
 				},
 			},
 		},
