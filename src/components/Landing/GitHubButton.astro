@@ -43,46 +43,53 @@ const link = `https://github.com/${repo}`;
 </div>
 
 <script>
-	document.querySelectorAll<HTMLAnchorElement>('a.gh-button[data-repo]').forEach(async (btn) => {
-		const repo = btn.dataset.repo!;
-		const counterEl = btn.querySelector<HTMLElement>('.gh-count')!;
+	const loadStars = () => {
+		document.querySelectorAll<HTMLAnchorElement>('a.gh-button[data-repo]').forEach(async (btn) => {
+			const repo = btn.dataset.repo!;
+			const counterEl = btn.querySelector<HTMLElement>('.gh-count')!;
+			const sepEl = btn.querySelector<HTMLElement>('.gh-sep')!;
 
-		const sepEl = btn.querySelector<HTMLElement>('.gh-sep')!;
+			const show = (text: string) => {
+				counterEl.textContent = text;
+				sepEl.style.display = 'block';
+				counterEl.style.display = 'flex';
+			};
 
-		const show = (text: string) => {
-			counterEl.textContent = text;
-			sepEl.style.display = 'block';
-			counterEl.style.display = 'flex';
-		};
+			const hide = () => {
+				sepEl.style.display = 'none';
+				counterEl.style.display = 'none';
+			};
 
-		const hide = () => {
-			sepEl.style.display = 'none';
-			counterEl.style.display = 'none';
-		};
+			const cached = sessionStorage.getItem(`gh_stars_${repo}`);
+			if (cached) {
+				show(cached);
+				return;
+			}
 
-		const cached = sessionStorage.getItem(`gh_stars_${repo}`);
-		if (cached) {
-			show(cached);
-			return;
-		}
+			try {
+				const res = await fetch(`https://api.github.com/repos/${repo}`, {
+					headers: { Accept: 'application/vnd.github.v3+json' },
+				});
 
-		try {
-			const res = await fetch(`https://api.github.com/repos/${repo}`, {
-				headers: { Accept: 'application/vnd.github.v3+json' },
-			});
-
-			if (res.ok) {
-				const { stargazers_count: count } = await res.json();
-				const display = count.toLocaleString('en-US');
-				sessionStorage.setItem(`gh_stars_${repo}`, display);
-				show(display);
-			} else {
+				if (res.ok) {
+					const { stargazers_count: count } = await res.json();
+					const display = count.toLocaleString('en-US');
+					sessionStorage.setItem(`gh_stars_${repo}`, display);
+					show(display);
+				} else {
+					hide();
+				}
+			} catch {
 				hide();
 			}
-		} catch {
-			hide();
-		}
-	});
+		});
+	};
+
+	if ('requestIdleCallback' in window) {
+		requestIdleCallback(loadStars, { timeout: 4000 });
+	} else {
+		window.addEventListener('load', loadStars, { once: true });
+	}
 </script>
 
 <style>

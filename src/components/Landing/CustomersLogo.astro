@@ -36,7 +36,7 @@ const resolvedLogos = await Promise.all(
 		{
 			resolvedLogos.map((logo) => (
 				<a href={logo.href} class="customers-logo__item">
-					<object data={logo.src} aria-label={logo.ariaLabel} />
+					<img src={logo.src} alt={logo.ariaLabel} />
 				</a>
 			))
 		}
@@ -59,8 +59,8 @@ const resolvedLogos = await Promise.all(
 		}
 
 		img {
-			height: 60px;
-			margin-bottom: $spacing-5;
+			height: 36px;
+			width: auto;
 		}
 
 		&__content {
@@ -76,29 +76,25 @@ const resolvedLogos = await Promise.all(
 
 		&__item {
 			display: block;
-
-			object {
-				pointer-events: none;
-			}
 		}
 
 		// CE (Community Edition) - blue/gray filter
-		&.ce .customers-logo__item object {
+		&.ce .customers-logo__item img {
 			filter: invert(86%) sepia(5%) saturate(530%) hue-rotate(171deg) brightness(237%) contrast(86%);
 		}
 
 		// PE (Professional Edition) - green filter
-		&.pe .customers-logo__item object {
+		&.pe .customers-logo__item img {
 			filter: invert(79%) sepia(25%) saturate(246%) hue-rotate(93deg) brightness(185%) contrast(82%);
 		}
 
 		// PaaS (Cloud) - blue filter
-		&.paas .customers-logo__item object {
+		&.paas .customers-logo__item img {
 			filter: invert(87%) sepia(3%) saturate(664%) hue-rotate(176deg) brightness(237%) contrast(82%);
 		}
 
 		// Edge - teal filter
-		&.edge .customers-logo__item object {
+		&.edge .customers-logo__item img {
 			filter: invert(79%) sepia(25%) saturate(246%) hue-rotate(130deg) brightness(185%)
 				contrast(82%);
 		}

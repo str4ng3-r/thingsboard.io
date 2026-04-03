@@ -344,7 +344,7 @@ const linkVariant = dark ? 'light' : variant === 'pe' ? 'pe' : 'default';
 		}
 	}
 
-	// .mfb.block.micro — specificity (0,3,0) beats global _home.scss .block.micro (0,2,0)
+	// .mfb.block.micro — higher specificity (0,3,0) overrides any shared .block.micro rule
 	.mfb.block.micro {
 		margin: 80px 0;
 
