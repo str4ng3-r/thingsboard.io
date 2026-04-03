@@ -447,14 +447,39 @@ const carouselId = `carousel-${Math.random().toString(36).substring(2, 9)}`;
 	}
 
 	@include media-down(md) {
+		// Expand touch target to 24×24px minimum while keeping 10px visual dot
 		.carousel-dot {
-			width: 10px;
-			height: 10px;
+			width: 24px;
+			height: 24px;
+			background: transparent;
+			position: relative;
 			border-radius: 50%;
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: var(--color-border-light);
+			}
+
+			&:hover::before,
+			&.active::before {
+				background: $color-primary;
+			}
+		}
+
+		.carousel-dot:hover,
+		.carousel-dot.active {
+			background: transparent;
 		}
 
 		.carousel-dots {
-			gap: $spacing-3;
+			gap: 0;
 		}
 
 		.carousel-usecase .arrow-container {
