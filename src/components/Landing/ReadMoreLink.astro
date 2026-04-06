@@ -32,7 +32,7 @@ const { href, text = 'Read more', ariaLabel, variant = 'default', class: classNa
 		display: inline-flex;
 		align-items: center;
 		position: relative;
-		color: $color-primary;
+		color: var(--color-primary);
 		text-decoration: none;
 		transition: color $transition-base;
 
@@ -54,7 +54,7 @@ const { href, text = 'Read more', ariaLabel, variant = 'default', class: classNa
 			left: 0;
 			font-size: 16px;
 			transition: transform $transition-base;
-			color: $color-primary;
+			color: var(--color-primary);
 
 			&.first {
 				opacity: 0.2;

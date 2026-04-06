@@ -476,6 +476,14 @@ import { Products } from '@models/site.models';
 		background-color: #1f8b4d;
 	}
 
+	// The #export section has a dark (#262c28) bottom strip behind the read-more link.
+	// $color-pe-link (#166c37) is designed for light backgrounds (5.89:1 on white)
+	// but fails on #262c28 (~2:1). Override with $color-pe (#17bb52, 5.59:1 on #262c28).
+	:global(#export .read-more-link--pe),
+	:global(#export .read-more-link--pe .arrow) {
+		color: $color-pe;
+	}
+
 	@media screen and (min-width: 1025px) {
 		:global(#background-white-labeling .main2),
 		:global(#background-platform-integrations .main2),
