@@ -6,6 +6,7 @@ interface LinkItem {
 	href: string;
 	text?: string;
 	ariaLabel?: string;
+	srOnlySuffix?: string;
 }
 
 interface Props {
@@ -118,7 +119,7 @@ const hasPseudoBg = dark && !bgId;
 				<p>{description}</p>
 				<div class="links">
 					{links.map((link) => (
-						<ReadMoreLink href={link.href} text={link.text} ariaLabel={link.ariaLabel || link.text} variant={linkVariant} />
+						<ReadMoreLink href={link.href} text={link.text} ariaLabel={link.ariaLabel} srOnlySuffix={link.srOnlySuffix} variant={linkVariant} />
 					))}
 				</div>
 			</div>

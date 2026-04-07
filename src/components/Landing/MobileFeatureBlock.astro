@@ -9,6 +9,7 @@ interface Props {
 	readMoreHref: string;
 	readMoreText?: string;
 	readMoreAriaLabel?: string;
+	readMoreSrOnlySuffix?: string;
 	/** Dots/points background SVG src */
 	phoneBgSrc: string;
 	/** Side decorative SVG src */
@@ -48,6 +49,7 @@ const {
 	readMoreHref,
 	readMoreText = 'Read more',
 	readMoreAriaLabel,
+	readMoreSrOnlySuffix,
 	phoneBgSrc,
 	phoneSideSrc,
 	phoneSideClass,
@@ -76,9 +78,9 @@ const linkVariant = dark ? 'light' : variant === 'pe' ? 'pe' : 'default';
 					<SmartImage src={frameImageSrc} alt={heading} width={480} height={1039} />
 				</div>
 				<div class="frame-video">
-					<video autoplay loop preload="auto" muted playsinline>
-						<source src={videoMp4} type="video/mp4" />
-						<source src={videoWebm} type="video/webm" />
+					<video class="lazy-video" loop preload="none" muted playsinline>
+						<source data-src={videoMp4} type="video/mp4" />
+						<source data-src={videoWebm} type="video/webm" />
 					</video>
 				</div>
 			</div>
@@ -88,7 +90,7 @@ const linkVariant = dark ? 'light' : variant === 'pe' ? 'pe' : 'default';
 	<div class="feature-des">
 		<h2>{heading}</h2>
 		<p set:html={description} />
-		<ReadMoreLink href={readMoreHref} text={readMoreText} ariaLabel={readMoreAriaLabel} variant={linkVariant} />
+		<ReadMoreLink href={readMoreHref} text={readMoreText} ariaLabel={readMoreAriaLabel} srOnlySuffix={readMoreSrOnlySuffix} variant={linkVariant} />
 	</div>
 
 	{!imageFirst && (
@@ -101,15 +103,37 @@ const linkVariant = dark ? 'light' : variant === 'pe' ? 'pe' : 'default';
 					<SmartImage src={frameImageSrc} alt={heading} width={480} height={1039} />
 				</div>
 				<div class="frame-video">
-					<video autoplay loop preload="auto" muted playsinline>
-						<source src={videoMp4} type="video/mp4" />
-						<source src={videoWebm} type="video/webm" />
+					<video class="lazy-video" loop preload="none" muted playsinline>
+						<source data-src={videoMp4} type="video/mp4" />
+						<source data-src={videoWebm} type="video/webm" />
 					</video>
 				</div>
 			</div>
 		</div>
 	)}
 </div>
+
+<script>
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((entry) => {
+				if (!entry.isIntersecting) return;
+				const video = entry.target as HTMLVideoElement;
+				video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((source) => {
+					source.src = source.dataset.src!;
+				});
+				video.load();
+				video.play().catch(() => {});
+				observer.unobserve(video);
+			});
+		},
+		{ rootMargin: '200px' }
+	);
+
+	document.querySelectorAll<HTMLVideoElement>('video.lazy-video').forEach((video) => {
+		observer.observe(video);
+	});
+</script>
 
 <style lang="scss">
 	@use '../../styles/variables' as *;
