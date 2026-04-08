@@ -5,12 +5,18 @@
 /sitemap.xml /sitemap-index.xml 301
 
 /docs/contact-us/ /contact-us/ 301
-/docs/services/ /services/ 301
-/docs/services/support/ /services/support/ 301
-/docs/services/consulting/ /services/consulting/ 301
-/docs/services/customers-full-reviews/ /clients-feedback/ 301
-/services/development-services/customers-full-reviews/ /clients-feedback/ 301
+/services/development-services/customers-full-reviews/ /services/development-services/ 301
+/products/paas/billing-info/ /docs/paas/user-guide/billing-info/ 301
+/products/paas/domains/ /docs/paas/user-guide/security/domains/ 301
+/products/paas/subscription/ /docs/paas/reference/subscriptions/ 301
+/products/paas/eu/subscription/ /docs/paas/eu/reference/subscriptions/ 301
+/products/paas/what-is-thingsboard-cloud/ /docs/paas/why-thingsboard/ 301
+/products/thingsboard-pe/install/ /docs/pe/installation/ 301
+/products/thingsboard-pe/install/aws/ /docs/pe/installation/aws-marketplace/ 301
+/products/thingsboard-pe/install-thanks/ /contact-us-thanks/ 301
 /products/trendz/trndz-request-demo/ /products/trendz/request-demo/ 301
+/images/trendz/trndz-request-demo/ /products/trendz/request-demo/ 301
+/iot-solutions/ /services/development-services/ 301
 
 /docs/reference/apis-and-sdks/ /docs/apis-and-sdks/ 301
 /docs/pe/reference/apis-and-sdks/ /docs/pe/apis-and-sdks/ 301
@@ -1038,6 +1044,13 @@
 /docs/pe/mqtt-broker/search/ /docs/mqtt-broker/pe/ 301
 /docs/pe/mqtt-broker/troubleshooting/ /docs/mqtt-broker/pe/help/ 301
 /docs/pe/mqtt-broker/user-guide/ui/mail-server/ /docs/mqtt-broker/pe/user-guide/ui/settings/ 301
+/docs/services/ /services/ 301
+/docs/services/consulting/ /services/consulting/ 301
+/docs/services/customers-full-reviews/ /services/development-services/ 301
+/docs/services/development-services/ /services/development-services/ 301
+/docs/services/iot-solutions/ /services/development-services/ 301
+/docs/services/support/ /services/support/ 301
+/docs/services/trainings/ /services/trainings/ 301
 
 # === End auto-generated redirects ===
 

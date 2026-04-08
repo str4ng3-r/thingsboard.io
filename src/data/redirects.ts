@@ -1080,6 +1080,15 @@ export const SINGLE_REDIRECTS: SingleRedirect[] = [
 	{ oldPath: 'pe/mqtt-broker/search', target: '/docs/mqtt-broker/pe/' },
 	{ oldPath: 'pe/mqtt-broker/troubleshooting', target: '/docs/mqtt-broker/pe/help/' },
 	{ oldPath: 'pe/mqtt-broker/user-guide/ui/mail-server', target: '/docs/mqtt-broker/pe/user-guide/ui/settings/' },
+
+	// Services (docs → non-docs)
+	{ oldPath: 'services', target: '/services/' },
+	{ oldPath: 'services/consulting', target: '/services/consulting/' },
+	{ oldPath: 'services/customers-full-reviews', target: '/services/development-services/' },
+	{ oldPath: 'services/development-services', target: '/services/development-services/' },
+	{ oldPath: 'services/iot-solutions', target: '/services/development-services/' },
+	{ oldPath: 'services/support', target: '/services/support/' },
+	{ oldPath: 'services/trainings', target: '/services/trainings/' },
 ];
 
 // ---------------------------------------------------------------------------

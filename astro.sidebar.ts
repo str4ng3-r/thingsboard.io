@@ -3135,7 +3135,24 @@ export const licenseSidebar: SidebarConfig = [
 	{
 		label: 'Getting Started',
 		translations: { uk: 'Початок роботи' },
-		items: ['docs/license-server'],
+		items: ['docs/license-server', 'docs/license-server/what-is-license-server'],
+	},
+	{
+		label: 'License Management',
+		translations: { uk: 'Управління ліцензіями' },
+		items: [
+			'docs/license-server/subscription',
+			'docs/license-server/perpetual',
+			'docs/license-server/instance',
+		],
+	},
+	{
+		label: 'Account & Billing',
+		translations: { uk: 'Акаунт та оплата' },
+		items: [
+			'docs/license-server/billing-info',
+			'docs/license-server/user',
+		],
 	},
 ];
 
@@ -3223,7 +3240,11 @@ export const trendzSidebarTabLinks: SidebarTabLinks = {
 	'Guides': '/docs/trendz/guides/',
 	'Installation': '/docs/trendz/install/installation-options/',
 };
-export const licenseSidebarTabLinks: SidebarTabLinks = {};
+export const licenseSidebarTabLinks: SidebarTabLinks = {
+	'Getting Started': '/docs/license-server/',
+	'License Management': '/docs/license-server/subscription/',
+	'Account & Billing': '/docs/license-server/billing-info/',
+};
 
 /**
  * Maps URL prefix → tab navigation links for that product's sidebar.
