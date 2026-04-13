@@ -176,8 +176,8 @@ const guideItems = (prefix: string, { isPE = false } = {}) => [
 				label: 'Infrastructure',
 				collapsed: true,
 				items: [
-					`${prefix}/security/http-over-ssl`,
 					`${prefix}/security/domains`,
+					`${prefix}/security/self-signed-ecc`,
 				],
 			},
 			{
