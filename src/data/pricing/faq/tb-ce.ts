@@ -291,18 +291,18 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'edge-community-installation',
 				question: 'How can I install ThingsBoard Edge Community Edition?',
-				answer: '<p>You can install the Community Edition following the <a target="_blank" href="https://thingsboard.io/docs/user-guide/install/edge/installation-options/">installation guides</a> available in the official documentation.</p>',
+				answer: '<p>You can install the Community Edition following the <a target="_blank" href="/docs/user-guide/install/edge/installation-options/">installation guides</a> available in the official documentation.</p>',
 			},
 			{
 				id: 'edge-community-system-requirements',
 				question:
 					'What are the system requirements for deploying the Community Edition?',
-				answer: '<p>The Community Edition is compatible with various operating systems, including Linux, Windows, and macOS. Specific requirements depend on the deployment method and can be found in the <a target="_blank" href="https://thingsboard.io/docs/user-guide/install/edge/installation-options/">installation guide</a>.</p>',
+				answer: '<p>The Community Edition is compatible with various operating systems, including Linux, Windows, and macOS. Specific requirements depend on the deployment method and can be found in the <a target="_blank" href="/docs/user-guide/install/edge/installation-options/">installation guide</a>.</p>',
 			},
 			{
 				id: 'edge-community-docker-support',
 				question: 'Does the Community Edition support Docker deployment?',
-				answer: '<p>Yes, ThingsBoard Edge Community Edition supports Docker. Detailed instructions for Docker-based installation are provided in the <a target="_blank" href="https://thingsboard.io/docs/user-guide/install/edge/docker/">Docker deployment</a> guide.</p>',
+				answer: '<p>Yes, ThingsBoard Edge Community Edition supports Docker. Detailed instructions for Docker-based installation are provided in the <a target="_blank" href="/docs/user-guide/install/edge/docker/">Docker deployment</a> guide.</p>',
 			},
 			{
 				id: 'edge-community-core-features',
