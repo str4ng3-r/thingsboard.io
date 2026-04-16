@@ -30,7 +30,7 @@ export const homeFeatures: FeatureItem[] = [
 	{
 		icon: '/src/assets/images/landings/ce/scalability-icon.svg',
 		title: 'Horizontal scalability',
-		href: '/docs/reference/#thingsboard-services',
+		href: '/docs/reference/architecture/#services',
 		description:
 			'Amount of supported server-side requests and devices increase linearly as new thingsboard servers are added in clustering mode. No downtime, server restarts or application errors.',
 	},
@@ -72,7 +72,7 @@ export const homeFeatures: FeatureItem[] = [
 	{
 		icon: '/src/assets/images/landings/ce/tolerance-icon.svg',
 		title: 'Fault-tolerance',
-		href: '/docs/reference/#thingsboard-services',
+		href: '/docs/reference/architecture/#services',
 		description:
 			'All thingsboard servers are identical. No master-workers or hot standby. Node failure is automatically detected. Failed nodes can be replaced without downtime.',
 	},
@@ -93,14 +93,14 @@ export const homeFeatures: FeatureItem[] = [
 	{
 		icon: '/src/assets/images/landings/ce/microservices-icon.svg',
 		title: 'Microservices or Monolithic',
-		href: '/docs/reference/#monolithic-vs-microservices-architecture',
+		href: '/docs/reference/architecture/monolithic',
 		description:
 			'Supports monolithic deployment for getting started or small environments. Provides ability to upgrade to microservices for high availability and horizontal scalability.',
 	},
 	{
 		icon: '/src/assets/images/landings/ce/database-icon.svg',
 		title: 'SQL, NoSQL and Hybrid database',
-		href: '/docs/reference/#sql-vs-nosql-vs-hybrid-database-approach',
+		href: '/docs/reference/architecture/database',
 		description:
 			'Supports various database options and ability to choose where to store main entities and where to store telemetry data.',
 	},

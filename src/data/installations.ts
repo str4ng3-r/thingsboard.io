@@ -95,7 +95,7 @@ export const products: ProductData[] = [
 			[
 				{
 					title: 'More features',
-					href: '/products/thingsboard-pe/#advanced-thingsboard-iot-platform-distribution-with-value-added-features',
+					href: '/products/thingsboard-pe/#features',
 					description: 'Platform supports all Professional Edition features.',
 				},
 				{
@@ -132,7 +132,7 @@ export const products: ProductData[] = [
 		id: 'thingsboard-ce',
 		title: 'ThingsBoard Community Edition',
 		description:
-			'Open-source IoT platform for device management, data collection, processing and visualization. <a href="/docs/">Read More</a>.',
+			'Open-source IoT platform for device management, data collection, processing and visualization. <a href="/docs/">Read more<span class="sr-only"> about ThingsBoard Community Edition</span></a>.',
 		buttons: [
 			{
 				id: 'TryItNow_CE_Install',
@@ -265,7 +265,7 @@ export const products: ProductData[] = [
 		id: 'thingsboard-pe',
 		title: 'ThingsBoard Professional Edition',
 		description:
-			'Advanced IoT Platform distribution based on latest stable open-source version with value added features. <a href="/products/thingsboard-pe/">Read More</a>.',
+			'Advanced IoT Platform distribution based on latest stable open-source version with value added features. <a href="/products/thingsboard-pe/">Read more<span class="sr-only"> about ThingsBoard Professional Edition</span></a>.',
 		buttons: [
 			{
 				id: 'TryItNow_PE_Install',
@@ -416,7 +416,7 @@ export const products: ProductData[] = [
 		id: 'thingsboard-edge',
 		title: 'ThingsBoard Edge',
 		description:
-			'The ThingsBoard Edge empowers businesses with real-time data analysis and management right at the source, enhancing agility and efficiency in data-driven decisions.\n\nSeamlessly connected to your preferred ThingsBoard platform—whether it\'s ThingsBoard Cloud, ThingsBoard Demo, ThingsBoard PE, or ThingsBoard CE—it ensures continuous synchronization that adapts to your unique business needs, delivering the power of edge intelligence.\n\nMaximize efficiency and gain immediate, actionable insights with ThingsBoard Edge! <a href="/products/thingsboard-edge/">Read More</a>.',
+			'The ThingsBoard Edge empowers businesses with real-time data analysis and management right at the source, enhancing agility and efficiency in data-driven decisions.\n\nSeamlessly connected to your preferred ThingsBoard platform—whether it\'s ThingsBoard Cloud, ThingsBoard Demo, ThingsBoard PE, or ThingsBoard CE—it ensures continuous synchronization that adapts to your unique business needs, delivering the power of edge intelligence.\n\nMaximize efficiency and gain immediate, actionable insights with ThingsBoard Edge! <a href="/products/thingsboard-edge/">Read more<span class="sr-only"> about ThingsBoard Edge</span></a>.',
 		buttons: [
 			{
 				id: 'TryItNow_Edge_Install_Edge_CE',
@@ -532,7 +532,7 @@ export const products: ProductData[] = [
 		id: 'thingsboard-trendz',
 		title: 'Trendz Analytics',
 		description:
-			'The ThingsBoard Trendz is an Analytics Platform that converts the IoT dataset into insights and simplifies the decision-making process. <a href="/products/trendz/">Read More</a>.',
+			'The ThingsBoard Trendz is an Analytics Platform that converts the IoT dataset into insights and simplifies the decision-making process. <a href="/products/trendz/">Read more<span class="sr-only"> about Trendz Analytics</span></a>.',
 		buttons: [
 			{
 				id: 'TryItNow_Trendz_Documentation',
@@ -637,7 +637,7 @@ export const products: ProductData[] = [
 		id: 'mqtt-broker',
 		title: 'MQTT Broker',
 		description:
-			'<b>TBMQ</b> is a highly scalable and durable <a href="/products/mqtt-broker/" target="_blank">MQTT message broker</a> built for real-time data processing across IoT ecosystems of any scale. It efficiently handles millions of concurrent client connections and processes millions of messages per second while maintaining low latency and reliable delivery. Designed for horizontal scalability, TBMQ seamlessly expands across cluster nodes to support massive deployments with millions of connected devices. <a href="/docs/mqtt-broker/" target="_blank">Read More</a>.',
+			'<b>TBMQ</b> is a highly scalable and durable <a href="/products/mqtt-broker/" target="_blank">MQTT message broker</a> built for real-time data processing across IoT ecosystems of any scale. It efficiently handles millions of concurrent client connections and processes millions of messages per second while maintaining low latency and reliable delivery. Designed for horizontal scalability, TBMQ seamlessly expands across cluster nodes to support massive deployments with millions of connected devices. <a href="/docs/mqtt-broker/" target="_blank">Read more<span class="sr-only"> about TBMQ MQTT Broker</span></a>.',
 		buttons: [
 			{
 				id: 'TryItNow_TBMQ_Demo',

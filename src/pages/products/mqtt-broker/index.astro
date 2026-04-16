@@ -17,13 +17,13 @@ const tbmqGroups = [
 		rows: [
 			{
 				label: 'MQTT 3.1 / 3.1.1 support',
-				href: '/docs/mqtt-broker/user-guide/mqtt-protocol/#differences-between-mqtt-311-and-mqtt-50',
+				href: '/docs/mqtt-broker/user-guide/mqtt-protocol/#mqtt-311-vs-mqtt-50',
 				ce: true,
 				pe: true,
 			},
 			{
 				label: 'MQTT 5.0 support',
-				href: '/docs/mqtt-broker/user-guide/mqtt-protocol/#new-features-in-mqtt-50',
+				href: '/docs/mqtt-broker/user-guide/mqtt-protocol/#mqtt-311-vs-mqtt-50',
 				ce: true,
 				pe: true,
 			},
@@ -208,15 +208,17 @@ const tbmqGroups = [
 			<ScenariosSection />
 			<InstallationOptionsSection />
 			<MiddleFeaturesSection />
-			<ComparisonTable
-				title="TBMQ feature comparison"
-				groups={tbmqGroups}
-				peColor="#1f8b4d"
-				centerTitle={true}
-				bgColor="#F2F8F4"
-				noSkew={true}
-				fixedMaxWidth={true}
-			/>
+			<div id="comparison-features">
+				<ComparisonTable
+					title="TBMQ feature comparison"
+					groups={tbmqGroups}
+					peColor="#1f8b4d"
+					centerTitle={true}
+					bgColor="#F2F8F4"
+					noSkew={true}
+					fixedMaxWidth={true}
+				/>
+			</div>
 			<BottomFeaturesSection />
 			<GetStartedSection />
 			<NewsSection />

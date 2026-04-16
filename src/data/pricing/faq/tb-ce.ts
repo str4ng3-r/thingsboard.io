@@ -23,7 +23,7 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'ce-pe-difference',
 				question: 'How does the Community Edition differ from Professional Edition?',
-				answer: '<p>Community Edition includes essential features for IoT device management, data collection, visualization, and rule processing. The Professional Edition offers advanced features such as white-labeling, RBAC, integrations, etc. You can find a more detailed comparison <a target="_blank" href="/products/thingsboard-pe/">here</a>.</p>',
+				answer: '<p>Community Edition includes essential features for IoT device management, data collection, visualization, and rule processing. The Professional Edition offers advanced features such as white-labeling, RBAC, integrations, etc. You can find a more detailed comparison <a target="_blank" href="/products/thingsboard-pe/">on the ThingsBoard PE page</a>.</p>',
 			},
 			{
 				id: 'ce-connect-devices-limit',
@@ -45,7 +45,7 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'ce-clustering',
 				question: 'Does the Community Edition support clustering?',
-				answer: '<p>Yes, clustering is fully supported in the Community Edition. You can find more details about deployment scenarios <a target="_blank" href="/docs/reference/iot-platform-deployment-scenarios/">here</a>.</p>',
+				answer: '<p>Yes, clustering is fully supported in the Community Edition. You can find more details about deployment scenarios <a target="_blank" href="/docs/reference/iot-platform-deployment-scenarios/">in the deployment scenarios reference</a>.</p>',
 			},
 			{
 				id: 'ce-customize',
@@ -76,7 +76,7 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'ce-database-support',
 				question: 'What databases does the Community Edition support?',
-				answer: '<p>The Community Edition supports pure SQL or a hybrid SQL + NoSQL (for telemetry storage) . For more details on database options, you can check <a target="_blank" href="/docs/reference/#sql-vs-nosql-vs-hybrid-database-approach">here</a>.</p>',
+				answer: '<p>The Community Edition supports pure SQL or a hybrid SQL + NoSQL (for telemetry storage) . For more details on database options, you can check <a target="_blank" href="/docs/reference/architecture/database">the database approach reference</a>.</p>',
 			},
 			{
 				id: 'official-docker-ce',
@@ -86,7 +86,7 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'ce-on-raspberry-edge',
 				question: 'Can I run the Community Edition on Raspberry Pi or other edge devices?',
-				answer: '<p>Yes, but performance may be limited due to hardware constraints. You can check details <a target="_blank" href="/docs/user-guide/install/installation-options/">here</a>.</p>',
+				answer: '<p>Yes, but performance may be limited due to hardware constraints. You can check details <a target="_blank" href="/docs/user-guide/install/installation-options/">in the installation options guide</a>.</p>',
 			},
 			{
 				id: 'ce-multi-tenancy',
@@ -107,12 +107,12 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'ce-features',
 				question: 'What features are included in ThingsBoard Community Edition?',
-				answer: '<p>The Community Edition includes device and asset management, data visualization, rule engine automation, and API integrations. You can find all features and descriptions <a target="_blank" href="/docs/">here</a>.</p>',
+				answer: '<p>The Community Edition includes device and asset management, data visualization, rule engine automation, and API integrations. You can find all features and descriptions <a target="_blank" href="/docs/">in the documentation</a>.</p>',
 			},
 			{
 				id: 'pe-exclusive-features',
 				question: 'What features are exclusive to the Professional Edition?',
-				answer: '<p>The Professional Edition offers advanced features such as white-labeling, RBAC, advanced rule engine capabilities, platform integrations, etc. You can find a more detailed comparison <a target="_blank" href="/products/thingsboard-pe/">here</a>.</p>',
+				answer: '<p>The Professional Edition offers advanced features such as white-labeling, RBAC, advanced rule engine capabilities, platform integrations, etc. You can find a more detailed comparison <a target="_blank" href="/products/thingsboard-pe/">on the ThingsBoard PE page</a>.</p>',
 			},
 			{
 				id: 'ce-white-labeling-support',
@@ -291,18 +291,18 @@ export const tbCeFaq: FaqCategory[] = [
 			{
 				id: 'edge-community-installation',
 				question: 'How can I install ThingsBoard Edge Community Edition?',
-				answer: '<p>You can install the Community Edition following the <a target="_blank" href="https://thingsboard.io/docs/user-guide/install/edge/installation-options/">installation guides</a> available in the official documentation.</p>',
+				answer: '<p>You can install the Community Edition following the <a target="_blank" href="/docs/user-guide/install/edge/installation-options/">installation guides</a> available in the official documentation.</p>',
 			},
 			{
 				id: 'edge-community-system-requirements',
 				question:
 					'What are the system requirements for deploying the Community Edition?',
-				answer: '<p>The Community Edition is compatible with various operating systems, including Linux, Windows, and macOS. Specific requirements depend on the deployment method and can be found in the <a target="_blank" href="https://thingsboard.io/docs/user-guide/install/edge/installation-options/">installation guide</a>.</p>',
+				answer: '<p>The Community Edition is compatible with various operating systems, including Linux, Windows, and macOS. Specific requirements depend on the deployment method and can be found in the <a target="_blank" href="/docs/user-guide/install/edge/installation-options/">installation guide</a>.</p>',
 			},
 			{
 				id: 'edge-community-docker-support',
 				question: 'Does the Community Edition support Docker deployment?',
-				answer: '<p>Yes, ThingsBoard Edge Community Edition supports Docker. Detailed instructions for Docker-based installation are provided in the <a target="_blank" href="https://thingsboard.io/docs/user-guide/install/edge/docker/">Docker deployment</a> guide.</p>',
+				answer: '<p>Yes, ThingsBoard Edge Community Edition supports Docker. Detailed instructions for Docker-based installation are provided in the <a target="_blank" href="/docs/user-guide/install/edge/docker/">Docker deployment</a> guide.</p>',
 			},
 			{
 				id: 'edge-community-core-features',
