@@ -216,7 +216,7 @@ Before assigning the integration, add the `remoteHttpIntegrationUrl` attribute t
 
 ## Install the remote integration service
 
-Use the **Integration key** and **Integration secret** from [Step 3](#step-3-save-remote-integration-credentials) to configure the service.
+Use the **Integration key** and **Integration secret** from [Step 3](#step-3-save-the-integration-credentials) to configure the service.
 
 <Tabs>
   <TabItem label="Docker (Linux / Mac)">
@@ -406,8 +406,8 @@ docker run -it -p 11560:11560/udp \\
     |---|---|
     | `mytbedge` | Hostname of the ThingsBoard Edge service |
     | `9090` | Integration RPC port (`INTEGRATIONS_RPC_PORT` in tb-edge.yml) |
-    | `YOUR_ROUTING_KEY` | Integration key from [Step 3](#step-3-save-remote-integration-credentials) |
-    | `YOUR_SECRET` | Integration secret from [Step 3](#step-3-save-remote-integration-credentials) |
+    | `YOUR_ROUTING_KEY` | Integration key from [Step 3](#step-3-save-the-integration-credentials) |
+    | `YOUR_SECRET` | Integration secret from [Step 3](#step-3-save-the-integration-credentials) |
     | `edge_docker_default` | Docker network where the Edge container runs. Check with `docker network ls` |
     | `--restart always` | Automatically restarts on system reboot or failure |
 

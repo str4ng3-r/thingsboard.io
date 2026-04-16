@@ -109,8 +109,8 @@ To send telemetry on behalf of a device, use the following command. Replace `$AC
   http://${tbHost(props.product)}/api/v1/$ACCESS_TOKEN/telemetry \\
   --header "Content-Type:application/json"`} lang="bash" />
 
-The example uses the <DocLink product={props.product} path='reference/http-api'>HTTP API</DocLink>.
-Other connectivity options (MQTT, CoAP, LwM2M, etc.) are supported as well. See <DocLink product={props.product} path='getting-started-guides/connectivity'>connecting devices</DocLink> for details.
+The example uses the <DocLink product={props.product} path='reference/http-api/getting-connected'>HTTP API</DocLink>.
+Other connectivity options (MQTT, CoAP, LwM2M, etc.) are supported as well. See <DocLink product={props.product} path='user-guide/connectivity-guide'>connecting devices</DocLink> for details.
 
 ## Alarms
 
@@ -133,7 +133,7 @@ To demonstrate multi-tenancy and data isolation, the solution creates a sample c
 
 Two customer users are automatically generated with random names and email addresses and assigned to Customer D. These users have read-only access to the dashboard and can only see devices owned by Customer D. You can find the generated user credentials in the solution instructions.
 
-Additional <DocLink product={props.product} path='user-guide/ui/customers'>customers</DocLink> and <DocLink product={props.product} path='user-guide/ui/users'>users</DocLink> can be created via the administration UI. As a Tenant Administrator, you can change the owner of Sensor T1 to Customer D to make it visible to the demo customer users.
+Additional <DocLink product={props.product} path='user-guide/customers'>customers</DocLink> and <DocLink product={props.product} path='user-guide/users'>users</DocLink> can be created via the administration UI. As a Tenant Administrator, you can change the owner of Sensor T1 to Customer D to make it visible to the demo customer users.
 
 ## Conclusion
 

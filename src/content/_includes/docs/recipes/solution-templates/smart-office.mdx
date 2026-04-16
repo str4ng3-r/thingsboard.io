@@ -157,10 +157,10 @@ To send telemetry on behalf of a device, use the following commands. Replace `$A
   http://${tbHost(props.product)}/api/v1/$ACCESS_TOKEN/telemetry \\
   --header "Content-Type:application/json"`} lang="bash" />
 
-The HVAC device also accepts RPC commands from the dashboard to enable or disable the system and change the target temperature. RPC communication is handled via the <DocLink product={props.product} path='user-guide/rpc'>RPC API</DocLink>.
+The HVAC device also accepts RPC commands from the dashboard to enable or disable the system and change the target temperature. RPC communication is handled via the <DocLink product={props.product} path='user-guide/command-and-control'>RPC API</DocLink>.
 
-The examples use the <DocLink product={props.product} path='reference/http-api'>HTTP API</DocLink>.
-Other connectivity options (MQTT, CoAP, LwM2M, etc.) are supported as well. See <DocLink product={props.product} path='getting-started-guides/connectivity'>connecting devices</DocLink> for details.
+The examples use the <DocLink product={props.product} path='reference/http-api/getting-connected'>HTTP API</DocLink>.
+Other connectivity options (MQTT, CoAP, LwM2M, etc.) are supported as well. See <DocLink product={props.product} path='user-guide/connectivity-guide'>connecting devices</DocLink> for details.
 
 ## Alarms
 
