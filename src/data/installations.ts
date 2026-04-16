@@ -95,7 +95,7 @@ export const products: ProductData[] = [
 			[
 				{
 					title: 'More features',
-					href: '/products/thingsboard-pe/#advanced-thingsboard-iot-platform-distribution-with-value-added-features',
+					href: '/products/thingsboard-pe/#features',
 					description: 'Platform supports all Professional Edition features.',
 				},
 				{

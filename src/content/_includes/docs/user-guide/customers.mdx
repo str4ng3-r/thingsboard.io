@@ -21,7 +21,7 @@ The Customers page displays all Customers available{props.product !== Products.C
 
 ## Customer management
 
-<DocLink product={props.product} path='user-guide/multi-tenancy/#tenant-administrator-management' target="_blank">Tenant Administrators</DocLink> can create, edit, and delete Customers, as well as manage their assigned resources. 
+<DocLink product={props.product} path={[Products.CE, Products.PE].includes(props.product) ? 'user-guide/multi-tenancy/#tenant-administrator-management' : 'user-guide/multi-tenancy/'} target="_blank">Tenant Administrators</DocLink> can create, edit, and delete Customers, as well as manage their assigned resources. 
 
 {props.product !== Products.CE &&<><DocLink product={props.product} path='user-guide/users/' target="_blank">Customer users</DocLink> (with the required permissions) can also create their own customers (sub-customers) and manage the resources assigned to them.</>}
 

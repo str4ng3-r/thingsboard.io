@@ -888,7 +888,7 @@ We need to read registers from address `0` to address `3`, so our address range 
 Also, you need to use, for examples `${address}` variable in the `tag` field to uniquely identify each register within
 the batch read. In our case, we will use the following expression for the `tag` field:
 `${unitId}.${type}.${address}` (you can find more information about variables in the corresponding [section of
-the documentation](/docs/iot-gateway/config/modbus/#batch-reading-advanced-configuration-mode-only)).
+the documentation](/docs/iot-gateway/config/modbus/#batch-reading)).
 
 Copy and paste the following configuration into the Modbus connector advanced configuration mode:
 

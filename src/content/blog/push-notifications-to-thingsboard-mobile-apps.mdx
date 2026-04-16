@@ -14,7 +14,7 @@ Now, you can receive instant alerts and updates directly on your smartphone, mak
 
 ## Firebase setup
 
-To deliver notifications from ThingsBoard instances to mobile apps, we utilize [Firebase](https://firebase.google.com/). To set up push notifications, create a Firebase project and provide the necessary Firebase credentials to both the platform instance and the mobile application. For setup instructions, community edition users should follow this community edition [guide](/docs/mobile/getting-started/#step-4-optional-configure-push-notifications), while professional edition users can refer to the professional edition [guide](/docs/pe/mobile/getting-started/#step-4-optional-configure-push-notifications).
+To deliver notifications from ThingsBoard instances to mobile apps, we utilize [Firebase](https://firebase.google.com/). To set up push notifications, create a Firebase project and provide the necessary Firebase credentials to both the platform instance and the mobile application. For setup instructions, community edition users should follow this community edition [guide](/docs/mobile/getting-started/#step-2-optional-configure-push-notifications), while professional edition users can refer to the professional edition [guide](/docs/pe/mobile/getting-started/#step-2-optional-configure-push-notifications).
 
 ## How to use notifications
 
@@ -35,7 +35,7 @@ If you don’t set up a tap action, tapping the notification will bring up the n
 
 ### Notification rules
 
-Notification rules are your go-to tool for automating alerts based on specific events, making it a breeze to keep everyone informed without manual intervention. A common scenario is sending out alerts for new alarms. These rules can handle everything from simple notifications to complex escalation chains and are highly customizable. Learn more about [notification rules](/docs/user-guide/notifications/#alarm-1). See the default rule below. This rule sends information about new alarm to all tenant administrators:
+Notification rules are your go-to tool for automating alerts based on specific events, making it a breeze to keep everyone informed without manual intervention. A common scenario is sending out alerts for new alarms. These rules can handle everything from simple notifications to complex escalation chains and are highly customizable. Learn more about [notification rules](/docs/user-guide/notifications/#rules). See the default rule below. This rule sends information about new alarm to all tenant administrators:
 
 Each rule is associated with a notification [template](/docs/user-guide/notifications/#templates), which defines the delivery method and appearance of notifications. To get started with push notifications for new alarms, modify the “New Alarm Notification” template to include the “Mobile app” delivery option.
 

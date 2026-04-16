@@ -73,7 +73,7 @@ export const tbCloudFaq: FaqCategory[] = [
 			{
 				id: 'tb-cloud-how-cancel-supscription',
 				question: 'How to cancel my subscription?',
-				answer: '<p>Kindly refer to the <a target="_blank" href="/docs/paas/eu/subscription/#how-to-cancel-my-subscription">subscription cancellation guide</a>.</p>',
+				answer: '<p>Kindly refer to the <a target="_blank" href="/docs/paas/eu/reference/subscriptions/#cancel-subscription">subscription cancellation guide</a>.</p>',
 			},
 			{
 				id: 'migrate-cloud-to-sm',
@@ -302,7 +302,7 @@ export const tbCloudFaq: FaqCategory[] = [
 			{
 				id: 'tb-cloud-subscription-cancel',
 				question: 'How to cancel my subscription?',
-				answer: '<p>Kindly refer to the <a target="_blank" href="/docs/paas/eu/subscription/#how-to-cancel-my-subscription">subscription cancellation guide</a>.</p>',
+				answer: '<p>Kindly refer to the <a target="_blank" href="/docs/paas/eu/reference/subscriptions/#cancel-subscription">subscription cancellation guide</a>.</p>',
 			},
 			{
 				id: 'tb-cloud-subscription-cancel-impact',

@@ -101,9 +101,9 @@ Templates support dynamic parameters wrapped in `${...}`, like `${recipientFirst
 | <DocLink product={props.product} path="reference/notification-system/template-parameters#api-usage-limit" bold={false}>API usage limit</DocLink> | Tenant nearing API call quota |
 | <DocLink product={props.product} path="reference/notification-system/template-parameters#new-platform-version" bold={false}>New platform version</DocLink> | ThingsBoard upgrade available |
 | <DocLink product={props.product} path="reference/notification-system/template-parameters#exceeded-rate-limits" bold={false}>Exceeded rate limits</DocLink> | API rate limit breached |
-| <DocLink product={props.product} path="reference/notification-system/template-parameters#task-processing-failure" bold={false}>Task processing failure</DocLink> | Background task processing fails |
-| <DocLink product={props.product} path="reference/notification-system/template-parameters#resources-shortage" bold={false}>Resources shortage</DocLink> | Server resource shortage (CPU, RAM, storage) |
-| <DocLink product={props.product} path="reference/notification-system/template-parameters#integration-lifecycle-event" bold={false}>Integration lifecycle event</DocLink> | Integration start/stop failures |
+| <DocLink product={props.product} path="reference/notification-system/rule-triggers#task-processing-failure" bold={false}>Task processing failure</DocLink> | Background task processing fails |
+| <DocLink product={props.product} path="reference/notification-system/rule-triggers#resources-shortage" bold={false}>Resources shortage</DocLink> | Server resource shortage (CPU, RAM, storage) |
+| <DocLink product={props.product} path={props.product === Products.CE ? "reference/notification-system/rule-triggers" : "reference/notification-system/rule-triggers#integration-lifecycle-event"} bold={false}>Integration lifecycle event</DocLink> | Integration start/stop failures |
 
 ## Rules
 
@@ -140,7 +140,7 @@ Notification rules automate delivery based on trigger events. Each rule is coupl
 | <DocLink product={props.product} path="reference/notification-system/rule-triggers#rule-engine-lifecycle-event" bold={false}>Rule engine lifecycle event</DocLink> | Tenant | Rule chain or node lifecycle event | *Rule node initialization failure* |
 | <DocLink product={props.product} path="reference/notification-system/rule-triggers#edge-connection" bold={false}>Edge connection</DocLink> | Tenant | Edge connection status changes | *Edge connection status change* |
 | <DocLink product={props.product} path="reference/notification-system/rule-triggers#edge-communication-failure" bold={false}>Edge communication failure</DocLink> | Tenant | Edge communication failure | *Edge communication failure* |
-| <DocLink product={props.product} path="reference/notification-system/rule-triggers#integration-lifecycle-event" bold={false}>Integration lifecycle event</DocLink> | Tenant | Integration fails to start or stop | *Integration start failure* |
+| <DocLink product={props.product} path={props.product === Products.CE ? "reference/notification-system/rule-triggers" : "reference/notification-system/rule-triggers#integration-lifecycle-event"} bold={false}>Integration lifecycle event</DocLink> | Tenant | Integration fails to start or stop | *Integration start failure* |
 | <DocLink product={props.product} path="reference/notification-system/rule-triggers#entities-limit" bold={false}>Entities limit</DocLink> | System | Tenant approaching entity count limit | — |
 | <DocLink product={props.product} path="reference/notification-system/rule-triggers#api-usage-limit" bold={false}>API usage limit</DocLink> | System | Tenant reaching API usage threshold | *API feature disabled*, *API feature warning* |
 | <DocLink product={props.product} path="reference/notification-system/rule-triggers#new-platform-version" bold={false}>New platform version</DocLink> | System | New ThingsBoard version released | *New platform version* |
