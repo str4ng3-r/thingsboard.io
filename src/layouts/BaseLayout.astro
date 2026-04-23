@@ -37,7 +37,7 @@ const {
 	forceLightTheme = false,
 } = Astro.props;
 
-const canonicalUrl = `https://thingsboard.io${Astro.url.pathname}`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const section = getSectionFromPath(Astro.url.pathname);
 const pageTitle = customTitle ? title : formatMarketingTitle(title, section);
 ---

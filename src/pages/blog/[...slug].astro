@@ -21,7 +21,12 @@ export async function getStaticPaths() {
 const { post } = Astro.props as { post: BlogPost };
 const { Content, headings } = await render(post as any);
 const author = getAuthor(post.data.author);
-const postUrl = encodeURIComponent(`https://thingsboard.io/blog/${post.id}/`);
+const siteOrigin = new URL(Astro.site!).origin;
+const homeUrl = new URL('/', Astro.site).href;
+const blogUrl = new URL('/blog/', Astro.site).href;
+const postUrl = new URL(`/blog/${post.id}/`, Astro.site).href;
+// Separate percent-encoded form for social share query params.
+const postUrlEncoded = encodeURIComponent(postUrl);
 const shareTitle = encodeURIComponent(post.data.title);
 const allPosts = (await getCollection('blog', ({ data }) => !(data as BlogData).draft)) as unknown as BlogPost[];
 const relatedPosts = allPosts
@@ -48,27 +53,27 @@ const jsonLd = {
 			mainEntityOfPage: { '@id': `${postUrl}#webpage` },
 			image: post.data.featuredImage ? {
 				'@type': 'ImageObject',
-				url: `https://thingsboard.io${post.data.featuredImage}`,
+				url: new URL(post.data.featuredImage, Astro.site).href,
 			} : undefined,
 			author: author ? {
 				'@type': 'Person',
 				name: author.name,
-				url: `https://thingsboard.io/blog/author/${author.slug}/`,
+				url: new URL(`/blog/author/${author.slug}/`, Astro.site).href,
 				...(author.avatar && { image: { '@type': 'ImageObject', url: author.avatar } }),
 			} : undefined,
 			publisher: {
 				'@type': 'Organization',
 				name: 'ThingsBoard',
-				url: 'https://thingsboard.io',
-				logo: { '@type': 'ImageObject', url: 'https://thingsboard.io/images/thingsboard_logo_blue.svg' },
+				url: siteOrigin,
+				logo: { '@type': 'ImageObject', url: new URL('/images/thingsboard_logo_blue.svg', Astro.site).href },
 			},
 		},
 		{
 			'@type': 'BreadcrumbList',
 			'@id': `${postUrl}#breadcrumblist`,
 			itemListElement: [
-				{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://thingsboard.io/' },
-				{ '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://thingsboard.io/blog/' },
+				{ '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl },
+				{ '@type': 'ListItem', position: 2, name: 'Blog', item: blogUrl },
 				{ '@type': 'ListItem', position: 3, name: post.data.title },
 			],
 		},
@@ -79,15 +84,15 @@ const jsonLd = {
 			name: post.data.title,
 			description: post.data.description,
 			inLanguage: 'en-US',
-			isPartOf: { '@id': 'https://thingsboard.io/blog/#website' },
+			isPartOf: { '@id': `${blogUrl}#website` },
 		},
 		{
 			'@type': 'WebSite',
-			'@id': 'https://thingsboard.io/blog/#website',
-			url: 'https://thingsboard.io/blog/',
+			'@id': `${blogUrl}#website`,
+			url: blogUrl,
 			name: 'ThingsBoard Blog',
 			inLanguage: 'en-US',
-			publisher: { '@id': 'https://thingsboard.io/#organization' },
+			publisher: { '@id': `${homeUrl}#organization` },
 		},
 	],
 };
@@ -182,16 +187,16 @@ const jsonLd = {
 			<div class="share-inner">
 				<span class="share-label">Share:</span>
 				<div class="share-icons">
-					<a href={`https://www.facebook.com/sharer/sharer.php?u=${postUrl}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on Facebook">
+					<a href={`https://www.facebook.com/sharer/sharer.php?u=${postUrlEncoded}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on Facebook">
 						<Icon name="tabler:brand-facebook" size={20} />
 					</a>
-					<a href={`https://t.me/share/url?url=${postUrl}&text=${shareTitle}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on Telegram">
+					<a href={`https://t.me/share/url?url=${postUrlEncoded}&text=${shareTitle}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on Telegram">
 						<Icon name="tabler:brand-telegram" size={20} />
 					</a>
-					<a href={`https://www.linkedin.com/sharing/share-offsite/?url=${postUrl}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on LinkedIn">
+					<a href={`https://www.linkedin.com/sharing/share-offsite/?url=${postUrlEncoded}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on LinkedIn">
 						<Icon name="tabler:brand-linkedin" size={20} />
 					</a>
-					<a href={`https://twitter.com/intent/tweet?url=${postUrl}&text=${shareTitle}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on X">
+					<a href={`https://twitter.com/intent/tweet?url=${postUrlEncoded}&text=${shareTitle}`} target="_blank" rel="noopener noreferrer" class="share-icon" aria-label="Share on X">
 						<Icon name="tabler:brand-x" size={20} />
 					</a>
 				</div>
