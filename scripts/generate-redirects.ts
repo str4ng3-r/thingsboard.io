@@ -29,31 +29,12 @@ import {
 	CATCH_ALL_REDIRECTS,
 	SINGLE_REDIRECTS,
 	DYNAMIC_REDIRECTS,
+	NON_DOCS_REDIRECTS,
 	getAllRedirectsFlat,
 } from '../src/data/redirects.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-
-// ---------------------------------------------------------------------------
-// Helpers for PREFIX_RENAME groups with empty entries
-// ---------------------------------------------------------------------------
-
-/**
- * For PREFIX_RENAME groups with empty entries (content-enumerated by .astro files),
- * map old prefix → new prefix so we can scan the content directory and populate
- * redirects.json with individual entries.
- */
-const PREFIX_RENAME_MAP: Record<string, string> = {
-	'user-guide/rule-engine-2-0/nodes': 'reference/rule-engine/nodes',
-	'pe/user-guide/rule-engine-2-0/nodes': 'pe/reference/rule-engine/nodes',
-	'paas/user-guide/rule-engine-2-0/nodes': 'paas/reference/rule-engine/nodes',
-	'paas/eu/user-guide/rule-engine-2-0/nodes': 'paas/eu/reference/rule-engine/nodes',
-	'pe/solution-templates': 'pe/recipes/solution-templates',
-	'paas/solution-templates': 'paas/recipes/solution-templates',
-	'paas/eu/solution-templates': 'paas/eu/recipes/solution-templates',
-	'iot-gateway/install': 'iot-gateway/installation',
-};
 
 /** Recursively find all .mdx files under a directory, returning relative paths without extension. */
 function findMdxSlugs(dir: string, base: string = ''): string[] {
@@ -81,12 +62,14 @@ function findMdxSlugs(dir: string, base: string = ''): string[] {
 
 const flatMap = getAllRedirectsFlat();
 
-// Add entries for PREFIX_RENAME groups with empty entries by scanning content
-for (const [oldPrefix, newPrefix] of Object.entries(PREFIX_RENAME_MAP)) {
-	const contentDir = resolve(ROOT, 'src/content/docs/docs', newPrefix);
+// Add entries for PREFIX_RENAME groups with empty entries by scanning content.
+// Source of truth for prefix renames: CATCH_ALL_REDIRECTS[].newPrefix.
+for (const group of CATCH_ALL_REDIRECTS) {
+	if (group.entries.length > 0 || !group.newPrefix) continue;
+	const contentDir = resolve(ROOT, 'src/content/docs/docs', group.newPrefix);
 	const slugs = findMdxSlugs(contentDir);
 	for (const slug of slugs) {
-		flatMap[`/docs/${oldPrefix}/${slug}/`] = `/docs/${newPrefix}/${slug}/`;
+		flatMap[`/docs/${group.oldPrefix}/${slug}/`] = `/docs/${group.newPrefix}/${slug}/`;
 	}
 }
 const jsonPath = resolve(ROOT, 'public/redirects.json');
@@ -146,10 +129,9 @@ for (const group of CATCH_ALL_REDIRECTS) {
 
 	// Empty-entry PREFIX_RENAME group — one splat rule drives the whole tree.
 	if (group.entries.length === 0) {
-		const newPrefix = PREFIX_RENAME_MAP[group.oldPrefix];
-		if (newPrefix) {
+		if (group.newPrefix) {
 			autoDynamicGroups.push({
-				rules: [`/docs/${group.oldPrefix}/* /docs/${newPrefix}/:splat 301`],
+				rules: [`/docs/${group.oldPrefix}/* /docs/${group.newPrefix}/:splat 301`],
 			});
 		}
 		continue;
@@ -195,6 +177,25 @@ if (remainingSingles.length > 0) {
 	}
 }
 
+// Non-docs rules: marketing pages, /products/*, /industries/*, external targets.
+// A rule is "dynamic" only when the SOURCE has a splat or :placeholder (those
+// require Cloudflare pattern matching). Literal `?query` in the target is just
+// a regular static target.
+const nonDocsStatic: string[] = [];
+const nonDocsDynamic: string[] = [];
+for (const [source, target] of Object.entries(NON_DOCS_REDIRECTS)) {
+	if (source.includes('*') || /:[A-Za-z_]/.test(source)) {
+		nonDocsDynamic.push(`${source} ${target} 301`);
+	} else {
+		nonDocsStatic.push(`${source} ${target} 301`);
+	}
+}
+if (nonDocsStatic.length > 0) {
+	staticLines.push('');
+	staticLines.push('# Non-docs redirects (from NON_DOCS_REDIRECTS)');
+	staticLines.push(...nonDocsStatic);
+}
+
 // DYNAMIC_REDIRECTS from redirects.ts render first in the Dynamic block so
 // hand-authored patterns (blog, edge upgrade) stay at the top. Group comments
 // live in the data file for maintainers; the generated file stays terse.
@@ -215,9 +216,10 @@ const dynamicHeader = [
 ];
 
 // One flat block: manual rules first (blog, edge upgrade), then auto-derived
-// splat rules. Rules are self-describing so no comments are emitted.
+// splat rules, then non-docs rules with query/placeholder targets.
+// Rules are self-describing so no comments are emitted.
 const autoDynamicRules = autoDynamicGroups.flatMap((g) => g.rules);
-const dynamicRules = [...manualDynamicRules, ...autoDynamicRules];
+const dynamicRules = [...manualDynamicRules, ...autoDynamicRules, ...nonDocsDynamic];
 
 const output =
 	manualHeader +

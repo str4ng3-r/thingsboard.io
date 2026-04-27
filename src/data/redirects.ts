@@ -1,10 +1,13 @@
 /**
- * Centralized redirect rules for old Jekyll docs URLs → new Astro docs URLs.
+ * Centralized redirect rules for old docs URLs → new docs URLs.
  *
- * This file is the single source of truth for all redirect mappings.
- * It is consumed by:
- *   - Page-based redirect files in src/pages/docs/ (Astro.redirect)
- *   - scripts/generate-redirects.ts (generates public/_redirects and public/redirects.json)
+ * Single source of truth. Consumed by:
+ *   - scripts/generate-redirects.ts  → public/_redirects (Cloudflare edge 301)
+ *                                      + public/redirects.json
+ *   - astro.redirects.ts             → Astro dev-mode redirects (NON_DOCS_REDIRECTS only)
+ *
+ * After editing, run `pnpm generate:redirects` and commit both the data change
+ * and the regenerated public/_redirects + public/redirects.json.
  *
  * Redirect types:
  *   PREFIX_RENAME  — tree-preserving 1:1 (old prefix/* → new prefix/*)
@@ -25,14 +28,20 @@ export interface RedirectEntry {
 }
 
 export interface CatchAllRedirect {
-	/** Old path prefix (no leading/trailing slash). Maps to a [...slug].astro file at this location. */
+	/** Old path prefix (no leading/trailing slash). Emits `/docs/{oldPrefix}/* → …:splat 301`. */
 	oldPrefix: string;
-	/** Redirect entries — each slug is relative to oldPrefix */
+	/** Redirect entries — each slug is relative to oldPrefix. Empty = PREFIX_RENAME (splat-only). */
 	entries: RedirectEntry[];
+	/**
+	 * New prefix for empty-entries PREFIX_RENAME groups. When set, the generator
+	 * emits `/docs/{oldPrefix}/* → /docs/{newPrefix}/:splat 301` and scans
+	 * `src/content/docs/docs/{newPrefix}` to populate redirects.json.
+	 */
+	newPrefix?: string;
 }
 
 export interface SingleRedirect {
-	/** Old path (no leading/trailing slash, e.g. 'user-guide/audit-log') */
+	/** Old path under /docs/ (no leading/trailing slash, e.g. 'user-guide/audit-log') */
 	oldPath: string;
 	/** Absolute target path with trailing slash (e.g. '/docs/user-guide/security/audit-log/') */
 	target: string;
@@ -90,38 +99,55 @@ export const CATCH_ALL_REDIRECTS: CatchAllRedirect[] = [
 	// Listed here for public/_redirects and redirects.json generation.
 	{
 		oldPrefix: 'user-guide/rule-engine-2-0/nodes',
+		newPrefix: 'reference/rule-engine/nodes',
 		entries: [], // PREFIX_RENAME — splat rule in _redirects, JSON populated by generate script
 	},
 	{
 		oldPrefix: 'pe/user-guide/rule-engine-2-0/nodes',
+		newPrefix: 'pe/reference/rule-engine/nodes',
 		entries: [],
 	},
 	{
 		oldPrefix: 'paas/user-guide/rule-engine-2-0/nodes',
+		newPrefix: 'paas/reference/rule-engine/nodes',
 		entries: [],
 	},
 	{
 		oldPrefix: 'paas/eu/user-guide/rule-engine-2-0/nodes',
+		newPrefix: 'paas/eu/reference/rule-engine/nodes',
 		entries: [],
 	},
 	// Solution templates: solution-templates/* → recipes/solution-templates/*
 	{
 		oldPrefix: 'pe/solution-templates',
+		newPrefix: 'pe/recipes/solution-templates',
 		entries: [], // PREFIX_RENAME — splat rule in _redirects, enumerated by [..slug].astro
 	},
 	{
 		oldPrefix: 'paas/solution-templates',
+		newPrefix: 'paas/recipes/solution-templates',
 		entries: [],
 	},
 	{
 		oldPrefix: 'paas/eu/solution-templates',
+		newPrefix: 'paas/eu/recipes/solution-templates',
 		entries: [],
 	},
 	// IoT Gateway install: iot-gateway/install/* → iot-gateway/installation/*
 	{
 		oldPrefix: 'iot-gateway/install',
+		newPrefix: 'iot-gateway/installation',
 		entries: [], // PREFIX_RENAME — splat rule in _redirects; rpi/windows overrides in SINGLE_REDIRECTS
 	},
+	// Legacy product-tree splits: old /docs/pe/{product} prefixes → new /docs/{product}/pe
+	{ oldPrefix: 'pe/edge', newPrefix: 'edge/pe', entries: [] },
+	{ oldPrefix: 'pe/mobile', newPrefix: 'mobile/pe', entries: [] },
+	{ oldPrefix: 'pe/mqtt-broker', newPrefix: 'mqtt-broker/pe', entries: [] },
+	// Tutorial tree merged into getting-started
+	{ oldPrefix: 'tutorial/getting-started', newPrefix: 'getting-started', entries: [] },
+	{ oldPrefix: 'pe/tutorial/getting-started', newPrefix: 'pe/getting-started', entries: [] },
+	{ oldPrefix: 'paas/tutorial/getting-started', newPrefix: 'paas/getting-started', entries: [] },
+	{ oldPrefix: 'paas/eu/tutorial/getting-started', newPrefix: 'paas/eu/getting-started', entries: [] },
 	{
 		oldPrefix: 'user-guide/install/upgrade-instructions',
 		entries: buildUpgradeRedirectEntries('installation/upgrade-instructions'),
@@ -168,8 +194,7 @@ export const CATCH_ALL_REDIRECTS: CatchAllRedirect[] = [
 ];
 
 /**
- * Individual page redirects.
- * Each entry maps to a single .astro file at src/pages/docs/{oldPath}.astro.
+ * Individual /docs/* page redirects.
  * Add entries here for one-off page renames or removed pages.
  */
 export const SINGLE_REDIRECTS: SingleRedirect[] = [
@@ -199,42 +224,46 @@ export const SINGLE_REDIRECTS: SingleRedirect[] = [
 	{ oldPath: 'pe/api', target: '/docs/pe/apis-and-sdks/' },
 	{ oldPath: 'paas/api', target: '/docs/paas/apis-and-sdks/' },
 	{ oldPath: 'paas/eu/api', target: '/docs/paas/eu/apis-and-sdks/' },
+	{ oldPath: 'reference/apis-and-sdks', target: '/docs/apis-and-sdks/' },
+	{ oldPath: 'pe/reference/apis-and-sdks', target: '/docs/pe/apis-and-sdks/' },
+	{ oldPath: 'paas/reference/apis-and-sdks', target: '/docs/paas/apis-and-sdks/' },
+	{ oldPath: 'paas/eu/reference/apis-and-sdks', target: '/docs/paas/eu/apis-and-sdks/' },
 	{ oldPath: 'user-guide/customization', target: '/docs/user-guide/' },
 	{ oldPath: 'pe/user-guide/customization', target: '/docs/pe/user-guide/' },
 	{ oldPath: 'paas/user-guide/customization', target: '/docs/paas/user-guide/' },
 	{ oldPath: 'paas/eu/user-guide/customization', target: '/docs/paas/eu/user-guide/' },
 	{ oldPath: 'edge/api', target: '/docs/edge/reference/apis-and-sdks/' },
-	{ oldPath: 'pe/edge/api', target: '/docs/pe/edge/reference/apis-and-sdks/' },
+	{ oldPath: 'pe/edge/api', target: '/docs/edge/pe/reference/apis-and-sdks/' },
 	{ oldPath: 'edge/config/create-device', target: '/docs/edge/user-guide/device-management/' },
-	{ oldPath: 'pe/edge/config/create-device', target: '/docs/pe/edge/user-guide/device-management/' },
+	{ oldPath: 'pe/edge/config/create-device', target: '/docs/edge/pe/user-guide/device-management/' },
 	{ oldPath: 'edge/config/deploying-edge-alongside-iot-gateway', target: '/docs/edge/user-guide/iot-gateway/' },
-	{ oldPath: 'pe/edge/config/deploying-edge-alongside-iot-gateway', target: '/docs/pe/edge/user-guide/iot-gateway/' },
+	{ oldPath: 'pe/edge/config/deploying-edge-alongside-iot-gateway', target: '/docs/edge/pe/user-guide/iot-gateway/' },
 	{ oldPath: 'edge/config/edge-behind-proxy', target: '/docs/edge/user-guide/edge-proxy/docker/' },
-	{ oldPath: 'pe/edge/config/edge-behind-proxy', target: '/docs/pe/edge/user-guide/edge-proxy/docker/' },
+	{ oldPath: 'pe/edge/config/edge-behind-proxy', target: '/docs/edge/pe/user-guide/edge-proxy/docker/' },
 	{ oldPath: 'edge/config/edge-cluster-setup', target: '/docs/edge/installation/docker-compose-setup/' },
-	{ oldPath: 'pe/edge/config/edge-cluster-setup', target: '/docs/pe/edge/installation/docker-compose-setup/' },
+	{ oldPath: 'pe/edge/config/edge-cluster-setup', target: '/docs/edge/pe/installation/docker-compose-setup/' },
 	{ oldPath: 'edge/config/edge-public-dashboard', target: '/docs/edge/user-guide/edge-public-dashboard/' },
-	{ oldPath: 'pe/edge/config/edge-public-dashboard', target: '/docs/pe/edge/user-guide/edge-public-dashboard/' },
+	{ oldPath: 'pe/edge/config/edge-public-dashboard', target: '/docs/edge/pe/user-guide/edge-public-dashboard/' },
 	{ oldPath: 'edge/config/management', target: '/docs/edge/key-concepts/edge-instance/' },
-	{ oldPath: 'pe/edge/config/management', target: '/docs/pe/edge/key-concepts/edge-instance/' },
+	{ oldPath: 'pe/edge/config/management', target: '/docs/edge/pe/key-concepts/edge-instance/' },
 	{ oldPath: 'edge/config/provision-asset', target: '/docs/edge/user-guide/asset-management/' },
-	{ oldPath: 'pe/edge/config/provision-asset', target: '/docs/pe/edge/user-guide/asset-management/' },
+	{ oldPath: 'pe/edge/config/provision-asset', target: '/docs/edge/pe/user-guide/asset-management/' },
 	{ oldPath: 'edge/config/provision-customer', target: '/docs/edge/user-guide/provision-customers-and-users/' },
-	{ oldPath: 'pe/edge/config/provision-customer', target: '/docs/pe/edge/user-guide/provision-customers-and-users/' },
+	{ oldPath: 'pe/edge/config/provision-customer', target: '/docs/edge/pe/user-guide/provision-customers-and-users/' },
 	{ oldPath: 'edge/config/provision-dashboard', target: '/docs/edge/user-guide/dashboards/' },
-	{ oldPath: 'pe/edge/config/provision-dashboard', target: '/docs/pe/edge/user-guide/dashboards/' },
+	{ oldPath: 'pe/edge/config/provision-dashboard', target: '/docs/edge/pe/user-guide/dashboards/' },
 	{ oldPath: 'edge/config/provision-device', target: '/docs/edge/user-guide/device-management/' },
-	{ oldPath: 'pe/edge/config/provision-device', target: '/docs/pe/edge/user-guide/device-management/' },
+	{ oldPath: 'pe/edge/config/provision-device', target: '/docs/edge/pe/user-guide/device-management/' },
 	{ oldPath: 'edge/config/provision-entity-view', target: '/docs/edge/key-concepts/entities/' },
-	{ oldPath: 'pe/edge/config/provision-entity-view', target: '/docs/pe/edge/key-concepts/entities/' },
+	{ oldPath: 'pe/edge/config/provision-entity-view', target: '/docs/edge/pe/key-concepts/entities/' },
 	{ oldPath: 'edge/config/provision-user', target: '/docs/edge/user-guide/provision-customers-and-users/' },
-	{ oldPath: 'pe/edge/config/provision-user', target: '/docs/pe/edge/user-guide/provision-customers-and-users/' },
+	{ oldPath: 'pe/edge/config/provision-user', target: '/docs/edge/pe/user-guide/provision-customers-and-users/' },
 	{ oldPath: 'edge/config/subscribe-to-attribute', target: '/docs/edge/user-guide/attribute-sync/' },
-	{ oldPath: 'pe/edge/config/subscribe-to-attribute', target: '/docs/pe/edge/user-guide/attribute-sync/' },
+	{ oldPath: 'pe/edge/config/subscribe-to-attribute', target: '/docs/edge/pe/user-guide/attribute-sync/' },
 	{ oldPath: 'edge/edge-architecture', target: '/docs/edge/reference/architecture/' },
-	{ oldPath: 'pe/edge/edge-architecture', target: '/docs/pe/edge/reference/architecture/' },
+	{ oldPath: 'pe/edge/edge-architecture', target: '/docs/edge/pe/reference/architecture/' },
 	{ oldPath: 'edge/faq', target: '/docs/edge/why-thingsboard-edge/' },
-	{ oldPath: 'pe/edge/faq', target: '/docs/pe/edge/why-thingsboard-edge/' },
+	{ oldPath: 'pe/edge/faq', target: '/docs/edge/pe/why-thingsboard-edge/' },
 	{ oldPath: 'pe/edge/user-guide/integrations', target: '/docs/edge/pe/user-guide/integrations/overview/' },
 	{ oldPath: 'pe/edge/user-guide/integrations/chirpstack', target: '/docs/edge/pe/user-guide/integrations/chirpstack/' },
 	{ oldPath: 'pe/edge/user-guide/integrations/coap', target: '/docs/edge/pe/user-guide/integrations/coap/' },
@@ -249,62 +278,62 @@ export const SINGLE_REDIRECTS: SingleRedirect[] = [
 	{ oldPath: 'pe/edge/user-guide/scheduler-vs-rule-chain', target: '/docs/edge/pe/user-guide/scheduler-vs-rule-chain/' },
 	{ oldPath: 'edge/getting-started-guides/what-is-edge', target: '/docs/edge/why-thingsboard-edge/' },
 	{ oldPath: 'edge/releases', target: '/docs/edge/releases/releases-table/' },
-	{ oldPath: 'pe/edge/releases', target: '/docs/pe/edge/releases/releases-table/' },
+	{ oldPath: 'pe/edge/releases', target: '/docs/edge/pe/releases/releases-table/' },
 	{ oldPath: 'edge/reference/coap-api', target: '/docs/edge/reference/apis-and-sdks/coap-api/' },
-	{ oldPath: 'pe/edge/reference/coap-api', target: '/docs/pe/edge/reference/apis-and-sdks/coap-api/' },
+	{ oldPath: 'pe/edge/reference/coap-api', target: '/docs/edge/pe/reference/apis-and-sdks/coap-api/' },
 	{ oldPath: 'edge/reference/http-api', target: '/docs/edge/reference/apis-and-sdks/http-api/' },
-	{ oldPath: 'pe/edge/reference/http-api', target: '/docs/pe/edge/reference/apis-and-sdks/http-api/' },
+	{ oldPath: 'pe/edge/reference/http-api', target: '/docs/edge/pe/reference/apis-and-sdks/http-api/' },
 	{ oldPath: 'edge/reference/mqtt-api', target: '/docs/edge/reference/apis-and-sdks/mqtt-api/' },
-	{ oldPath: 'pe/edge/reference/mqtt-api', target: '/docs/pe/edge/reference/apis-and-sdks/mqtt-api/' },
+	{ oldPath: 'pe/edge/reference/mqtt-api', target: '/docs/edge/pe/reference/apis-and-sdks/mqtt-api/' },
 	{ oldPath: 'edge/reference/lwm2m-api', target: '/docs/edge/reference/apis-and-sdks/lwm2m-api/' },
-	{ oldPath: 'pe/edge/reference/lwm2m-api', target: '/docs/pe/edge/reference/apis-and-sdks/lwm2m-api/' },
+	{ oldPath: 'pe/edge/reference/lwm2m-api', target: '/docs/edge/pe/reference/apis-and-sdks/lwm2m-api/' },
 	{ oldPath: 'edge/reference/snmp-api', target: '/docs/edge/reference/apis-and-sdks/snmp-api/' },
-	{ oldPath: 'pe/edge/reference/snmp-api', target: '/docs/pe/edge/reference/apis-and-sdks/snmp-api/' },
+	{ oldPath: 'pe/edge/reference/snmp-api', target: '/docs/edge/pe/reference/apis-and-sdks/snmp-api/' },
 	{ oldPath: 'edge/reference/gateway-mqtt-api', target: '/docs/edge/reference/apis-and-sdks/gateway-mqtt-api/' },
-	{ oldPath: 'pe/edge/reference/gateway-mqtt-api', target: '/docs/pe/edge/reference/apis-and-sdks/gateway-mqtt-api/' },
+	{ oldPath: 'pe/edge/reference/gateway-mqtt-api', target: '/docs/edge/pe/reference/apis-and-sdks/gateway-mqtt-api/' },
 	{ oldPath: 'edge/reference/protocols', target: '/docs/edge/reference/apis-and-sdks/' },
-	{ oldPath: 'pe/edge/reference/protocols', target: '/docs/pe/edge/reference/apis-and-sdks/' },
+	{ oldPath: 'pe/edge/reference/protocols', target: '/docs/edge/pe/reference/apis-and-sdks/' },
 	{ oldPath: 'edge/use-cases/overview', target: '/docs/edge/why-thingsboard-edge/' },
-	{ oldPath: 'pe/edge/use-cases/overview', target: '/docs/pe/edge/why-thingsboard-edge/' },
+	{ oldPath: 'pe/edge/use-cases/overview', target: '/docs/edge/pe/why-thingsboard-edge/' },
 	{ oldPath: 'edge/use-cases/data-filtering-traffic-reduce', target: '/docs/edge/recipes/data-filtering-traffic-reduce/' },
-	{ oldPath: 'pe/edge/use-cases/data-filtering-traffic-reduce', target: '/docs/pe/edge/recipes/data-filtering-traffic-reduce/' },
+	{ oldPath: 'pe/edge/use-cases/data-filtering-traffic-reduce', target: '/docs/edge/pe/recipes/data-filtering-traffic-reduce/' },
 	{ oldPath: 'edge/use-cases/manage-alarms-rpc-requests', target: '/docs/edge/recipes/manage-alarms-rpc-requests/' },
-	{ oldPath: 'pe/edge/use-cases/manage-alarms-rpc-requests', target: '/docs/pe/edge/recipes/manage-alarms-rpc-requests/' },
+	{ oldPath: 'pe/edge/use-cases/manage-alarms-rpc-requests', target: '/docs/edge/pe/recipes/manage-alarms-rpc-requests/' },
 	{ oldPath: 'edge/user-guide/alarms', target: '/docs/edge/key-concepts/alarms/' },
-	{ oldPath: 'pe/edge/user-guide/alarms', target: '/docs/pe/edge/key-concepts/alarms/' },
+	{ oldPath: 'pe/edge/user-guide/alarms', target: '/docs/edge/pe/key-concepts/alarms/' },
 	{ oldPath: 'edge/user-guide/db-overview', target: '/docs/edge/user-guide/dashboards/' },
-	{ oldPath: 'pe/edge/user-guide/db-overview', target: '/docs/pe/edge/user-guide/dashboards/' },
+	{ oldPath: 'pe/edge/user-guide/db-overview', target: '/docs/edge/pe/user-guide/dashboards/' },
 	{ oldPath: 'edge/user-guide/edge-attributes', target: '/docs/edge/key-concepts/attributes/' },
-	{ oldPath: 'pe/edge/user-guide/edge-attributes', target: '/docs/pe/edge/key-concepts/attributes/' },
+	{ oldPath: 'pe/edge/user-guide/edge-attributes', target: '/docs/edge/pe/key-concepts/attributes/' },
 	{ oldPath: 'edge/user-guide/entities-and-relations', target: '/docs/edge/key-concepts/entities/' },
-	{ oldPath: 'pe/edge/user-guide/entities-and-relations', target: '/docs/pe/edge/key-concepts/entities/' },
+	{ oldPath: 'pe/edge/user-guide/entities-and-relations', target: '/docs/edge/pe/key-concepts/entities/' },
 	{ oldPath: 'edge/user-guide/grpc-over-ssl', target: '/docs/edge/user-guide/grpc-ssl/' },
-	{ oldPath: 'pe/edge/user-guide/grpc-over-ssl', target: '/docs/pe/edge/user-guide/grpc-ssl/' },
+	{ oldPath: 'pe/edge/user-guide/grpc-over-ssl', target: '/docs/edge/pe/user-guide/grpc-ssl/' },
 	{ oldPath: 'edge/user-guide/install/config', target: '/docs/edge/reference/configuration/server-config/' },
-	{ oldPath: 'pe/edge/user-guide/install/config', target: '/docs/pe/edge/reference/configuration/server-config/' },
+	{ oldPath: 'pe/edge/user-guide/install/config', target: '/docs/edge/pe/reference/configuration/server-config/' },
 	{ oldPath: 'edge/user-guide/install/how-to-change-config', target: '/docs/edge/reference/configuration/how-to-change-config/' },
-	{ oldPath: 'pe/edge/user-guide/install/how-to-change-config', target: '/docs/pe/edge/reference/configuration/how-to-change-config/' },
+	{ oldPath: 'pe/edge/user-guide/install/how-to-change-config', target: '/docs/edge/pe/reference/configuration/how-to-change-config/' },
 	{ oldPath: 'edge/user-guide/telemetry-sync', target: '/docs/edge/key-concepts/telemetry-synchronization/' },
-	{ oldPath: 'pe/edge/user-guide/telemetry-sync', target: '/docs/pe/edge/key-concepts/telemetry-synchronization/' },
+	{ oldPath: 'pe/edge/user-guide/telemetry-sync', target: '/docs/edge/pe/key-concepts/telemetry-synchronization/' },
 	{ oldPath: 'edge/user-guide/troubleshooting', target: '/docs/edge/user-guide/logs/' },
-	{ oldPath: 'pe/edge/user-guide/troubleshooting', target: '/docs/pe/edge/user-guide/logs/' },
+	{ oldPath: 'pe/edge/user-guide/troubleshooting', target: '/docs/edge/pe/user-guide/logs/' },
 	{ oldPath: 'paas/edge/getting-started-guides/what-is-edge', target: '/docs/edge/pe/why-thingsboard-edge/' },
 	{ oldPath: 'edge/reference/mcp-server', target: '/docs/edge/reference/apis-and-sdks/mcp-server/getting-started/' },
-	{ oldPath: 'pe/edge/reference/mcp-server', target: '/docs/pe/edge/reference/apis-and-sdks/mcp-server/getting-started/' },
-	{ oldPath: 'pe/edge/getting-started-guides/what-is-edge', target: '/docs/pe/edge/why-thingsboard-edge/' },
+	{ oldPath: 'pe/edge/reference/mcp-server', target: '/docs/edge/pe/reference/apis-and-sdks/mcp-server/getting-started/' },
+	{ oldPath: 'pe/edge/getting-started-guides/what-is-edge', target: '/docs/edge/pe/why-thingsboard-edge/' },
 	{ oldPath: 'edge/getting-started-guides/connectivity', target: '/docs/edge/reference/apis-and-sdks/overview/' },
-	{ oldPath: 'pe/edge/getting-started-guides/connectivity', target: '/docs/pe/edge/reference/apis-and-sdks/overview/' },
-	{ oldPath: 'pe/edge/search', target: '/docs/pe/edge/' },
+	{ oldPath: 'pe/edge/getting-started-guides/connectivity', target: '/docs/edge/pe/reference/apis-and-sdks/overview/' },
+	{ oldPath: 'pe/edge/search', target: '/docs/edge/pe/' },
 	{ oldPath: 'edge/rule-engine/provision-rule-chains', target: '/docs/edge/user-guide/rule-chain-templates/' },
-	{ oldPath: 'pe/edge/rule-engine/provision-rule-chains', target: '/docs/pe/edge/user-guide/rule-chain-templates/' },
+	{ oldPath: 'pe/edge/rule-engine/provision-rule-chains', target: '/docs/edge/pe/user-guide/rule-chain-templates/' },
 	{ oldPath: 'edge/rule-engine/rule-chain-templates', target: '/docs/edge/user-guide/rule-chain-templates/' },
-	{ oldPath: 'pe/edge/rule-engine/rule-chain-templates', target: '/docs/pe/edge/user-guide/rule-chain-templates/' },
+	{ oldPath: 'pe/edge/rule-engine/rule-chain-templates', target: '/docs/edge/pe/user-guide/rule-chain-templates/' },
 	{ oldPath: 'edge/rule-engine/queues', target: '/docs/edge/user-guide/queues/' },
-	{ oldPath: 'pe/edge/rule-engine/queues', target: '/docs/pe/edge/user-guide/queues/' },
+	{ oldPath: 'pe/edge/rule-engine/queues', target: '/docs/edge/pe/user-guide/queues/' },
 	{ oldPath: 'edge/features/cloud-events', target: '/docs/edge/user-guide/telemetry-synchronization/' },
-	{ oldPath: 'pe/edge/features/cloud-events', target: '/docs/pe/edge/user-guide/telemetry-synchronization/' },
+	{ oldPath: 'pe/edge/features/cloud-events', target: '/docs/edge/pe/user-guide/telemetry-synchronization/' },
 	{ oldPath: 'edge/features/edge-status', target: '/docs/edge/user-guide/edge-status-events/' },
-	{ oldPath: 'pe/edge/features/edge-status', target: '/docs/pe/edge/user-guide/edge-status-events/' },
+	{ oldPath: 'pe/edge/features/edge-status', target: '/docs/edge/pe/user-guide/edge-status-events/' },
 	{ oldPath: 'domains', target: '/docs/user-guide/security/domains/' },
 	{ oldPath: 'pe/domains', target: '/docs/pe/user-guide/security/domains/' },
 	{ oldPath: 'paas/domains', target: '/docs/paas/user-guide/security/domains/' },
@@ -1088,8 +1117,8 @@ export const SINGLE_REDIRECTS: SingleRedirect[] = [
 	{ oldPath: 'pe/reference/python-client-sdk', target: '/docs/pe/reference/python-device-sdk/' },
 	{ oldPath: 'paas/reference/python-client-sdk', target: '/docs/paas/reference/python-device-sdk/' },
 	{ oldPath: 'paas/eu/reference/python-client-sdk', target: '/docs/paas/eu/reference/python-device-sdk/' },
-	{ oldPath: 'reference/releases', target: '/docs/user-guide/releases-table/' },
-	{ oldPath: 'pe/reference/releases', target: '/docs/pe/user-guide/releases-table/' },
+	{ oldPath: 'reference/releases', target: '/docs/releases/releases-table/' },
+	{ oldPath: 'pe/reference/releases', target: '/docs/pe/releases/releases-table/' },
 	{ oldPath: 'reference/rest-client', target: '/docs/reference/java-rest-client/' },
 	{ oldPath: 'pe/reference/rest-client', target: '/docs/pe/reference/java-rest-client/' },
 	{ oldPath: 'paas/reference/rest-client', target: '/docs/paas/reference/java-rest-client/' },
@@ -1233,7 +1262,122 @@ export const SINGLE_REDIRECTS: SingleRedirect[] = [
 	{ oldPath: 'paas/user-guide/integrations/ocean-connect', target: '/docs/paas/user-guide/integrations/integration-types/' },
 	{ oldPath: 'paas/eu/user-guide/integrations/ocean-connect', target: '/docs/paas/eu/user-guide/integrations/integration-types/' },
 	{ oldPath: 'sitemap', target: '/docs/' },
+
+	// Docs root — legacy paths that point off-docs
+	{ oldPath: 'contact-us-thanks', target: '/contact-us-thanks/' },
+	{ oldPath: 'user-guide/live-demo', target: '/docs/installation/?installationType=saas' },
+
+	// PaaS/PaaS-EU — getting-started-guides renamed to /why-thingsboard/
+	{ oldPath: 'paas/getting-started-guides/what-is-thingsboard-cloud', target: '/docs/paas/why-thingsboard/' },
+	{ oldPath: 'paas/eu/getting-started-guides/what-is-thingsboard-cloud', target: '/docs/paas/eu/why-thingsboard/' },
+
+	// MQTT v5 error codes — moved to getting-connected anchor
+	{ oldPath: 'reference/mqtt-v5-errors-code', target: '/docs/reference/mqtt-api/getting-connected/#mqtt-v50-error-codes' },
+	{ oldPath: 'pe/reference/mqtt-v5-errors-code', target: '/docs/pe/reference/mqtt-api/getting-connected/#mqtt-v50-error-codes' },
+
+	// Releases/roadmap — moved from user-guide to releases tree
+	{ oldPath: 'user-guide/releases-table', target: '/docs/releases/releases-table/' },
+	{ oldPath: 'pe/user-guide/releases-table', target: '/docs/pe/releases/releases-table/' },
+	{ oldPath: 'user-guide/roadmap', target: '/docs/releases/roadmap/' },
+	{ oldPath: 'pe/user-guide/roadmap', target: '/docs/pe/releases/roadmap/' },
+	{ oldPath: 'user-guide/versions-and-support', target: '/docs/releases/release-policy/' },
+	{ oldPath: 'pe/user-guide/versions-and-support', target: '/docs/pe/releases/release-policy/' },
+
+	// Old /docs/services/* service pages moved to top-level product pages
+	{ oldPath: 'services/device-management', target: '/device-management/' },
+	{ oldPath: 'services/monitoring-dashboard', target: '/monitoring-dashboard/' },
+
+	// Legacy /docs/samples/* — folded into Getting Started, user guide, device library, recipes
+	{ oldPath: 'samples', target: '/docs/getting-started/' },
+	{ oldPath: 'samples/alarms/basic-rules', target: '/docs/user-guide/alarms/' },
+	{ oldPath: 'samples/alarms/mail', target: '/docs/user-guide/ui/mail-settings/' },
+	{ oldPath: 'samples/arduino', target: '/device-library/arduino-nano-rp2040-connect/' },
+	{ oldPath: 'samples/arduino/sim808-htu21d', target: '/device-library/arduino-nano-rp2040-connect/' },
+	{ oldPath: 'samples/arduino/temperature', target: '/device-library/arduino-nano-rp2040-connect/' },
+	{ oldPath: 'samples/ble/raspberry-esp32-xiaomi-sensor-htu21d', target: '/device-library/esp32-dev-kit-v1/' },
+	{ oldPath: 'samples/esp32', target: '/device-library/esp32-dev-kit-v1/' },
+	{ oldPath: 'samples/esp32/gpio-control-pico-kit-dht22-sensor', target: '/device-library/esp32-dev-kit-v1/' },
+	{ oldPath: 'samples/esp32/ota', target: '/device-library/esp32-dev-kit-v1/' },
+	{ oldPath: 'samples/esp8266', target: '/device-library/nodemcuv3/' },
+	{ oldPath: 'samples/esp8266/gpio', target: '/device-library/nodemcuv3/' },
+	{ oldPath: 'samples/esp8266/temperature', target: '/device-library/nodemcuv3/' },
+	{ oldPath: 'samples/monitoring/facilities-monitoring-poc', target: '/docs/recipes/solution-templates/smart-office/' },
+	{ oldPath: 'samples/nodemcu', target: '/device-library/nodemcuv3/' },
+	{ oldPath: 'samples/nodemcu/temperature', target: '/device-library/nodemcuv3/' },
+	{ oldPath: 'samples/raspberry', target: '/device-library/raspberry-pi-4/' },
+	{ oldPath: 'samples/raspberry/gpio', target: '/device-library/raspberry-pi-4/' },
+	{ oldPath: 'samples/raspberry/gpio-android-things', target: '/device-library/raspberry-pi-4/' },
+	{ oldPath: 'samples/raspberry/temperature', target: '/device-library/raspberry-pi-4/' },
+
+	// Trendz — pages consolidated into monitoring / aggregation / tasks-service
+	{ oldPath: 'trendz/anomaly/alarms', target: '/docs/trendz/anomaly/monitoring/' },
+	{ oldPath: 'trendz/anomaly/refresh-reprocess', target: '/docs/trendz/anomaly/monitoring/' },
+	{ oldPath: 'trendz/anomaly/save-to-tb', target: '/docs/trendz/anomaly/monitoring/' },
+	{ oldPath: 'trendz/background-jobs', target: '/docs/trendz/tasks-service/' },
+	{ oldPath: 'trendz/data-grouping-aggregation', target: '/docs/trendz/telemetry-aggregation/' },
+	{ oldPath: 'trendz/releases', target: '/docs/trendz/releases/releases-table/' },
+	{ oldPath: 'trendz/view-builder', target: '/docs/trendz/telemetry-aggregation/' },
 ];
+
+/**
+ * Non-docs redirects — marketing pages, /products/*, /use-cases/*, /partners/*,
+ * /services/*, /industries/*, and external targets. These are ALSO consumed by
+ * astro.redirects.ts so Astro applies them in dev mode and at build time.
+ *
+ * Add entries here for any non-/docs/ path rename. Do NOT add /docs/ entries
+ * here — those belong in CATCH_ALL_REDIRECTS / SINGLE_REDIRECTS / DYNAMIC_REDIRECTS.
+ *
+ * All entries render as static 301 rules in public/_redirects and are spread
+ * verbatim into astro.redirects.ts for dev-mode parity. Targets may include
+ * literal `?query` strings (no placeholder substitution).
+ */
+export const NON_DOCS_REDIRECTS: Record<string, string> = {
+	// Trendz
+	'/products/trendz/trndz-request-demo/': '/products/trendz/request-demo/',
+	'/images/trendz/trndz-request-demo/': '/products/trendz/request-demo/',
+
+	// PaaS
+	'/products/paas/billing-info/': '/docs/paas/user-guide/billing-info/',
+	'/products/paas/domains/': '/docs/paas/user-guide/security/domains/',
+	'/products/paas/subscription/': '/docs/paas/reference/subscriptions/',
+	'/products/paas/eu/subscription/': '/docs/paas/eu/reference/subscriptions/',
+	'/products/paas/what-is-thingsboard-cloud/': '/docs/paas/why-thingsboard/',
+	'/products/thingsboard-pe/install/': '/docs/pe/installation/',
+	'/products/thingsboard-pe/install/aws/': '/docs/pe/installation/aws-marketplace/',
+	'/products/thingsboard-pe/install-thanks/': '/contact-us-thanks/',
+
+	// License Server
+	'/products/license-server/': '/docs/license-server/what-is-license-server/',
+	'/products/license-server/billing-info/': '/docs/license-server/billing-info/',
+	'/products/license-server/subscription/': '/docs/license-server/subscription/',
+	'/products/license-server/perpetual/': '/docs/license-server/perpetual/',
+	'/products/license-server/instance/': '/docs/license-server/instance/',
+	'/products/license-server/user/': '/docs/license-server/user/',
+
+	// Use Cases
+	'/use-cases/fleet-tracking/': '/use-cases/site-fleet-tracking/',
+	'/fleet-tracking/': '/use-cases/site-fleet-tracking/',
+	'/smart-metering/': '/use-cases/smart-metering/',
+	'/smart-farming/': '/use-cases/smart-farming/',
+	'/smart-energy/': '/use-cases/smart-energy/',
+
+	// Partners
+	'/partners/hardware/iotracker/': '/partners/hardware/iothings/',
+	'/partners/hardware/makerfabs/': '/partners/hardware/agrosense-makerfabs/',
+	'/partners/hardware/apply/thanks/': '/partners/hardware/apply-thanks/',
+
+	// Services
+	'/services/development-services/customers-full-reviews/': '/services/development-services/',
+	'/iot-solutions/': '/services/development-services/',
+
+	// Industries — bare index; per-industry pages collapse via DYNAMIC_REDIRECTS
+	'/industries/': '/clients-feedback/',
+
+	// Installations / use-cases / external
+	'/installations/forever-free-cloud/': '/installations/choose-region/',
+	'/iot-use-cases/': '/use-cases/',
+	'/support-ukraine/': 'https://u24.gov.ua/',
+};
 
 /**
  * Dynamic redirects — splat (`*`) and placeholder (`:name`) patterns that
@@ -1258,6 +1402,12 @@ export const DYNAMIC_REDIRECTS: DynamicRedirectGroup[] = [
 		],
 	},
 	{
+		comment: 'Industries — per-industry page → clients-feedback filtered by category',
+		entries: [
+			{ source: '/industries/:category/', target: '/clients-feedback/?category=:category' },
+		],
+	},
+	{
 		comment: 'Blog — WordPress year archives → blog index',
 		entries: [
 			{ source: '/blog/2023/*', target: '/blog/' },
@@ -1276,6 +1426,26 @@ export const DYNAMIC_REDIRECTS: DynamicRedirectGroup[] = [
 			{
 				source: '/docs/user-guide/install/pe/edge/upgrade-instructions/:platform/:version/',
 				target: '/docs/edge/pe/installation/upgrade-instructions/:platform/',
+			},
+		],
+	},
+	{
+		comment: 'Docs — legacy product prefixes (/gw, /license) → canonical prefixes',
+		entries: [
+			{ source: '/docs/gw/*', target: '/docs/iot-gateway/:splat' },
+			{ source: '/docs/license/*', target: '/docs/license-server/:splat' },
+		],
+	},
+	{
+		comment: 'Docs — versioned releases-table pages moved under /releases/',
+		entries: [
+			{
+				source: '/docs/user-guide/releases-table/*',
+				target: '/docs/releases/releases-table/:splat',
+			},
+			{
+				source: '/docs/pe/user-guide/releases-table/*',
+				target: '/docs/pe/releases/releases-table/:splat',
 			},
 		],
 	},
