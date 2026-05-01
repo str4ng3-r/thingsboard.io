@@ -276,7 +276,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"generalGuides": [
 				{
 					"label": "Raspberry Pi with Grove Base Hat",
-					"href": "/docs/samples/raspberry/grove/"
+					"href": "/partners/hardware/seeed/samples/raspberry-pi-with-grove-base-hat/"
 				},
 				{
 					"label": "Seeed Wiki integration",
@@ -434,28 +434,28 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		"links": {
 			"sensorGuides": [
 				{
-					"label": "Electricity Meter",
-					"href": "/docs/samples/smartico/elec-meter-lorawan/Electricity_Meter_LoRaWAN/"
+					"label": "Electricity Three Phase Smart Meter \"Smartico E307\"",
+					"href": "/device-library/smartico-e307/"
 				},
 				{
-					"label": "Gas Meter",
-					"href": "/docs/samples/smartico/gas-meter-lorawan/Gas_Meter_LoRaWAN/"
+					"label": "Smart Gas Meter \"Smartico G-1.6\"",
+					"href": "/device-library/smartico-g-1-6/"
 				},
 				{
-					"label": "Gas Shutoff Valve",
-					"href": "/docs/samples/smartico/gas-valve-lorawan/Gas_Valve_LoRaWAN/"
+					"label": "Gas Shutoff Valve LoRaWAN \"Smartico V-LR\"",
+					"href": "/device-library/smartico-v-lr/"
 				},
 				{
-					"label": "Leaks Detector",
-					"href": "/docs/samples/smartico/leaks-detector-lorawan/Leaks_Detector_LoRaWAN/"
+					"label": "Leaks Detector LoRaWAN \"Smartico L2-LR\"",
+					"href": "/device-library/smartico-l2-lr/"
 				},
 				{
-					"label": "Water meter Pulse Sensor",
-					"href": "/docs/samples/smartico/pulse-sensor-lorawan/Pulse_Sensor_LoRaWAN/"
+					"label": "Pulse Sensor LoRaWAN \"Smartico P22-LR\"",
+					"href": "/device-library/smartico-p22-lr/"
 				},
 				{
-					"label": "Water meter wM-Bus Reader",
-					"href": "/docs/samples/smartico/wm-bus-lorawan/wMBus_Reader_LoRaWAN/"
+					"label": "Wireless M-BUS reader LoRaWAN \"Smartico WM-LR\"",
+					"href": "/device-library/smartico-wm-lr/"
 				}
 			]
 		},
@@ -510,7 +510,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"gatewayGuides": [
 				{
 					"label": "Syrus 4 IoT Telematics Gateway",
-					"href": "/docs/samples/syrus/syrus/"
+					"href": "/device-library/syrus-4g-iot-telematics-gateway/"
 				}
 			]
 		},
@@ -551,8 +551,8 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		"links": {
 			"generalGuides": [
 				{
-					"label": "Nettra RTU",
-					"href": "/docs/samples/nettrartu+/rtu_temp_sensor/"
+					"label": "RTU-X",
+					"href": "/device-library/rtu-x/"
 				}
 			]
 		},
@@ -591,10 +591,10 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		"logo": "/images/partners/solandtec.webp",
 		"website": "https://solandtec.com/",
 		"links": {
-			"otherGuides": [
+			"gatewayGuides": [
 				{
 					"label": "ADAM-6717",
-					"href": "/docs/samples/solandtec/thingsboard-guide-solandtec/"
+					"href": "/device-library/adam-6717/"
 				}
 			]
 		},
@@ -641,7 +641,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"trackersGuides": [
 				{
 					"label": "Abeeway Micro Tracker and Abeeway Industrial Tracker",
-					"href": "/docs/samples/abeeway/tracker/"
+					"href": "/partners/hardware/actility/samples/abeeway-trackers-thingpark-integration/"
 				}
 			]
 		},
@@ -683,8 +683,12 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		"links": {
 			"generalGuides": [
 				{
-					"label": "SODAQ Universal Tracker",
-					"href": "/docs/samples/sodaq/sodaq/"
+					"label": "SODAQ Universal Tracker with T-Mobile NB-IoT and ThingsBoard",
+					"href": "/partners/hardware/sodaq/samples/sodaq-universal-tracker/"
+				},
+				{
+					"label": "SODAQ Universal Tracker via UDP Integration",
+					"href": "/partners/hardware/sodaq/samples/sodaq-udp-integration/"
 				}
 			]
 		},
@@ -722,11 +726,11 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"singleBoardComputersGuides": [
 				{
 					"label": "SensiLoRa 2.0 V1.2",
-					"href": "/docs/samples/sensiedge/getting_started_sensiLoRa.pdf"
+					"href": "/partners/hardware/sensiedge/samples/getting_started_sensiLoRa.pdf"
 				},
 				{
 					"label": "SensiBLE 1.0 & 2.1",
-					"href": "/docs/samples/sensiedge/connect_sensi_ble.pdf"
+					"href": "/partners/hardware/sensiedge/samples/connect_sensi_ble.pdf"
 				}
 			]
 		},
@@ -857,7 +861,14 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		],
 		"logo": "/images/partners/tektelic.webp",
 		"website": "https://tektelic.com/",
-		"links": {},
+		"links": {
+			"sensorGuides": [
+				{
+					"label": "COMFORT v2 LoRaWAN® Leak Detection Sensor",
+					"href": "/device-library/comfort-v2-lorawan-leak-detection-sensor/"
+				}
+			]
+		},
 		"description": "Leading supplier of LoRaWAN IoT equipment including best-in-class gateways and end devices."
 	},
 	{
@@ -939,7 +950,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"otherDevicesGuides": [
 				{
 					"label": "Integration guide",
-					"href": "/docs/samples/roltek/roltek/"
+					"href": "/partners/hardware/roltek/samples/dc620-integration/"
 				}
 			]
 		},
@@ -1037,7 +1048,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"generalGuides": [
 				{
 					"label": "PLC KERNEL",
-					"href": "/docs/samples/kernel/kernel/"
+					"href": "/partners/hardware/kernelgroup/samples/plc-kernel-thingsboard/"
 				},
 				{
 					"label": "Integration guide",
@@ -1095,7 +1106,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"otherDevicesGuides": [
 				{
 					"label": "4G LTE Industrial Router",
-					"href": "/docs/samples/kingpigeon/kingpigeon/"
+					"href": "/partners/hardware/beilai/samples/4g-lte-industrial-router/"
 				},
 				{
 					"label": "Flexible Device–Edge–Cloud IoT Solution with ARMxy & ThingsBoard",
@@ -1229,12 +1240,14 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		"links": {
 			"generalGuides": [
 				{
-					"label": "Senquip telemetry device",
-					"href": "/docs/samples/senquip/senquip/"
-				},
-				{
 					"label": "Integration guide",
 					"href": "https://cdn.senquip.com/wp-content/uploads/2024/04/18103454/APN0015-Rev-1.1-Connecting-Senquip-Devices-to-the-ThingsBoard.pdf"
+				}
+			],
+			"sensorGuides": [
+				{
+					"label": "ORB-C1-G",
+					"href": "/device-library/orb-c1-g/"
 				}
 			]
 		},
@@ -1330,7 +1343,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"trackersGuides": [
 				{
 					"label": "LPWA GPS Tracker",
-					"href": "/docs/samples/monoz/LPWA_GPS_Tracker_with_monoZ/"
+					"href": "/device-library/monozero-bg96-v2/"
 				}
 			]
 		},
@@ -1370,7 +1383,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"gatewayGuides": [
 				{
 					"label": "EXXN IoT Gateway",
-					"href": "/docs/samples/exxn/exxn/"
+					"href": "/device-library/iot-gateway-cell-1024/"
 				}
 			]
 		},
@@ -1415,7 +1428,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"otherDevicesGuides": [
 				{
 					"label": "FDQ-99900 MI-8",
-					"href": "/docs/samples/fusion-daq/fusion-daq/"
+					"href": "/device-library/fusiondaq-fdq-99900-mi-8/"
 				}
 			]
 		},
@@ -1547,7 +1560,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"generalGuides": [
 				{
 					"label": "MOKO SMART LoRaWAN device",
-					"href": "/docs/samples/moko-smart/moko-smart-guide/"
+					"href": "/partners/hardware/mokosmart/samples/lorawan-device-and-thingsboard/"
 				},
 				{
 					"label": "How to connect LW001-BG PRO LoRaWAN Tracker to ThingsBoard?",
@@ -1592,7 +1605,7 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 			"generalGuides": [
 				{
 					"label": "Netvox LoRaWAN Devices",
-					"href": "/docs/samples/netvox/netvox-guide/"
+					"href": "/partners/hardware/netvox/samples/lorawan-devices-and-thingsboard/"
 				}
 			]
 		},
@@ -1827,8 +1840,8 @@ export const HARDWARE_PARTNERS: HardwarePartner[] = [
 		"links": {
 			"generalGuides": [
 				{
-					"label": "Energy Meter monitoring",
-					"href": "/docs/samples/digicom/energy-meter-monitoring-with-thingsboard-iot-plaƞorm/"
+					"label": "4G Router DRN 500",
+					"href": "/device-library/drn-500/"
 				}
 			]
 		},
