@@ -754,6 +754,15 @@ const paasReferenceItems = (prefix: string): SidebarConfig => {
 						`${prefix}/widgets/tables/persistent-table`,
 					],
 				},
+				{
+					label: 'Video streaming',
+					collapsed: true,
+					items: [
+						{ label: 'Overview', slug: `${prefix}/widgets/video/overview` },
+						{ label: 'Configure the widget', slug: `${prefix}/widgets/video/configure` },
+						{ label: 'Build a public stream URL', slug: `${prefix}/widgets/video/deploy` },
+					],
+				},
 				`${prefix}/widgets/widget-api`,
 			],
 		},
@@ -1047,6 +1056,15 @@ const referenceItems = (prefix: string, extraConfigItems: SidebarConfig = []) =>
 						`${prefix}/widgets/tables/entities-table`,
 						`${prefix}/widgets/tables/timeseries-table`,
 						`${prefix}/widgets/tables/persistent-table`,
+					],
+				},
+				{
+					label: 'Video streaming',
+					collapsed: true,
+					items: [
+						{ label: 'Overview', slug: `${prefix}/widgets/video/overview` },
+						{ label: 'Configure the widget', slug: `${prefix}/widgets/video/configure` },
+						{ label: 'Build a public stream URL', slug: `${prefix}/widgets/video/deploy` },
 					],
 				},
 				`${prefix}/widgets/widget-api`,
