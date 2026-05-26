@@ -1621,6 +1621,10 @@ const mainSidebarItems = (
 		items: guideItems(`${prefix}/user-guide`, { isPE: prefix.includes('/pe') }),
 	},
 	{
+		label: 'Build with AI',
+		link: `${prefix}/iot-solutions-with-ai`,
+	},
+	{
 		label: 'Recipes',
 		collapsed: true,
 		translations: { uk: 'Рецепти' },
@@ -1988,6 +1992,10 @@ export const paasSidebar: SidebarConfig = [
 		],
 	},
 	{
+		label: 'Build with AI',
+		link: 'docs/paas/iot-solutions-with-ai',
+	},
+	{
 		label: 'Recipes',
 		collapsed: true,
 		translations: { uk: 'Рецепти' },
@@ -2338,6 +2346,10 @@ export const paasEuSidebar: SidebarConfig = [
 				],
 			},
 		],
+	},
+	{
+		label: 'Build with AI',
+		link: 'docs/paas/eu/iot-solutions-with-ai',
 	},
 	{
 		label: 'Recipes',
