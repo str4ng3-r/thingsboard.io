@@ -1,15 +1,18 @@
 ---
+import { PAGE_SIZE } from '@models/iot-hub';
+import IotHubChevron from './IotHubChevron.astro';
+import PaginationChevron from './PaginationChevron.astro';
+
 interface Props {
 	currentPage: number;
 	totalPages: number;
-	basePath: string; // e.g. "/iot-hub/devices/"
+	basePath: string;
 }
 
 const { currentPage, totalPages, basePath } = Astro.props;
 
 const pageUrl = (n: number): string => (n === 1 ? basePath : `${basePath}${n}/`);
 
-// Build a windowed list: first, last, current ±1, with "…" gaps.
 function buildPages(current: number, total: number): Array<number | 'ellipsis'> {
 	if (total <= 7) {
 		return Array.from({ length: total }, (_, i) => i + 1);
@@ -25,92 +28,131 @@ function buildPages(current: number, total: number): Array<number | 'ellipsis'> 
 }
 
 const items = buildPages(currentPage, totalPages);
-const hasPrev = currentPage > 1;
-const hasNext = currentPage < totalPages;
+const prevHref = currentPage > 1 ? pageUrl(currentPage - 1) : undefined;
+const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined;
 ---
 
 <nav class="iot-hub-pagination" aria-label="Pagination">
-	{
-		hasPrev ? (
-			<a class="iot-hub-pagination__link" href={pageUrl(currentPage - 1)} rel="prev">
-				Previous
-			</a>
-		) : (
-			<span class="iot-hub-pagination__link is-disabled" aria-hidden="true">
-				Previous
-			</span>
-		)
-	}
-	<ul class="iot-hub-pagination__pages">
-		{
-			items.map((item) =>
-				item === 'ellipsis' ? (
-					<li class="iot-hub-pagination__ellipsis" aria-hidden="true">
-						…
-					</li>
-				) : (
-					<li>
-						<a
-							class={`iot-hub-pagination__link${item === currentPage ? ' is-current' : ''}`}
-							href={pageUrl(item)}
-							aria-current={item === currentPage ? 'page' : undefined}
-						>
-							{item}
-						</a>
-					</li>
+	<div class="iot-hub-pagination__pages-wrap">
+		<ul class="iot-hub-pagination__pages iot-hub-pagination__pages--numbers">
+			<li>
+				<PaginationChevron direction="left" href={prevHref} label="Previous page" />
+			</li>
+			{
+				items.map((item) =>
+					item === 'ellipsis' ? (
+						<li class="iot-hub-pagination__ellipsis" aria-hidden="true">
+							…
+						</li>
+					) : (
+						<li>
+							<a
+								class={`iot-hub-pagination__page${item === currentPage ? ' is-current' : ''}`}
+								href={pageUrl(item)}
+								aria-current={item === currentPage ? 'page' : undefined}
+							>
+								{item}
+							</a>
+						</li>
+					)
 				)
-			)
-		}
-	</ul>
-	{
-		hasNext ? (
-			<a class="iot-hub-pagination__link" href={pageUrl(currentPage + 1)} rel="next">
-				Next
-			</a>
-		) : (
-			<span class="iot-hub-pagination__link is-disabled" aria-hidden="true">
-				Next
+			}
+			<li>
+				<PaginationChevron direction="right" href={nextHref} label="Next page" />
+			</li>
+		</ul>
+		<div class="iot-hub-pagination__pages iot-hub-pagination__pages--compact">
+			<PaginationChevron direction="left" href={prevHref} label="Previous page" />
+			<span class="iot-hub-pagination__summary">
+				Page {currentPage} of {totalPages}
 			</span>
-		)
-	}
+			<PaginationChevron direction="right" href={nextHref} label="Next page" />
+		</div>
+	</div>
+	<div class="iot-hub-pagination__per-page" aria-hidden="true">
+		<span class="iot-hub-pagination__per-page-label">Items per page:</span>
+		<span class="iot-hub-pagination__per-page-value">
+			{PAGE_SIZE}
+			<IotHubChevron direction="down" />
+		</span>
+	</div>
 </nav>
 
 <style lang="scss">
 	@use '~/styles/_variables.scss' as *;
 
 	.iot-hub-pagination {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
-		margin: 2rem 0;
+		padding: 0 16px;
+		min-height: 40px;
+
+		@include media-down(sm) {
+			padding: 0 12px;
+		}
+	}
+
+	.iot-hub-pagination__pages-wrap {
+		display: flex;
+		justify-content: center;
+		flex: 1 1 0;
 	}
 
 	.iot-hub-pagination__pages {
 		display: flex;
-		gap: 0.25rem;
+		align-items: center;
+		gap: 1px;
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.iot-hub-pagination__link {
+	.iot-hub-pagination__pages--compact {
+		display: none;
+		gap: 8px;
+	}
+
+	@include media-down(md) {
+		.iot-hub-pagination__pages--numbers {
+			display: none;
+		}
+
+		.iot-hub-pagination__pages--compact {
+			display: flex;
+		}
+	}
+
+	%pagination-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 2.25rem;
-		height: 2.25rem;
-		padding: 0 0.75rem;
-		border: 1px solid var(--color-border, #e5e7eb);
-		border-radius: 6px;
-		font-size: 0.875rem;
+		min-width: 40px;
+		height: 40px;
+		padding: 8px;
+		border: none;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: $font-weight-semibold;
+		line-height: 24px;
 		text-decoration: none;
-		color: inherit;
+		color: var(--color-text-secondary);
+		background: transparent;
+		transition: background $transition-fast, color $transition-fast;
 
-		&.is-current {
-			background: var(--color-accent, #305680);
-			color: #fff;
-			border-color: var(--color-accent, #305680);
+		svg {
+			display: block;
+		}
+	}
+
+	:global(.iot-hub-pagination__chevron) {
+		@extend %pagination-btn;
+
+		&:hover,
+		&:focus-visible {
+			background: var(--color-bg-light);
+			color: var(--color-text);
 		}
 
 		&.is-disabled {
@@ -119,9 +161,89 @@ const hasNext = currentPage < totalPages;
 		}
 	}
 
+	.iot-hub-pagination__page {
+		@extend %pagination-btn;
+		padding: 8px 16px;
+		color: var(--color-text);
+
+		&:hover,
+		&:focus-visible {
+			background: var(--color-bg-light);
+		}
+
+		&.is-current {
+			background: var(--color-primary);
+			color: #fff;
+			pointer-events: none;
+		}
+
+		:global([data-theme='dark']) &.is-current {
+			background: #b3c7ff;
+			color: #17181c;
+		}
+	}
+
 	.iot-hub-pagination__ellipsis {
 		display: inline-flex;
 		align-items: center;
-		padding: 0 0.25rem;
+		justify-content: center;
+		min-width: 24px;
+		height: 40px;
+		color: var(--color-text-muted);
+	}
+
+	.iot-hub-pagination__summary {
+		display: inline-flex;
+		align-items: center;
+		height: 40px;
+		font-size: 14px;
+		font-weight: $font-weight-semibold;
+		line-height: 24px;
+		color: var(--color-text);
+		white-space: nowrap;
+	}
+
+	.iot-hub-pagination__per-page {
+		position: absolute;
+		top: 50%;
+		right: 16px;
+		transform: translateY(-50%);
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		line-height: 24px;
+		color: var(--color-text-muted);
+
+		@include media-down(md) {
+			display: none;
+		}
+	}
+
+	.iot-hub-pagination__per-page-label {
+		white-space: nowrap;
+	}
+
+	.iot-hub-pagination__per-page-value {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 40px;
+		min-width: 72px;
+		padding: 8px 8px 8px 12px;
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		color: var(--color-text);
+		font-weight: $font-weight-normal;
+		cursor: not-allowed;
+		background: var(--color-bg-surface);
+
+		svg {
+			color: var(--color-text-secondary);
+		}
+
+		:global([data-theme='dark']) & {
+			border-color: #23262f;
+		}
 	}
 </style>

@@ -10,10 +10,10 @@ export const IOT_HUB_CATEGORIES = [
 		label: 'Devices',
 		tileLabel: 'Device Library',
 		card: 'big',
-		// Light = Figma `iot-hub/--device-library-card-bg` (light theme),
-		// Dark = same token in dark theme (saturated brand hue).
 		tileColor: '#ccd5ff',
 		tileColorDark: '#4c63cc',
+		heroDescription:
+			'Explore the device library to find pre-configured connectivity templates you can deploy in minutes to connect your hardware instantly.',
 	},
 	{
 		slug: 'solution-templates',
@@ -23,6 +23,8 @@ export const IOT_HUB_CATEGORIES = [
 		card: 'big',
 		tileColor: '#b8d9ff',
 		tileColorDark: '#2c6cb4',
+		heroDescription:
+			'Complete IoT solution packages with dashboards, rule chains, and device configurations. Get started with proven architectures.',
 	},
 	{
 		slug: 'widgets',
@@ -32,6 +34,8 @@ export const IOT_HUB_CATEGORIES = [
 		card: 'big',
 		tileColor: '#a3ffc3',
 		tileColorDark: '#2c9755',
+		heroDescription:
+			'Jumpstart your IoT journey with pre-configured widgets designed for your industry. Deploy proven architectures instantly and focus your energy on what matters: your unique business logic.',
 	},
 	{
 		slug: 'calculated-fields',
@@ -41,6 +45,8 @@ export const IOT_HUB_CATEGORIES = [
 		card: 'small',
 		tileColor: '#bdedff',
 		tileColorDark: '#3db5e0',
+		heroDescription:
+			'Use pre-configured Calculated Fields to automate complex metrics like fuel efficiency or power factor. Skip the manual logic and keep your dashboards clean and actionable.',
 	},
 	{
 		slug: 'alarm-rules',
@@ -50,6 +56,8 @@ export const IOT_HUB_CATEGORIES = [
 		card: 'small',
 		tileColor: '#ffe6cc',
 		tileColorDark: '#d7702f',
+		heroDescription:
+			'Use pre-built Alarm Rule templates to detect critical conditions like low battery, threshold breaches, or devices going offline. Skip writing the rule logic and start reacting to incidents the moment they happen.',
 	},
 	{
 		slug: 'rule-chains',
@@ -59,6 +67,8 @@ export const IOT_HUB_CATEGORIES = [
 		card: 'small',
 		tileColor: '#ecd1ff',
 		tileColorDark: '#bb7ce9',
+		heroDescription:
+			'From sophisticated data processing to seamless API integrations, Rule Chain templates provide the architectural foundation you need to scale without building from scratch.',
 	},
 ] as const;
 

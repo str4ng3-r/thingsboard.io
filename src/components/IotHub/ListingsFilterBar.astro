@@ -1,0 +1,223 @@
+---
+import IotHubChevron from './IotHubChevron.astro';
+
+interface Props {
+	totalCount: number;
+	searchPlaceholder?: string;
+	sortLabel?: string;
+}
+
+const { totalCount, searchPlaceholder = 'Search...', sortLabel = 'Most Installed' } = Astro.props;
+---
+
+<div class="iot-hub-filter-bar">
+	<div class="iot-hub-filter-bar__row1">
+		<button class="iot-hub-filter-bar__filter-btn" type="button" disabled>
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+				<path
+					d="M3 4h18l-7 8v6l-4 2v-8L3 4Z"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"></path>
+			</svg>
+			<span>Filter</span>
+		</button>
+		<div class="iot-hub-filter-bar__search">
+			<input
+				class="iot-hub-filter-bar__search-input"
+				type="search"
+				placeholder={searchPlaceholder}
+				aria-label="Search"
+				disabled
+			/>
+			<button
+				class="iot-hub-filter-bar__search-icon"
+				type="button"
+				aria-label="Search"
+				disabled
+			>
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path
+						d="m21 21-4.3-4.3M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+	<div class="iot-hub-filter-bar__row2">
+		<p class="iot-hub-filter-bar__count">
+			{totalCount} {totalCount === 1 ? 'result' : 'results'}
+		</p>
+		<button class="iot-hub-filter-bar__sort-btn" type="button" disabled>
+			<span>{sortLabel}</span>
+			<IotHubChevron direction="down" />
+		</button>
+	</div>
+</div>
+
+<style lang="scss">
+	@use '~/styles/_variables.scss' as *;
+
+	.iot-hub-filter-bar {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		padding: 40px 16px 0;
+
+		@include media-down(sm) {
+			padding: 40px 12px 0;
+		}
+	}
+
+	.iot-hub-filter-bar__row1 {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+
+		@include media-down(sm) {
+			gap: 8px;
+		}
+	}
+
+	.iot-hub-filter-bar__filter-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 14px 16px;
+		font-family: inherit;
+		font-size: 16px;
+		font-weight: $font-weight-semibold;
+		line-height: 28px;
+		color: var(--color-primary);
+		background: transparent;
+		border: 1px solid var(--color-primary);
+		border-radius: 8px;
+		min-height: 56px;
+		cursor: not-allowed;
+		flex-shrink: 0;
+
+		svg {
+			display: block;
+		}
+
+		:global([data-theme='dark']) & {
+			color: #b3c7ff;
+			border-color: #b3c7ff;
+		}
+
+		@include media-down(sm) {
+			padding: 16px;
+
+			span {
+				display: none;
+			}
+		}
+	}
+
+	.iot-hub-filter-bar__search {
+		flex: 1 1 0;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 8px 8px 16px;
+		min-height: 56px;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		transition: border-color $transition-fast;
+
+		&:focus-within {
+			border-color: var(--color-primary);
+		}
+
+		:global([data-theme='dark']) & {
+			border-color: #353841;
+		}
+	}
+
+	.iot-hub-filter-bar__search-input {
+		flex: 1 1 0;
+		min-width: 0;
+		border: none;
+		outline: none;
+		background: transparent;
+		font-family: inherit;
+		font-size: 16px;
+		line-height: 28px;
+		color: var(--color-text);
+
+		&::placeholder {
+			color: var(--color-text-muted);
+		}
+
+		&:disabled {
+			color: var(--color-text);
+			-webkit-text-fill-color: var(--color-text);
+			opacity: 1;
+			cursor: not-allowed;
+		}
+	}
+
+	.iot-hub-filter-bar__search-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border: none;
+		background: transparent;
+		border-radius: 8px;
+		color: var(--color-text-secondary);
+		cursor: not-allowed;
+		flex-shrink: 0;
+
+		svg {
+			display: block;
+		}
+	}
+
+	.iot-hub-filter-bar__row2 {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		min-height: 40px;
+	}
+
+	.iot-hub-filter-bar__count {
+		flex: 1 1 0;
+		font-size: 14px;
+		font-weight: $font-weight-semibold;
+		line-height: 24px;
+		margin: 0;
+		color: var(--color-text);
+	}
+
+	.iot-hub-filter-bar__sort-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 8px;
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: $font-weight-semibold;
+		line-height: 24px;
+		color: var(--color-primary);
+		background: transparent;
+		border: none;
+		border-radius: 8px;
+		cursor: not-allowed;
+
+		svg {
+			display: block;
+		}
+
+		:global([data-theme='dark']) & {
+			color: #b3c7ff;
+		}
+	}
+</style>

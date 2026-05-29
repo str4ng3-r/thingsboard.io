@@ -1,23 +1,22 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
-import CategoryHeader from '@components/IotHub/CategoryHeader.astro';
+import CategoryHero from '@components/IotHub/CategoryHero.astro';
+import CreatorCTA from '@components/IotHub/CreatorCTA.astro';
 import ListingCard from '@components/IotHub/ListingCard.astro';
 import ListingGrid from '@components/IotHub/ListingGrid.astro';
+import ListingsFilterBar from '@components/IotHub/ListingsFilterBar.astro';
 import PaginationLink from '@components/IotHub/PaginationLink.astro';
 import { getCollection } from 'astro:content';
-import { PAGE_SIZE, getCardVariant } from '@models/iot-hub';
+import { IOT_HUB_CATEGORIES, PAGE_SIZE, getCardVariant } from '@models/iot-hub';
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const categories = await getCollection('iotHubCategories');
 	return categories.flatMap((catEntry) =>
-		// Exclude pure-numeric slugs — the detail route filters them out, so listing
-		// them here would produce cards whose hrefs resolve to pagination pages.
 		paginate(
 			catEntry.data.items.filter((item) => !/^\d+$/.test(item.slug)),
 			{
 				params: { category: catEntry.id },
-				props: { categoryLabel: catEntry.data.label },
 				pageSize: PAGE_SIZE,
 			}
 		)
@@ -25,53 +24,112 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
-const { categoryLabel } = Astro.props as { categoryLabel: string };
 const { category } = Astro.params;
 const basePath = `/iot-hub/${category}/`;
 const variant = getCardVariant(page.data[0]?.itemType ?? '');
+const catConfig = IOT_HUB_CATEGORIES.find((c) => c.slug === category);
+const heroTitle = catConfig?.tileLabel ?? '';
 
-const title = `${categoryLabel} | IoT Hub | ThingsBoard`;
-const description = `Browse ${categoryLabel.toLowerCase()} published to the ThingsBoard IoT Hub.`;
+const title = `${heroTitle} | IoT Hub | ThingsBoard`;
+const description =
+	catConfig?.heroDescription ??
+	`Browse ${heroTitle.toLowerCase()} published to the ThingsBoard IoT Hub.`;
+const searchPlaceholder = heroTitle
+	? `Search ${heroTitle.toLowerCase()}...`
+	: 'Search...';
 ---
 
 <BaseLayout title={title} description={description}>
-	<main class="iot-hub-index">
-		<CategoryHeader categoryLabel={categoryLabel} totalCount={page.total} />
-		{
-			page.data.length > 0 ? (
-				<>
-					<ListingGrid variant={variant}>
-						{page.data.map((item) => (
-							<ListingCard item={item} categorySlug={category!} />
-						))}
-					</ListingGrid>
-					{page.lastPage > 1 ? (
-						<PaginationLink
-							currentPage={page.currentPage}
-							totalPages={page.lastPage}
-							basePath={basePath}
-						/>
-					) : null}
-				</>
-			) : (
-				<p class="iot-hub-index__empty">No items available yet.</p>
-			)
-		}
+	<main class="iot-hub-cat">
+		<div class="iot-hub-cat__center">
+			<div class="iot-hub-cat__container">
+				<CategoryHero categorySlug={category!} />
+			</div>
+		</div>
+		<div class="iot-hub-cat__divider"></div>
+		<div class="iot-hub-cat__center">
+			<div class="iot-hub-cat__container">
+				<div class="iot-hub-cat__listings">
+					<ListingsFilterBar
+						totalCount={page.total}
+						searchPlaceholder={searchPlaceholder}
+					/>
+					{
+						page.data.length > 0 ? (
+							<>
+								<ListingGrid variant={variant}>
+									{page.data.map((item) => (
+										<ListingCard item={item} categorySlug={category!} />
+									))}
+								</ListingGrid>
+								<PaginationLink
+									currentPage={page.currentPage}
+									totalPages={page.lastPage}
+									basePath={basePath}
+								/>
+							</>
+						) : (
+							<p class="iot-hub-cat__empty">No items available yet.</p>
+						)
+					}
+				</div>
+			</div>
+		</div>
+		<div class="iot-hub-cat__divider"></div>
+		<div class="iot-hub-cat__center">
+			<div class="iot-hub-cat__container">
+				<CreatorCTA />
+			</div>
+		</div>
 	</main>
 </BaseLayout>
 
 <style lang="scss">
 	@use '~/styles/_variables.scss' as *;
 
-	.iot-hub-index {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 1.5rem 4rem;
+	.iot-hub-cat {
+		--iot-hub-hairline: var(--hairline---sl-color-hairline, #edeef3);
+
+		:global([data-theme='dark']) & {
+			--iot-hub-hairline: var(--hairline---sl-color-hairline, #23262f);
+		}
 	}
 
-	.iot-hub-index__empty {
+	.iot-hub-cat__center {
+		margin: 0 auto;
+		max-width: calc(#{$container-max-width} + 32px);
+
+		@include media-down(sm) {
+			max-width: calc(#{$container-max-width} + 16px);
+		}
+	}
+
+	.iot-hub-cat__container {
+		max-width: $container-max-width;
+		margin: 0 16px;
+		border-right: 1px solid var(--iot-hub-hairline);
+		border-left: 1px solid var(--iot-hub-hairline);
+
+		@include media-down(sm) {
+			margin: 0 8px;
+		}
+	}
+
+	.iot-hub-cat__divider {
+		height: 1px;
+		background: var(--iot-hub-hairline);
+	}
+
+	.iot-hub-cat__listings {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		padding-bottom: 40px;
+	}
+
+	.iot-hub-cat__empty {
 		text-align: center;
-		color: var(--color-text-muted, #6b7280);
-		padding: 4rem 0;
+		color: var(--color-text-muted);
+		padding: 4rem 1rem;
 	}
 </style>

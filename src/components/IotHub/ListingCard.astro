@@ -246,14 +246,14 @@ const mdiName = placeholderIcon.startsWith('mdi:') ? placeholderIcon.slice(4) : 
 	.iot-hub-card__body {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 4px;
 		min-width: 0;
 	}
 
 	.iot-hub-card__title {
 		font-size: 16px;
 		font-weight: $font-weight-semibold;
-		line-height: 24px;
+		line-height: 28px;
 		margin: 0;
 		color: var(--color-text);
 		overflow: hidden;
@@ -296,7 +296,7 @@ const mdiName = placeholderIcon.startsWith('mdi:') ? placeholderIcon.slice(4) : 
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		color: #555962;
+		color: var(--sl-color-gray-3);
 	}
 
 	.iot-hub-card__dot {
@@ -304,7 +304,7 @@ const mdiName = placeholderIcon.startsWith('mdi:') ? placeholderIcon.slice(4) : 
 		width: 3px;
 		height: 3px;
 		border-radius: 50%;
-		background: var(--color-border);
+		background: var(--sl-color-gray-5);
 	}
 
 	.iot-hub-card__installs {
@@ -312,7 +312,7 @@ const mdiName = placeholderIcon.startsWith('mdi:') ? placeholderIcon.slice(4) : 
 		align-items: center;
 		gap: 2px;
 		flex-shrink: 0;
-		color: #555962;
+		color: var(--sl-color-gray-3);
 	}
 
 	.iot-hub-card__cta {

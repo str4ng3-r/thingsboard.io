@@ -1,0 +1,31 @@
+---
+import IotHubChevron from './IotHubChevron.astro';
+
+interface Props {
+	direction: 'left' | 'right';
+	href?: string;
+	disabled?: boolean;
+	label: string;
+}
+
+const { direction, href, disabled = false, label } = Astro.props;
+const rel = direction === 'left' ? 'prev' : 'next';
+const isDisabled = disabled || !href;
+---
+
+{
+	isDisabled ? (
+		<span class="iot-hub-pagination__chevron is-disabled" aria-hidden="true">
+			<IotHubChevron direction={direction} size={24} />
+		</span>
+	) : (
+		<a
+			class="iot-hub-pagination__chevron"
+			href={href}
+			rel={rel}
+			aria-label={label}
+		>
+			<IotHubChevron direction={direction} size={24} />
+		</a>
+	)
+}

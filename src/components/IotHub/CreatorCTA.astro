@@ -1,7 +1,7 @@
 ---
 import { IOT_HUB_API_URL } from '@models/iot-hub';
+import IotHubChevron from './IotHubChevron.astro';
 
-// Matches the platform's openSignup() in tb-iot-hub-home.
 const submitUrl = `${IOT_HUB_API_URL}/signup`;
 ---
 
@@ -17,14 +17,7 @@ const submitUrl = `${IOT_HUB_API_URL}/signup`;
 			</div>
 			<a class="iot-hub-cta__button" href={submitUrl} target="_blank" rel="noopener">
 				<span>Contribute</span>
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-					<path
-						d="m9 6 6 6-6 6"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"></path>
-				</svg>
+				<IotHubChevron direction="right" size={24} />
 			</a>
 		</div>
 	</div>
@@ -34,10 +27,10 @@ const submitUrl = `${IOT_HUB_API_URL}/signup`;
 	@use '~/styles/_variables.scss' as *;
 
 	.iot-hub-cta-wrap {
-		padding: 80px 1rem;
+		padding: 2.5rem 1rem 5rem;
 
-		@include media-down(lg) {
-			padding-top: 40px;
+		@include media-down(sm) {
+			padding: 2.5rem 0.75rem 5rem;
 		}
 	}
 
@@ -62,8 +55,8 @@ const submitUrl = `${IOT_HUB_API_URL}/signup`;
 			);
 		}
 
-		@include media-down(md) {
-			padding: 2rem 1.25rem;
+		@include media-down(sm) {
+			padding: 1.5rem;
 		}
 	}
 
@@ -89,9 +82,9 @@ const submitUrl = `${IOT_HUB_API_URL}/signup`;
 		margin: 0;
 		color: var(--color-text);
 
-		@include media-down(md) {
+		@include media-down(sm) {
 			font-size: 24px;
-			line-height: 32px;
+			line-height: 28px;
 		}
 	}
 
@@ -102,7 +95,7 @@ const submitUrl = `${IOT_HUB_API_URL}/signup`;
 		margin: 0;
 		color: var(--color-text);
 
-		@include media-down(md) {
+		@include media-down(sm) {
 			font-size: 16px;
 			line-height: 28px;
 		}
@@ -123,9 +116,6 @@ const submitUrl = `${IOT_HUB_API_URL}/signup`;
 			display: block;
 		}
 
-		// Dark theme inverts the CTA: lighter blue surface with dark text per
-		// Figma node 1240:40372. `:global()` is required because `data-theme`
-		// lives on <html>, outside this component's Astro scope.
 		:global([data-theme='dark']) & {
 			background: #b3c7ff;
 			color: #17181c;
