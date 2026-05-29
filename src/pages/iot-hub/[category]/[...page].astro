@@ -3,12 +3,20 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import CategoryHero from '@components/IotHub/CategoryHero.astro';
 import CreatorCTA from '@components/IotHub/CreatorCTA.astro';
+import FilterPanel from '@components/IotHub/FilterPanel.astro';
 import ListingCard from '@components/IotHub/ListingCard.astro';
 import ListingGrid from '@components/IotHub/ListingGrid.astro';
 import ListingsFilterBar from '@components/IotHub/ListingsFilterBar.astro';
 import PaginationLink from '@components/IotHub/PaginationLink.astro';
 import { getCollection } from 'astro:content';
-import { IOT_HUB_CATEGORIES, PAGE_SIZE, getCardVariant } from '@models/iot-hub';
+import {
+	IOT_HUB_CATEGORIES,
+	IOT_HUB_STRINGS,
+	PAGE_SIZE,
+	getCardVariant,
+	type ItemTypeFilterInfo,
+	type IotHubItemType,
+} from '@models/iot-hub';
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const categories = await getCollection('iotHubCategories');
@@ -18,12 +26,22 @@ export const getStaticPaths = (async ({ paginate }) => {
 			{
 				params: { category: catEntry.id },
 				pageSize: PAGE_SIZE,
+				props: {
+					itemType: catEntry.data.itemType,
+					filterInfo: catEntry.data.filterInfo,
+				},
 			}
 		)
 	);
 }) satisfies GetStaticPaths;
 
-const { page } = Astro.props;
+interface Props {
+	page: import('astro').Page;
+	itemType: IotHubItemType;
+	filterInfo: ItemTypeFilterInfo;
+}
+
+const { page, itemType, filterInfo } = Astro.props as Props;
 const { category } = Astro.params;
 const basePath = `/iot-hub/${category}/`;
 const variant = getCardVariant(page.data[0]?.itemType ?? '');
@@ -49,29 +67,42 @@ const searchPlaceholder = heroTitle
 		<div class="iot-hub-cat__divider"></div>
 		<div class="iot-hub-cat__center">
 			<div class="iot-hub-cat__container">
-				<div class="iot-hub-cat__listings">
-					<ListingsFilterBar
-						totalCount={page.total}
-						searchPlaceholder={searchPlaceholder}
-					/>
-					{
-						page.data.length > 0 ? (
-							<>
-								<ListingGrid variant={variant}>
-									{page.data.map((item) => (
-										<ListingCard item={item} categorySlug={category!} />
-									))}
-								</ListingGrid>
-								<PaginationLink
-									currentPage={page.currentPage}
-									totalPages={page.lastPage}
-									basePath={basePath}
-								/>
-							</>
-						) : (
-							<p class="iot-hub-cat__empty">No items available yet.</p>
-						)
-					}
+				<div
+					class="iot-hub-cat__listings-wrap"
+					data-iot-hub-listings-wrap
+					data-filter-open="false"
+				>
+					<FilterPanel itemType={itemType} filterInfo={filterInfo} />
+					<div
+						class="iot-hub-cat__backdrop"
+						data-iot-hub-filter-backdrop
+						aria-hidden="true"
+					>
+					</div>
+					<div class="iot-hub-cat__listings">
+						<ListingsFilterBar
+							totalCount={page.total}
+							searchPlaceholder={searchPlaceholder}
+						/>
+						{
+							page.data.length > 0 ? (
+								<>
+									<ListingGrid variant={variant}>
+										{page.data.map((item) => (
+											<ListingCard item={item} categorySlug={category!} />
+										))}
+									</ListingGrid>
+									<PaginationLink
+										currentPage={page.currentPage}
+										totalPages={page.lastPage}
+										basePath={basePath}
+									/>
+								</>
+							) : (
+								<p class="iot-hub-cat__empty">{IOT_HUB_STRINGS.emptyState}</p>
+							)
+						}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -83,6 +114,16 @@ const searchPlaceholder = heroTitle
 		</div>
 	</main>
 </BaseLayout>
+
+<style lang="scss" is:global>
+	// Paired with inline `padding-right` set by the lock script so the
+	// scrollbar gutter stays reserved while overflow is hidden and the
+	// fixed site header / body don't jump wider.
+	html.iot-hub-filter-scroll-locked,
+	html.iot-hub-filter-scroll-locked body {
+		overflow: hidden !important;
+	}
+</style>
 
 <style lang="scss">
 	@use '~/styles/_variables.scss' as *;
@@ -120,11 +161,38 @@ const searchPlaceholder = heroTitle
 		background: var(--iot-hub-hairline);
 	}
 
+	.iot-hub-cat__listings-wrap {
+		position: relative;
+		display: flex;
+		align-items: stretch;
+		min-height: 0;
+	}
+
 	.iot-hub-cat__listings {
 		display: flex;
 		flex-direction: column;
 		gap: 24px;
 		padding-bottom: 40px;
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.iot-hub-cat__backdrop {
+		display: none;
+
+		@include media-down(lg) {
+			.iot-hub-cat__listings-wrap[data-filter-open='true'] & {
+				display: block;
+				position: fixed;
+				// Start below the sticky site header so the header stays
+				// tappable. `$header-height` not `var(--sl-nav-height)` —
+				// see FilterPanel.astro for why the CSS var is wrong here.
+				inset: $header-height 0 0 0;
+				background: rgba(0, 0, 0, 0.4);
+				// Just below the panel (z-index 100) so click-outside works.
+				z-index: 95;
+			}
+		}
 	}
 
 	.iot-hub-cat__empty {
@@ -133,3 +201,96 @@ const searchPlaceholder = heroTitle
 		padding: 4rem 1rem;
 	}
 </style>
+
+<script>
+	document
+		.querySelectorAll<HTMLElement>('[data-iot-hub-listings-wrap]')
+		.forEach((wrap) => {
+			const panel = wrap.querySelector<HTMLElement>('[data-iot-hub-filter-panel]');
+			const toggle = wrap.querySelector<HTMLButtonElement>(
+				'[data-iot-hub-filter-toggle]'
+			);
+			const backdrop = wrap.querySelector<HTMLElement>(
+				'[data-iot-hub-filter-backdrop]'
+			);
+			if (!panel || !toggle) return;
+
+			// 1023px === Sass `media-down(lg)` so JS + CSS agree on the
+			// breakpoint where the panel switches to overlay-drawer.
+			const mobileMq = window.matchMedia('(max-width: 1023px)');
+
+			// Without the padding compensation, hiding the scrollbar
+			// widens the ICB and the fixed site header / body jump
+			// wider when the drawer opens.
+			const html = document.documentElement;
+			let headerOriginalPadding = '';
+			let htmlOriginalPadding = '';
+			let headerCompensated = false;
+			const lockScroll = () => {
+				const sw = window.innerWidth - html.clientWidth;
+				htmlOriginalPadding = html.style.paddingRight;
+				if (sw > 0) {
+					html.style.paddingRight = sw + 'px';
+					const header = document.querySelector<HTMLElement>('header.header');
+					if (header) {
+						const cur = parseFloat(getComputedStyle(header).paddingRight) || 0;
+						headerOriginalPadding = header.style.paddingRight;
+						header.style.transition = 'none';
+						header.style.paddingRight = cur + sw + 'px';
+						requestAnimationFrame(() => {
+							header.style.transition = '';
+						});
+						headerCompensated = true;
+					}
+				}
+				html.classList.add('iot-hub-filter-scroll-locked');
+			};
+			const unlockScroll = () => {
+				html.classList.remove('iot-hub-filter-scroll-locked');
+				html.style.paddingRight = htmlOriginalPadding;
+				if (headerCompensated) {
+					const header = document.querySelector<HTMLElement>('header.header');
+					if (header) {
+						header.style.transition = 'none';
+						header.style.paddingRight = headerOriginalPadding;
+						requestAnimationFrame(() => {
+							header.style.transition = '';
+						});
+					}
+					headerCompensated = false;
+				}
+			};
+			const setScrollLock = (lock: boolean) => {
+				if (lock) lockScroll();
+				else unlockScroll();
+			};
+
+			const setOpen = (open: boolean) => {
+				const wasOpen = panel.dataset.open === 'true';
+				panel.dataset.open = open ? 'true' : 'false';
+				wrap.dataset.filterOpen = open ? 'true' : 'false';
+				toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+				setScrollLock(open && mobileMq.matches);
+				// Gate focus restoration on focus being inside the panel
+				// so we don't steal focus when the user closed via a
+				// click outside while focus was already elsewhere.
+				if (wasOpen && !open && panel.contains(document.activeElement)) {
+					toggle.focus();
+				}
+			};
+
+			toggle.addEventListener('click', () => {
+				setOpen(panel.dataset.open !== 'true');
+			});
+			wrap.addEventListener('iot-hub-filter-close', () => setOpen(false));
+			backdrop?.addEventListener('click', () => setOpen(false));
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape' && panel.dataset.open === 'true') setOpen(false);
+			});
+			// Drop the lock when the viewport grows past lg while open
+			// (e.g. rotated tablet) so desktop layout doesn't stay frozen.
+			mobileMq.addEventListener('change', (e) => {
+				setScrollLock(panel.dataset.open === 'true' && e.matches);
+			});
+		});
+</script>

@@ -11,7 +11,9 @@ import {
 	IOT_HUB_CATEGORIES,
 	API_FETCH_PAGE_SIZE,
 	iotHubCategorySchema,
+	itemTypeFilterInfoSchema,
 	type ListingView,
+	type ItemTypeFilterInfo,
 } from '@models/iot-hub';
 import { fetchWithRetry } from '@util/fetch-utils';
 
@@ -351,16 +353,26 @@ export const collections = {
 				}
 				return items;
 			};
+			// Filter facet counts can't be derived from the per-page
+			// listing payload — they aggregate across the whole catalog.
+			const fetchFilterInfo = async (itemType: string): Promise<ItemTypeFilterInfo> => {
+				const url = `${IOT_HUB_API_URL}/api/item-listing/listingFilterInfo/${itemType}`;
+				const res = await fetchWithRetry(url);
+				const body = await res.json();
+				return itemTypeFilterInfoSchema.parse(body);
+			};
 			try {
 				// One entry per category, keyed by slug. See `iotHubCategorySchema`.
-				const perCategory = await Promise.all(
-					IOT_HUB_CATEGORIES.map((cat) => fetchCategory(cat.itemType))
-				);
+				const [perCategoryItems, perCategoryFilters] = await Promise.all([
+					Promise.all(IOT_HUB_CATEGORIES.map((cat) => fetchCategory(cat.itemType))),
+					Promise.all(IOT_HUB_CATEGORIES.map((cat) => fetchFilterInfo(cat.itemType))),
+				]);
 				return IOT_HUB_CATEGORIES.map((cat, i) => ({
 					id: cat.slug,
 					itemType: cat.itemType,
 					label: cat.label,
-					items: perCategory[i],
+					items: perCategoryItems[i],
+					filterInfo: perCategoryFilters[i],
 				}));
 			} catch (e) {
 				if (import.meta.env.DEV) {

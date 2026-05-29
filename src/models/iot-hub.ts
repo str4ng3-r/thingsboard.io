@@ -116,6 +116,66 @@ export const getPlaceholderIcon = (item: IconableListing): string => {
 	}
 };
 
+// User-facing UI strings used by IoT Hub components. Centralized so they're
+// easy to find, audit, and swap for a `t(...)` call if marketing-side i18n
+// ever lands (the site's existing i18n machinery only covers Starlight docs).
+export const IOT_HUB_STRINGS = {
+	filterPanel: {
+		title: 'Filter',
+		closeAriaLabel: 'Close filters',
+		landmarkLabel: 'Filters',
+		searchPlaceholder: 'Search...',
+		searchAriaPrefix: 'Search',
+		mostPopular: 'Most popular',
+		all: 'All',
+		sections: {
+			type: 'Type',
+			category: 'Category',
+			vendor: 'Vendor',
+			hardwareType: 'Hardware Type',
+			connectivity: 'Connectivity',
+			useCase: 'Use Case',
+		},
+	},
+	listingsBar: {
+		filter: 'Filter',
+		searchAriaLabel: 'Search',
+		defaultSearchPlaceholder: 'Search...',
+		defaultSortLabel: 'Most Installed',
+		resultSingular: 'result',
+		resultPlural: 'results',
+	},
+	emptyState: 'No items available yet.',
+} as const;
+
+// Maps raw subtype keys from the API (`timeseries`, `SIMPLE`, `CORE`, …)
+// to user-facing labels for the filter panel "Type" section.
+export const ITEM_SUBTYPE_LABELS: Partial<Record<IotHubItemType, Record<string, string>>> = {
+	WIDGET: {
+		timeseries: 'Timeseries',
+		latest: 'Latest',
+		rpc: 'Control',
+		alarm: 'Alarm',
+		static: 'Static',
+	},
+	CALCULATED_FIELD: {
+		SIMPLE: 'Simple',
+		SCRIPT: 'Script',
+		GEOFENCING: 'Geofencing',
+		ALARM: 'Alarm',
+		PROPAGATION: 'Propagation',
+		RELATED_ENTITIES_AGGREGATION: 'Related Entities Aggregation',
+		ENTITY_AGGREGATION: 'Entity Aggregation',
+	},
+	RULE_CHAIN: {
+		CORE: 'Core',
+		EDGE: 'Edge',
+	},
+};
+
+export const getSubtypeLabel = (itemType: IotHubItemType, key: string): string =>
+	ITEM_SUBTYPE_LABELS[itemType]?.[key] ?? key;
+
 export const PAGE_SIZE = 12;
 export const HOME_PER_CATEGORY = 4;
 export const API_FETCH_PAGE_SIZE = 100;
@@ -178,6 +238,22 @@ export const listingDetailSchema = listingViewSchema.extend({
 	readmeContent: z.string().nullable(),
 });
 
+// `/api/item-listing/listingFilterInfo/{itemType}` response shape.
+export const filterParamInfoSchema = z.object({
+	key: z.string(),
+	totalItems: z.number(),
+	totalInstallCount: z.number(),
+});
+
+export const itemTypeFilterInfoSchema = z.object({
+	types: z.array(filterParamInfoSchema).nullable().default([]),
+	categories: z.array(filterParamInfoSchema).nullable().default([]),
+	useCases: z.array(filterParamInfoSchema).nullable().default([]),
+	vendors: z.array(filterParamInfoSchema).nullable().default([]),
+	hardwareTypes: z.array(filterParamInfoSchema).nullable().default([]),
+	connectivities: z.record(z.string(), z.array(filterParamInfoSchema)).nullable().default({}),
+});
+
 // One collection entry per category. `items` preserves the API order
 // (installCount DESC) because it's stored as an array inside a single entry —
 // `getCollection()` only re-sorts entries by id, not the data within them.
@@ -185,8 +261,11 @@ export const iotHubCategorySchema = z.object({
 	itemType: itemTypeEnum,
 	label: z.string(),
 	items: z.array(listingViewSchema),
+	filterInfo: itemTypeFilterInfoSchema,
 });
 
 export type ListingView = z.infer<typeof listingViewSchema>;
 export type ListingDetail = z.infer<typeof listingDetailSchema>;
 export type IotHubCategoryData = z.infer<typeof iotHubCategorySchema>;
+export type FilterParamInfo = z.infer<typeof filterParamInfoSchema>;
+export type ItemTypeFilterInfo = z.infer<typeof itemTypeFilterInfoSchema>;

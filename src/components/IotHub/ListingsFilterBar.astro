@@ -1,5 +1,6 @@
 ---
 import IotHubChevron from './IotHubChevron.astro';
+import { IOT_HUB_STRINGS } from '@models/iot-hub';
 
 interface Props {
 	totalCount: number;
@@ -7,12 +8,23 @@ interface Props {
 	sortLabel?: string;
 }
 
-const { totalCount, searchPlaceholder = 'Search...', sortLabel = 'Most Installed' } = Astro.props;
+const T = IOT_HUB_STRINGS.listingsBar;
+const {
+	totalCount,
+	searchPlaceholder = T.defaultSearchPlaceholder,
+	sortLabel = T.defaultSortLabel,
+} = Astro.props;
 ---
 
 <div class="iot-hub-filter-bar">
 	<div class="iot-hub-filter-bar__row1">
-		<button class="iot-hub-filter-bar__filter-btn" type="button" disabled>
+		<button
+			class="iot-hub-filter-bar__filter-btn"
+			type="button"
+			data-iot-hub-filter-toggle
+			aria-expanded="false"
+			aria-controls="iot-hub-filter-panel"
+		>
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
 				<path
 					d="M3 4h18l-7 8v6l-4 2v-8L3 4Z"
@@ -21,36 +33,29 @@ const { totalCount, searchPlaceholder = 'Search...', sortLabel = 'Most Installed
 					stroke-linecap="round"
 					stroke-linejoin="round"></path>
 			</svg>
-			<span>Filter</span>
+			<span>{T.filter}</span>
 		</button>
 		<div class="iot-hub-filter-bar__search">
 			<input
 				class="iot-hub-filter-bar__search-input"
 				type="search"
 				placeholder={searchPlaceholder}
-				aria-label="Search"
+				aria-label={T.searchAriaLabel}
 				disabled
 			/>
 			<button
 				class="iot-hub-filter-bar__search-icon"
 				type="button"
-				aria-label="Search"
+				aria-label={T.searchAriaLabel}
 				disabled
 			>
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-					<path
-						d="m21 21-4.3-4.3M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"></path>
-				</svg>
+				<span class="iot-hub-filter-bar__search-icon-glyph" aria-hidden="true"></span>
 			</button>
 		</div>
 	</div>
 	<div class="iot-hub-filter-bar__row2">
 		<p class="iot-hub-filter-bar__count">
-			{totalCount} {totalCount === 1 ? 'result' : 'results'}
+			{totalCount} {totalCount === 1 ? T.resultSingular : T.resultPlural}
 		</p>
 		<button class="iot-hub-filter-bar__sort-btn" type="button" disabled>
 			<span>{sortLabel}</span>
@@ -97,16 +102,24 @@ const { totalCount, searchPlaceholder = 'Search...', sortLabel = 'Most Installed
 		border: 1px solid var(--color-primary);
 		border-radius: 8px;
 		min-height: 56px;
-		cursor: not-allowed;
+		cursor: pointer;
 		flex-shrink: 0;
+		transition: background $transition-fast, color $transition-fast;
 
 		svg {
 			display: block;
 		}
 
-		:global([data-theme='dark']) & {
-			color: #b3c7ff;
-			border-color: #b3c7ff;
+		// `var(--color-primary)` already theme-shifts via Starlight's
+		// accent token; only the inverted text on the active state needs
+		// a per-theme override.
+		&[aria-expanded='true'] {
+			background: var(--color-primary);
+			color: #ffffff;
+
+			:global([data-theme='dark']) & {
+				color: var(--neutral---sl-color-black, #17181c);
+			}
 		}
 
 		@include media-down(sm) {
@@ -175,10 +188,15 @@ const { totalCount, searchPlaceholder = 'Search...', sortLabel = 'Most Installed
 		color: var(--color-text-secondary);
 		cursor: not-allowed;
 		flex-shrink: 0;
+	}
 
-		svg {
-			display: block;
-		}
+	.iot-hub-filter-bar__search-icon-glyph {
+		display: block;
+		width: 24px;
+		height: 24px;
+		background-color: currentColor;
+		-webkit-mask: url('/icons/iot-hub-search.svg') center / contain no-repeat;
+		mask: url('/icons/iot-hub-search.svg') center / contain no-repeat;
 	}
 
 	.iot-hub-filter-bar__row2 {
