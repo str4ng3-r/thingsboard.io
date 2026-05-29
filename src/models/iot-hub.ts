@@ -194,7 +194,7 @@ export const itemTypeEnum = z.enum([
 ]);
 
 export const screenshotResourceSchema = z.object({
-	id: z.string().uuid(),
+	id: z.uuid(),
 	type: z.string().nullable().optional(),
 });
 
@@ -245,13 +245,23 @@ export const filterParamInfoSchema = z.object({
 	totalInstallCount: z.number(),
 });
 
+const nullableArrayOfFilterParamInfo = z
+	.array(filterParamInfoSchema)
+	.nullable()
+	.default([])
+	.transform((v) => v ?? []);
+
 export const itemTypeFilterInfoSchema = z.object({
-	types: z.array(filterParamInfoSchema).nullable().default([]),
-	categories: z.array(filterParamInfoSchema).nullable().default([]),
-	useCases: z.array(filterParamInfoSchema).nullable().default([]),
-	vendors: z.array(filterParamInfoSchema).nullable().default([]),
-	hardwareTypes: z.array(filterParamInfoSchema).nullable().default([]),
-	connectivities: z.record(z.string(), z.array(filterParamInfoSchema)).nullable().default({}),
+	types: nullableArrayOfFilterParamInfo,
+	categories: nullableArrayOfFilterParamInfo,
+	useCases: nullableArrayOfFilterParamInfo,
+	vendors: nullableArrayOfFilterParamInfo,
+	hardwareTypes: nullableArrayOfFilterParamInfo,
+	connectivities: z
+		.record(z.string(), z.array(filterParamInfoSchema))
+		.nullable()
+		.default({})
+		.transform((v) => v ?? {}),
 });
 
 // One collection entry per category. `items` preserves the API order

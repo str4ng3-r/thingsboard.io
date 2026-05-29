@@ -114,7 +114,7 @@ if (itemType === 'DEVICE') {
 			)
 		);
 	}
-	const connectivityGroups: SectionGroup[] = Object.entries(filterInfo.connectivities ?? {})
+	const connectivityGroups: SectionGroup[] = Object.entries(filterInfo.connectivities)
 		.map(([label, options]) => ({ label, options: passthrough(options) }))
 		.filter((g) => g.options.length > 0);
 	if (connectivityGroups.length > 0) {
