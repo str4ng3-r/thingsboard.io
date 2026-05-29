@@ -6,7 +6,6 @@ import UtmTracker from '@components/UtmTracker.astro';
 import GtmNoscript from '@components/GtmNoscript.astro';
 import ThirdPartyScripts from '@components/ThirdPartyScripts.astro';
 import SeoMeta from '@components/SeoMeta.astro';
-import ThemeProvider from '@astrojs/starlight/components/ThemeProvider.astro';
 import { formatMarketingTitle } from '@root/consts.ts';
 import { getSectionFromPath } from '@util/path-utils';
 import { getOgImageUrl } from '@util/getOgImageUrl';
@@ -97,13 +96,16 @@ const ogImage = ogImageProp ?? getOgImageUrl(Astro.url.pathname);
 
 		<link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg" />
 
-		<ThemeProvider />
 		<script is:inline>
-			// Pages with data-force-light stay light regardless of user preference.
-			// All other pages respect the theme set by ThemeProvider (from localStorage / OS).
-			if (document.documentElement.dataset.forceLight === 'true') {
-				document.documentElement.dataset.theme = 'light';
-			}
+			(function () {
+				var stored = typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+				var theme = stored
+					|| (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+				document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+				if (document.documentElement.dataset.forceLight === 'true') {
+					document.documentElement.dataset.theme = 'light';
+				}
+			})();
 		</script>
 
 		<ThirdPartyScripts />
