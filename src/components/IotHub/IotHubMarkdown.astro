@@ -1,103 +1,195 @@
 ---
+import '@astrojs/starlight/style/markdown.css';
+import { Code } from '@astrojs/starlight/components';
+import ImageGallery from '@components/ImageGallery.astro';
 import { resolveImage } from '@models/iot-hub';
 import { getMarkdownProcessor } from '@util/markdown-processor';
 
-// Renders IoT Hub listing readme markdown with the typography from the design
-// detail page — lead paragraph, h2 section
-// headings, body lists, and the `Specifications` table style.
+// Renders IoT Hub listing readme markdown. Plain prose flows through the
+// shared markdown processor and renders via set:html; fenced code blocks
+// (and any future registered patterns) are extracted *before* processing
+// and rendered with their matching Astro component instead — see the
+// `Slot` registry below.
 //
-// Accepts the RAW markdown string and processes it to HTML internally via
-// Astro's createMarkdownProcessor (cached at module level in
-// @util/markdown-processor so the unified pipeline is built once per worker).
+// To add a new pattern:
+//   1. Add a `kind` + `props` shape to the `Slot` union.
+//   2. Write a detector that scans the raw markdown, pushes a slot per
+//      match, and replaces the matched text with `slotComment(i)`.
+//   3. Add a case to the render switch in the template below.
 
 interface Props {
 	markdown: string | null | undefined;
-	/**
-	 * If true, the first paragraph is rendered as a larger lead paragraph
-	 * (matches the "summary" line above the first section in the design).
-	 */
-	leadFirstParagraph?: boolean;
 }
 
-const { markdown, leadFirstParagraph = true } = Astro.props;
+const { markdown } = Astro.props;
 
-// Rewrite relative `/api/resources/…` paths (used by the IoT Hub API for
-// images uploaded with the listing) into absolute URLs before passing the
-// markdown to the processor. The lookbehind `(?<![:\w])` skips paths that
-// are already part of an absolute URL like `https://host/api/resources/…`.
-const RESOURCE_PATH_RE = /(?<![:\w])(\/api\/resources\/[^\s)"'>]+)/g;
-function rewriteResourceUrls(src: string): string {
-	return src.replace(RESOURCE_PATH_RE, (_match, path: string) => {
-		return resolveImage(path) ?? path;
+// Registry of slot kinds we know how to render. Each slot stores the
+// props the matching Astro component will be invoked with.
+type CodeSlotProps = { code: string; lang?: string; meta?: string };
+type GalleryImage = { src: string; alt: string; caption?: string };
+type GallerySlotProps = { images: GalleryImage[] };
+type Slot =
+	| { kind: 'code'; props: CodeSlotProps }
+	| { kind: 'gallery'; props: GallerySlotProps };
+
+// Sentinel: HTML comments survive markdown→HTML conversion unmodified, so
+// we can splice slots back into the rendered HTML by plain string matching.
+const SENTINEL_PREFIX = 'ih-slot-';
+const slotComment = (i: number) => `<!--${SENTINEL_PREFIX}${i}-->`;
+const SLOT_RE = new RegExp(`<!--${SENTINEL_PREFIX}(\\d+)-->`, 'g');
+
+// --- Detectors ---------------------------------------------------------------
+
+// Fenced code blocks (```lang …meta\n…\n```). Tilde fences accepted too.
+// The opening fence string is back-referenced (`\2`) so the closing fence has
+// to match it exactly — keeps nested-fence outer blocks intact.
+const FENCED_CODE_RE = /^([ \t]*)(`{3,}|~{3,})[ \t]*([^\n`]*?)\n([\s\S]*?)\n\1\2[ \t]*$/gm;
+// Kramdown attribute-list residue from the legacy docs site — used there to
+// attach a `copy-code` class to the preceding block. Meaningless here, so we
+// scrub it from extracted code bodies (both on its own line and inline).
+const COPY_CODE_LINE_RE = /^[ \t]*\{:copy-code}[ \t]*\n?/gm;
+const COPY_CODE_INLINE_RE = /[ \t]*\{:copy-code}/g;
+function cleanCodeContent(code: string): string {
+	return code.replace(COPY_CODE_LINE_RE, '').replace(COPY_CODE_INLINE_RE, '');
+}
+function extractCodeBlocks(src: string, slots: Slot[]): string {
+	return src.replace(FENCED_CODE_RE, (_full, _indent, _fence, info: string, code: string) => {
+		const trimmed = (info ?? '').trim();
+		const spaceIdx = trimmed.search(/\s/);
+		const lang = (spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx)) || 'plaintext';
+		const userMeta = spaceIdx === -1 ? '' : trimmed.slice(spaceIdx + 1).trim();
+		const cleaned = cleanCodeContent(code);
+		// Always cap to 20 lines via expressive-code's maxLines meta token, and
+		// add line numbers for multi-line snippets. Author-supplied meta tokens
+		// (e.g. `title="…"`) come first so they aren't overridden.
+		const tokens: string[] = [];
+		if (userMeta) tokens.push(userMeta);
+		if (cleaned.includes('\n')) tokens.push('showLineNumbers');
+		tokens.push('maxLines=20');
+		const meta = tokens.join(' ');
+		const i = slots.push({ kind: 'code', props: { code: cleaned, lang, meta } }) - 1;
+		// Blank lines around the comment so markdown parses it as its own block.
+		return `\n\n${slotComment(i)}\n\n`;
 	});
 }
 
-let html: string | null = null;
+// Rewrite relative `/api/resources/…` paths (the IoT Hub API uses these for
+// listing-uploaded images) into absolute URLs. The lookbehind skips paths
+// already part of an absolute URL like `https://host/api/resources/…`.
+const RESOURCE_PATH_RE = /(?<![:\w])(\/api\/resources\/[^\s)"'>]+)/g;
+function rewriteResourceUrls(src: string): string {
+	return src.replace(RESOURCE_PATH_RE, (_m, path: string) => resolveImage(path) ?? path);
+}
+
+// Image galleries: `${images.gallery({src:'…',alt:'…',caption:'…'}, {src:'…'}, …)}`.
+// Ported from `resolveVariables` in the platform's iot-hub-markdown.component.ts:
+// outer regex captures everything between the parens; inner regex pulls out
+// each `{…}` object literal; per-field regexes extract the quoted strings
+// (preserving the quote type via back-reference so single- and double-quoted
+// values both work). Run AFTER rewriteResourceUrls so any `/api/resources/…`
+// paths inside `src:` fields are already absolute.
+const GALLERY_RE = /\$\{\s*images\.gallery\(([\s\S]*?)\)\s*}/g;
+const GALLERY_OBJ_RE = /\{[\s\S]*?}/g;
+const GALLERY_SRC_RE = /src\s*:\s*(['"])((?:(?!\1).)*)\1/;
+const GALLERY_ALT_RE = /alt\s*:\s*(['"])((?:(?!\1).)*)\1/;
+const GALLERY_CAPTION_RE = /caption\s*:\s*(['"])((?:(?!\1).)*)\1/;
+function extractImageGalleries(src: string, slots: Slot[]): string {
+	return src.replace(GALLERY_RE, (_full, inner: string) => {
+		const objects = inner.match(GALLERY_OBJ_RE) ?? [];
+		const images: GalleryImage[] = [];
+		for (const obj of objects) {
+			const imgSrc = obj.match(GALLERY_SRC_RE)?.[2] ?? '';
+			if (!imgSrc) continue;
+			const item: GalleryImage = {
+				src: imgSrc,
+				alt: obj.match(GALLERY_ALT_RE)?.[2] ?? '',
+			};
+			const caption = obj.match(GALLERY_CAPTION_RE)?.[2];
+			if (caption) item.caption = caption;
+			images.push(item);
+		}
+		// Drop the marker entirely if no valid images were found, rather than
+		// rendering an empty gallery surface.
+		if (images.length === 0) return '';
+		const i = slots.push({ kind: 'gallery', props: { images } }) - 1;
+		return `\n\n${slotComment(i)}\n\n`;
+	});
+}
+
+// --- Pipeline ----------------------------------------------------------------
+
+const slots: Slot[] = [];
+const parts: Array<{ kind: 'html'; html: string } | { kind: 'slot'; slot: Slot }> = [];
+
 if (markdown && markdown.trim().length > 0) {
+	// 1. Extract code blocks first so later detectors and the URL rewrite
+	//    below can't accidentally reach into code bodies.
+	let src = markdown;
+	src = extractCodeBlocks(src, slots);
+
+	// 2. Rewrite IoT Hub resource URLs in the surviving prose. Done BEFORE
+	//    gallery extraction so any `/api/resources/…` paths inside gallery
+	//    `src:` fields are already absolute by the time we parse them.
+	src = rewriteResourceUrls(src);
+
+	// 3. Extract any remaining patterns. Add new detectors here.
+	src = extractImageGalleries(src, slots);
+
+	// 4. Markdown → HTML.
 	const processor = await getMarkdownProcessor();
-	const result = await processor.render(rewriteResourceUrls(markdown));
-	html = result.code;
+	const { code: html } = await processor.render(src);
+
+	// 5. Walk the HTML, alternating between html chunks and slot invocations.
+	SLOT_RE.lastIndex = 0;
+	let last = 0;
+	let m: RegExpExecArray | null;
+	while ((m = SLOT_RE.exec(html))) {
+		if (m.index > last) parts.push({ kind: 'html', html: html.slice(last, m.index) });
+		const slot = slots[Number(m[1])];
+		if (slot) parts.push({ kind: 'slot', slot });
+		last = m.index + m[0].length;
+	}
+	if (last < html.length) parts.push({ kind: 'html', html: html.slice(last) });
 }
 ---
 
 {
-	html && (
-		<div
-			class:list={['iot-hub-md', { 'iot-hub-md--lead': leadFirstParagraph }]}
-			set:html={html}
-		/>
+	parts.length > 0 && (
+		<div class="sl-markdown-content">
+			{parts.map((p) => {
+				if (p.kind === 'html') return <Fragment set:html={p.html} />;
+				switch (p.slot.kind) {
+					case 'code':
+						return <Code {...p.slot.props} />;
+					case 'gallery':
+						return <ImageGallery {...p.slot.props} />;
+					// Future: more cases here.
+					default:
+						return null;
+				}
+			})}
+		</div>
 	)
 }
 
 <style lang="scss">
 	@use '~/styles/_variables.scss' as *;
+	
+	.sl-markdown-content {
 
-	:root {
-		--md-table-border-color: #edeef3;
-		--md-table-header-background-color: #F6F7F9;
-		--md-table-header-text-color: #555962;
-		--md-table-text-color: var(--color-text-secondary);
-	}
+		:global(p) { 
+			line-height: var(--sl-line-height);
+			-webkit-font-smoothing: antialiased;
+			color: var(--sl-color-text);
+			font-size: var(--sl-font-size);
+		}
 
-	:global([data-theme='dark']) {
-		--md-table-border-color: #23262F;
-		--md-table-header-background-color: #23262F;
-		--md-table-header-text-color: #888C96;
-	}
-
-	$text-color: var(--color-text-secondary);
-	$link-color: var(--color-primary);
-	$copy-button-color: var(--color-primary);
-
-	$code-block-border-color: rgba(42, 125, 236, .2);
-	$code-default-color: #212529;
-	$code-text-color: #eb5757;
-	$code-keyword-color: #2a7dec;
-
-
-
-	$table-border-color: var(--md-table-border-color);
-	$table-header-background-color: var(--md-table-header-background-color);
-	$table-header-text-color: var(--md-table-header-text-color);
-	$table-text-color: var(--md-table-text-color);
-
-	$gallery-border-hover-color: var(--color-primary);
-
-
-	// :global() is required throughout because the markdown HTML is injected
-	// via set:html so its elements don't carry this component's Astro scope.
-	.iot-hub-md {
-		font-size: 16px;
-		line-height: 24px;
-		letter-spacing: 0.2px;
-		color: $text-color;
-
-		:global(h1, h2, h3, h4, h5, h6) {
+		:global(h1), :global(h2), :global(h3), :global(h4), :global(h5), :global(h6) {
 			font-size: 24px;
 			font-weight: 600;
 			line-height: 32px;
 			letter-spacing: 0.1px;
-			color: $text-color;
+			color: var(--sl-color-text);
 			margin: 0;
 			padding: 0;
 		}
@@ -106,20 +198,15 @@ if (markdown && markdown.trim().length > 0) {
 			padding: 0 0 6px;
 			margin-top: 20px;
 		}
-		
+
 		:global(h1) {
 			font-size: 32px;
 			line-height: 48px;
 			padding-right: 0;
 		}
 
-		:global(p) {
-			font-size: 16px;
-			font-weight: 400;
-			line-height: 24px;
-			letter-spacing: 0.2px;
-			color: $text-color;
-			margin: 0;
+		:global(ul), :global(li) {
+			list-style: disc;
 		}
 
 		:global(> p), :global(> div) {
@@ -144,7 +231,6 @@ if (markdown && markdown.trim().length > 0) {
 			font-size: 16px;
 			line-height: 24px;
 			letter-spacing: 0.2px;
-			color: $text-color;
 
 			:global(+ h1), :global(+ h2), :global(+ h3), :global(+ h4), :global(+ h5), :global(+ h6) {
 				padding-top: 0;
@@ -157,14 +243,8 @@ if (markdown && markdown.trim().length > 0) {
 			margin-bottom: 8px;
 		}
 
-	  :global(ul), :global(li) {
+		:global(ul), :global(li) {
 			list-style: disc;
-		}
-
-		:global(li) {
-			padding-bottom: 4px;
-			margin-bottom: 0;
-			line-height: 24px;
 		}
 
 		:global(img) {
@@ -175,235 +255,6 @@ if (markdown && markdown.trim().length > 0) {
 			margin: 0;
 		}
 
-		:global(strong) {
-			font-weight: $font-weight-semibold;
-		}
-
-		:global(a) {
-			font-weight: 500;
-			color: $link-color;
-			text-decoration: none;
-			border: none;
-
-			&:hover {
-				color: $link-color;
-				text-decoration: underline;
-				border: none;
-			}
-		}
-
-		:global(code:not([class*=language-])) {
-			color: $code-text-color;
-			font-family: monospace;
-			font-size: 14px;
-		}
-
-		:global(div.code-wrapper) {
-			position: relative;
-
-			:global(button.clipboard-btn) {
-				pointer-events: none;
-				outline: none;
-				position: absolute;
-				width: 206px;
-				height: 32px;
-				top: 0;
-				right: 0;
-				background: 0 0;
-				border: none;
-				user-select: none;
-
-				&.multiline {
-					right: 6px;
-				}
-
-				:global(p) {
-					padding: 6px 8px 0;
-					top: 1px;
-					transition: .2s;
-					color: $copy-button-color;
-					background: rgba(255, 255, 255, .85);
-					backdrop-filter: blur(4px);
-					opacity: 0;
-					font-weight: 500;
-					right: 32px;
-					position: absolute;
-				}
-
-				:global(div) {
-					background-color: #fff;
-					position: absolute;
-					width: 38px;
-					height: 28px;
-					top: 3px;
-					right: 3px;
-					padding: 8px 10px 0;
-
-					:global(img) {
-						position: initial;
-						width: 18px;
-						height: 18px;
-						filter: invert(51%) sepia(6%) saturate(172%) hue-rotate(177deg) brightness(94%) contrast(92%);
-					}
-				}
-			}
-
-			&:hover {
-				cursor: pointer;
-
-				:global(pre[class*="language-"]) {
-					border: solid 1px $copy-button-color;
-				}
-
-				:global(button.clipboard-btn) {
-					:global(p) {
-						opacity: 1;
-					}
-
-					:global(div img) {
-						filter: invert(49%) sepia(97%) saturate(3730%) hue-rotate(200deg) brightness(95%) contrast(95%);
-					}
-				}
-			}
-		}
-
-	  :global(th), :global(td) {
-			:global(div.code-wrapper) {
-				display: inline-block;
-				width: 100%;
-
-				:global(button.clipboard-btn) {
-					top: -6px;
-					padding: 0 3px;
-				}
-			}
-		}
-			
-		:global(pre[class*="language-"]) {
-			font-size: 14px;
-			border: 1px solid $code-block-border-color;
-			border-radius: 4px;
-			background: 0 0;
-			padding: 8px 16px;
-			color: $code-default-color;
-
-			:global(.token.atrule), :global(.token.attr-value), :global(.token.keyword) {
-				color: $code-keyword-color;
-			}
-
-			:global(.token.selector), :global(.token.attr-name), :global(.token.string), :global(.token.char), :global(.token.builtin), :global(.token.inserted) {
-				color: $code-text-color;
-			}
-
-			:global(.token.punctuation) {
-				color: $code-default-color;
-			}
-
-			&.line-numbers {
-				padding-left: 66px;
-
-				:global(> code span.line-numbers-rows) {
-					top: -11px;
-					bottom: -11px;
-					left: -66px;
-					width: 50px;
-					border: none;
-					padding: 8px 12px 8px 18px;
-					text-align: right;
-					background: #f9fbff;
-
-					:global(> span:before) {
-						color: rgba(33, 37, 41, .6);
-						padding-right: 0;
-					}
-				}
-
-				&.no-line-numbers {
-					padding-left: 16px;
-
-					:global(> code span.line-numbers-rows) {
-						display: none;
-					}
-				}
-			}
-		}
-
-		:global(> table) {
-			width: 100%;
-			border: 1px solid $table-border-color;
-			border-radius: 4px;
-			border-collapse: unset;
-			border-spacing: 0;
-			margin-top: 20px;
-			margin-bottom: 20px;
-			overflow: hidden;
-			table-layout: fixed;
-
-			&.auto {
-				table-layout: auto;
-			}
-			:global(> thead) {
-				background-color: $table-header-background-color;
-				color: $table-header-text-color;
-
-				:global(> tr > th) {
-					border-bottom: 1px solid $table-border-color;
-					font-size: 16px;
-					padding: 8px 12px;
-					text-align: left;
-					margin: 0;
-					@media screen and (max-width: 400px) {
-						font-size: 12px;
-						padding: 8px 4px;
-						:global(code:not([class*=language-])) {
-							font-size: 12px;
-						}
-					}
-				}
-			}
-
-			:global(> tbody) {
-				:global(> tr:not(:last-child) > td) {
-					border-bottom: 1px solid $table-border-color;
-				}
-
-				:global(> tr > td) {
-					font-size: 16px;
-					padding: 8px 12px;
-					text-align: left;
-					margin: 0;
-					color: $table-text-color;
-					@media screen and (max-width: 400px) {
-						font-size: 12px;
-						padding: 8px 4px;
-						:global(code:not([class*=language-])) {
-							font-size: 12px;
-						}
-					}
-				}
-			}
-
-			:global(th), :global(td) {
-				font-size: 16px;
-				padding: 8px;
-				margin: 0;
-				text-align: left;
-			}
-
-			:global(td[align=center]), :global(th[align=center]) {
-				text-align: center;
-			}
-
-			:global(td[align=right]), :global(th[align=right]) {
-				text-align: right;
-			}
-
-			:global(tr td div) {
-				padding-left: 0;
-				padding-right: 0;
-			}
-		}
-		
 		:global(.tb-callout) {
 			display: flex;
 			align-items: flex-start;

@@ -12,9 +12,11 @@
 }
 
 // Reset
-* {
-	margin: 0;
-	padding: 0;
+@layer reset {
+	* {
+		margin: 0;
+		padding: 0;
+	}
 }
 
 // Body
