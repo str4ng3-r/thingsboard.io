@@ -119,7 +119,7 @@ const first = groups[0]?.items[0];
 const name = profile?.displayName ?? first?.creatorDisplayName ?? 'ThingsBoard';
 const avatarUrl = resolveAvatar(profile?.avatarUrl ?? first?.creatorAvatarUrl ?? null);
 const verified = profile?.verified ?? first?.creatorVerified ?? false;
-const count = profile?.publishedCount ?? total;
+const count = profile?.publishedListingCount ?? total;
 const basePath = `/iot-hub/creator/${id}/`;
 
 const title = `${name} | IoT Hub | ThingsBoard`;

@@ -330,7 +330,13 @@ export const creatorViewSchema = z.object({
 	youtubeUrl: z.string().nullable().default(null),
 	affiliateId: z.string().nullable().default(null),
 	verified: z.boolean().default(false),
+	// `publishedCount`: published item-version count across all the creator's
+	// items. `publishedListingCount`: number of the creator's listings whose
+	// status is PUBLISHED — what the creator page surfaces as the "items"
+	// figure since users care about how many distinct listings they ship,
+	// not how many versions sit inside them.
 	publishedCount: z.number().default(0),
+	publishedListingCount: z.number().default(0),
 });
 
 export type CreatorView = z.infer<typeof creatorViewSchema>;
