@@ -399,21 +399,26 @@ const highlights = [
 	// JS-built DOM picks up these styles too.
 	.iot-hub-hero__search-popup {
 		position: absolute;
-		top: 100%;
+		top: calc(100% + 1px);
 		left: 0;
 		right: 0;
 		display: flex;
 		flex-direction: column;
 		max-height: 424px;
 		background: var(--color-bg-surface);
-		border: 1px solid var(--neutral---sl-color-gray-4, #888c96);
-		border-radius: 8px;
-		box-shadow:
-			0 7px 16px rgba(0, 0, 0, 0.04),
-			0 29px 29px rgba(0, 0, 0, 0.03),
-			0 64px 38px rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, .12);
+		border-radius: 0 0 8px 8px;
+		box-shadow: 0 7px 16px #0000000a, 0 29px 29px #00000008, 0 64px 38px #00000005, 0 114px 46px #00000003, 0 178px 50px #0000;
 		z-index: 10;
 		overflow: hidden;
+		// Enter animation parity with Angular Material's
+		// `mat-autocomplete-panel-animations-enabled`: 120ms scaleY+opacity
+		// fade with deceleration easing, anchored to the top so the panel
+		// drops out of the input. CSS animations on `display: none` are
+		// inactive — toggling the `hidden` attribute (openPopup /
+		// closePopup) restarts the animation each time the popup re-shows.
+		transform-origin: top center;
+		animation: iot-hub-hero-popup-enter 120ms cubic-bezier(0, 0, 0.2, 1);
 
 		:global([data-theme='dark']) & {
 			border-color: #353841;
@@ -421,6 +426,23 @@ const highlights = [
 
 		&[hidden] {
 			display: none;
+		}
+	}
+
+	@keyframes iot-hub-hero-popup-enter {
+		from {
+			transform: scaleY(0);
+			opacity: 0;
+		}
+		to {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.iot-hub-hero__search-popup {
+			animation: none;
 		}
 	}
 
@@ -449,7 +471,7 @@ const highlights = [
 		&:hover,
 		&:focus-visible {
 			background: var(--color-bg-light);
-			text-decoration: underline;
+			text-decoration: none;
 		}
 
 		:global([data-theme='dark']) & {
@@ -492,6 +514,36 @@ const highlights = [
 		min-height: 80px;
 		font-size: 14px;
 		color: var(--color-text-muted);
+	}
+
+	// 24px circular progress spinner — visual parity with the platform's
+	// <mat-spinner diameter="24"> used in tb-search-popup-loading. Three
+	// transparent borders + one tinted top form an arc that rotates.
+	:global(.iot-hub-hero__search-popup-spinner) {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		border: 2px solid var(--color-bg-light, rgba(0, 0, 0, 0.08));
+		border-top-color: var(--color-primary);
+		border-radius: 50%;
+		animation: iot-hub-hero-spin 0.8s linear infinite;
+
+		:global([data-theme='dark']) & {
+			border-color: rgba(255, 255, 255, 0.12);
+			border-top-color: #b3c7ff;
+		}
+	}
+
+	@keyframes iot-hub-hero-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.iot-hub-hero__search-popup-spinner) {
+			animation-duration: 2.4s;
+		}
 	}
 
 	:global(.iot-hub-hero__search-popup-empty) {
@@ -632,6 +684,7 @@ const highlights = [
 		type ListingView,
 	} from '@models/iot-hub';
 	import { bindListingCard } from './iot-hub-listing-link-bind';
+	import { getKnownSlugs } from './iot-hub-known-slugs';
 
 	const DEBOUNCE_MS = 300;
 	const PAGE_SIZE = 10;
@@ -655,13 +708,18 @@ const highlights = [
 		});
 		const trimmed = text.trim();
 		if (trimmed) params.set('textSearch', trimmed);
-		const res = await fetch(
-			`${IOT_HUB_API_URL}/api/listings/published?${params.toString()}`,
-			{ signal }
-		);
+		const [res, knownSlugs] = await Promise.all([
+			fetch(
+				`${IOT_HUB_API_URL}/api/listings/published?${params.toString()}`,
+				{ signal }
+			),
+			getKnownSlugs(),
+		]);
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		const body = (await res.json()) as { data: ListingView[] };
-		return body.data ?? [];
+		// Drop listings whose detail pages don't exist statically — the
+		// portal may have published them since the last deploy.
+		return (body.data ?? []).filter((item) => knownSlugs.has(item.slug));
 	}
 
 	// Group by itemType in IOT_HUB_CATEGORIES priority order. Items whose
@@ -696,7 +754,11 @@ const highlights = [
 		if (state === 'loading') {
 			const div = document.createElement('div');
 			div.className = 'iot-hub-hero__search-popup-status';
-			div.textContent = 'Loading…';
+			const spinner = document.createElement('span');
+			spinner.className = 'iot-hub-hero__search-popup-spinner';
+			spinner.setAttribute('role', 'progressbar');
+			spinner.setAttribute('aria-label', 'Loading results');
+			div.appendChild(spinner);
 			body.appendChild(div);
 		} else if (state === 'empty') {
 			const div = document.createElement('div');
@@ -750,10 +812,22 @@ const highlights = [
 
 		let abort: AbortController | null = null;
 		let debounceTimer: number | undefined;
+		// Tracks whether the body is currently rendered in the loading
+		// state. Set the moment input changes (so the spinner appears
+		// immediately, not after the 300ms debounce) and cleared when the
+		// fetch resolves. The flag also lets fast typing skip a redundant
+		// re-render while loading is already visible.
+		let isLoading = false;
 		let lastQuery = ' '; // sentinel: never matches a real first value
 
 		function updateFooter(q: string): void {
 			footer!.href = buildSearchUrl(q);
+		}
+
+		function showLoading(text: string): void {
+			if (isLoading) return;
+			isLoading = true;
+			renderState(body!, 'loading', text);
 		}
 
 		function runSearch(text: string, force = false): void {
@@ -761,15 +835,17 @@ const highlights = [
 			lastQuery = text;
 			if (abort) abort.abort();
 			abort = new AbortController();
-			renderState(body!, 'loading', text);
+			showLoading(text);
 			updateFooter(text);
 			fetchListings(text, abort.signal)
 				.then((items) => {
+					isLoading = false;
 					if (items.length === 0) renderState(body!, 'empty', text);
 					else renderGroups(body!, groupByCategory(items));
 				})
 				.catch((err: unknown) => {
 					if (err instanceof DOMException && err.name === 'AbortError') return;
+					isLoading = false;
 					renderState(body!, 'error', text);
 				});
 		}
@@ -789,11 +865,19 @@ const highlights = [
 				clearTimeout(debounceTimer);
 				debounceTimer = undefined;
 			}
+			// Reset so a subsequent openPopup re-renders the loading state
+			// rather than skipping the call as a no-op against stale flag.
+			isLoading = false;
 		}
 
 		input.addEventListener('focus', openPopup);
 		input.addEventListener('input', () => {
 			updateFooter(input.value);
+			// Render the loading state synchronously — before the debounce
+			// timer starts — so the user sees immediate feedback while
+			// they continue typing. If the popup is already in the loading
+			// state, this is a cheap no-op (the flag check in showLoading).
+			showLoading(input.value);
 			if (debounceTimer !== undefined) clearTimeout(debounceTimer);
 			debounceTimer = window.setTimeout(() => runSearch(input.value), DEBOUNCE_MS);
 		});

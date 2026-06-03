@@ -1,6 +1,7 @@
 ---
 import { PAGE_SIZE } from '@models/iot-hub';
 import IotHubChevron from './IotHubChevron.astro';
+import IotHubIcon from './IotHubIcon.astro';
 import PaginationChevron from './PaginationChevron.astro';
 
 interface Props {
@@ -9,9 +10,23 @@ interface Props {
 	basePath: string;
 	/** Items-per-page value shown in the (decorative) selector. */
 	perPage?: number;
+	/**
+	 * Layout variant:
+	 *   - 'centered' (default) — page-numbers centred, items-per-page
+	 *     absolutely pinned to the right edge.
+	 *   - 'right' — everything right-aligned in a single flex row, items-
+	 *     per-page sits inline after the page numbers.
+	 */
+	variant?: 'centered' | 'right';
 }
 
-const { currentPage, totalPages, basePath, perPage = PAGE_SIZE } = Astro.props;
+const {
+	currentPage,
+	totalPages,
+	basePath,
+	perPage = PAGE_SIZE,
+	variant = 'centered',
+} = Astro.props;
 
 const pageUrl = (n: number): string => (n === 1 ? basePath : `${basePath}${n}/`);
 
@@ -32,9 +47,18 @@ function buildPages(current: number, total: number): Array<number | 'ellipsis'> 
 const items = buildPages(currentPage, totalPages);
 const prevHref = currentPage > 1 ? pageUrl(currentPage - 1) : undefined;
 const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined;
+
+// Items-per-page selector: three multiples of `perPage`. The dropdown
+// dispatches `iot-hub-page-size:change` { perPage } on selection so the
+// host (the future dynamic-search pipeline) can refetch.
+const perPageOptions = [perPage, perPage * 2, perPage * 3];
 ---
 
-<nav class="iot-hub-pagination" aria-label="Pagination">
+<nav
+	class:list={['iot-hub-pagination', `iot-hub-pagination--${variant}`]}
+	aria-label="Pagination"
+	data-iot-hub-pagination
+>
 	<div class="iot-hub-pagination__pages-wrap">
 		<ul class="iot-hub-pagination__pages iot-hub-pagination__pages--numbers">
 			<li>
@@ -71,20 +95,67 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 			<PaginationChevron direction="right" href={nextHref} label="Next page" />
 		</div>
 	</div>
-	<div class="iot-hub-pagination__per-page" aria-hidden="true">
-		<span class="iot-hub-pagination__per-page-label">Items per page:</span>
-		<span class="iot-hub-pagination__per-page-value">
-			{perPage}
-			<IotHubChevron direction="down" />
+	<div
+		class="iot-hub-pagination__per-page"
+		data-per-page-root
+		data-per-page={perPage}
+	>
+		<span class="iot-hub-pagination__per-page-label" id="iot-hub-per-page-label">
+			Items per page:
 		</span>
+		<button
+			type="button"
+			class="iot-hub-pagination__per-page-value"
+			data-per-page-button
+			aria-haspopup="listbox"
+			aria-expanded="false"
+			aria-labelledby="iot-hub-per-page-label"
+		>
+			<span data-per-page-label>{perPage}</span>
+			<IotHubChevron direction="down" />
+		</button>
+		<div
+			class="iot-hub-pagination__per-page-popup"
+			hidden
+			data-per-page-popup
+			role="listbox"
+			aria-label="Items per page"
+		>
+			{perPageOptions.map((n) => (
+				<button
+					type="button"
+					role="option"
+					class:list={[
+						'iot-hub-pagination__per-page-option',
+						n === perPage && 'iot-hub-pagination__per-page-option--selected',
+					]}
+					data-per-page-option
+					data-per-page-value={n}
+					aria-selected={n === perPage}
+				>
+					<span class="iot-hub-pagination__per-page-option-text">{n}</span>
+					<IotHubIcon
+						icon="check"
+						size={24}
+						class="iot-hub-pagination__per-page-option-check"
+					/>
+				</button>
+			))}
+		</div>
 	</div>
 </nav>
 
-<style lang="scss">
+<style is:global lang="scss">
 	@use '~/styles/_variables.scss' as *;
 
 	.iot-hub-pagination {
 		position: relative;
+		// Establishes a stacking context (z-index !== auto) so the
+		// per-page popup floats above the page sections that follow the
+		// pagination in DOM order. Without this, the popup ends up below
+		// later sections — they aren't z-indexed either, but DOM order
+		// wins for elements at the same stacking level.
+		z-index: 5;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -93,6 +164,26 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 
 		@include media-down(sm) {
 			padding: 0 12px;
+		}
+	}
+
+	// `right` variant — single right-aligned row. Used by surfaces where
+	// the centred layout would leave a big empty column to the left
+	// (e.g. the search-page filter bar).
+	.iot-hub-pagination--right {
+		justify-content: flex-end;
+		gap: 16px;
+		padding-right: 0;
+
+		.iot-hub-pagination__pages-wrap {
+			flex: 0;
+		}
+
+		.iot-hub-pagination__per-page {
+			position: relative;
+			top: auto;
+			right: auto;
+			transform: none;
 		}
 	}
 
@@ -116,7 +207,7 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 		gap: 8px;
 	}
 
-	@include media-down(md) {
+	@include media-down(lg) {
 		.iot-hub-pagination__pages--numbers {
 			display: none;
 		}
@@ -126,7 +217,11 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 		}
 	}
 
-	%pagination-btn {
+	// Mixin (not %placeholder + @extend) because @extend doesn't reliably
+	// reach across `:global()` selectors after Astro's SCSS pipeline rewrites
+	// them — `.iot-hub-pagination__page` would silently lose the shared
+	// chrome and end up at the UA button size + UA font.
+	@mixin pagination-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -148,8 +243,8 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 		}
 	}
 
-	:global(.iot-hub-pagination__chevron) {
-		@extend %pagination-btn;
+	.iot-hub-pagination__chevron {
+		@include pagination-btn;
 
 		&:hover,
 		&:focus-visible {
@@ -164,7 +259,7 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 	}
 
 	.iot-hub-pagination__page {
-		@extend %pagination-btn;
+		@include pagination-btn;
 		padding: 8px 16px;
 		color: var(--color-text);
 
@@ -179,7 +274,7 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 			pointer-events: none;
 		}
 
-		:global([data-theme='dark']) &.is-current {
+		[data-theme='dark'] &.is-current {
 			background: #b3c7ff;
 			color: #17181c;
 		}
@@ -189,9 +284,13 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 24px;
+		min-width: 40px;
 		height: 40px;
-		color: var(--color-text-muted);
+		padding: 8px 16px;
+		font-size: 14px;
+		font-weight: $font-weight-semibold;
+		line-height: 24px;
+		color: var(--sl-color-gray-5);
 	}
 
 	.iot-hub-pagination__summary {
@@ -217,7 +316,7 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 		line-height: 24px;
 		color: var(--color-text-muted);
 
-		@include media-down(md) {
+		@include media-down(lg) {
 			display: none;
 		}
 	}
@@ -236,16 +335,215 @@ const nextHref = currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
 		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		color: var(--color-text);
+		font-family: inherit;
+		font-size: 14px;
+		line-height: 24px;
 		font-weight: $font-weight-normal;
-		cursor: not-allowed;
+		cursor: pointer;
 		background: var(--color-bg-surface);
+		transition: background-color $transition-fast, border-color $transition-fast;
+
+		&:hover,
+		&[aria-expanded='true'] {
+			background: var(--sl-color-gray-6);
+		}
 
 		svg {
 			color: var(--color-text-secondary);
 		}
 
-		:global([data-theme='dark']) & {
+		[data-theme='dark'] & {
 			border-color: #23262f;
 		}
 	}
+
+	// Popup anchored below the button. `right: 0` keeps it aligned to the
+	// trigger's right edge so longer option labels expand leftward into the
+	// row's empty space rather than overflowing the viewport.
+	.iot-hub-pagination__per-page-popup {
+		position: absolute;
+		top: calc(100% + 4px);
+		right: 0;
+		min-width: 100%;
+		display: flex;
+		flex-direction: column;
+		padding: 4px;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--iot-hub-hairline, rgba(0, 0, 0, 0.12));
+		border-radius: 8px;
+		box-shadow:
+			0 1px 0.5px rgba(0, 0, 0, 0.12),
+			0 2px 0.5px rgba(0, 0, 0, 0.24);
+		// Within the .iot-hub-pagination stacking context (z-index: 5 on
+		// the nav), this is the local stacking level — high enough to
+		// clear any other internal absolutely-positioned siblings.
+		z-index: 100;
+
+		[data-theme='dark'] & {
+			border-color: #23262f;
+			background: #17181c;
+		}
+
+		// Enter animation parity with IotHubSort / hero autocomplete —
+		// 120ms decel curve. Pivot is top-right so the popup expands
+		// downward from the button corner.
+		transform-origin: top right;
+		animation: iot-hub-pagination-per-page-enter 120ms cubic-bezier(0, 0, 0.2, 1);
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	@keyframes iot-hub-pagination-per-page-enter {
+		from {
+			transform: scaleY(0);
+			opacity: 0;
+		}
+		to {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.iot-hub-pagination__per-page-popup {
+			animation: none;
+		}
+	}
+
+	.iot-hub-pagination__per-page-option {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		padding: 8px 12px;
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: $font-weight-semibold;
+		line-height: 24px;
+		color: var(--sl-color-gray-2);
+		background: transparent;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		text-align: left;
+		transition: background-color $transition-fast;
+
+		&:hover {
+			background: var(--sl-color-gray-6);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--color-primary);
+			outline-offset: -2px;
+		}
+	}
+
+	.iot-hub-pagination__per-page-option-text {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.iot-hub-pagination__per-page-option-check {
+		flex-shrink: 0;
+		visibility: hidden;
+	}
+
+	.iot-hub-pagination__per-page-option--selected {
+		background: var(--sl-color-gray-6);
+		color: var(--color-primary);
+
+		[data-theme='dark'] & {
+			color: #b3c7ff;
+		}
+
+		.iot-hub-pagination__per-page-option-check {
+			visibility: visible;
+		}
+	}
 </style>
+
+<script>
+	// Items-per-page dropdown. Click toggles, option click commits +
+	// closes + dispatches `iot-hub-page-size:change` { perPage } on the
+	// root for the future dynamic-search pipeline to listen to.
+
+	function setupPerPage(root: HTMLElement) {
+		if (root.dataset.perPageInited) return;
+		root.dataset.perPageInited = 'true';
+
+		const button = root.querySelector<HTMLButtonElement>('[data-per-page-button]');
+		const popup = root.querySelector<HTMLElement>('[data-per-page-popup]');
+		const label = root.querySelector<HTMLElement>('[data-per-page-label]');
+		if (!button || !popup || !label) return;
+
+		const options = Array.from(
+			root.querySelectorAll<HTMLButtonElement>('[data-per-page-option]')
+		);
+
+		function openPopup() {
+			popup!.hidden = false;
+			button!.setAttribute('aria-expanded', 'true');
+		}
+
+		function closePopup() {
+			popup!.hidden = true;
+			button!.setAttribute('aria-expanded', 'false');
+		}
+
+		button.addEventListener('click', (e) => {
+			e.stopPropagation();
+			if (popup.hidden) openPopup();
+			else closePopup();
+		});
+
+		for (const opt of options) {
+			opt.addEventListener('click', (e) => {
+				e.stopPropagation();
+				const value = Number.parseInt(opt.dataset.perPageValue ?? '0', 10);
+				if (!Number.isFinite(value) || value <= 0) return;
+				for (const o of options) {
+					const isSelected = o === opt;
+					o.classList.toggle(
+						'iot-hub-pagination__per-page-option--selected',
+						isSelected
+					);
+					o.setAttribute('aria-selected', String(isSelected));
+				}
+				label!.textContent = String(value);
+				root.dataset.perPage = String(value);
+				closePopup();
+				root.dispatchEvent(
+					new CustomEvent('iot-hub-page-size:change', {
+						detail: { perPage: value },
+						bubbles: true,
+					})
+				);
+			});
+		}
+
+		document.addEventListener('click', (e) => {
+			if (!popup.hidden && !root.contains(e.target as Node)) closePopup();
+		});
+		root.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && !popup.hidden) {
+				closePopup();
+				button!.focus();
+			}
+		});
+	}
+
+	function initAll() {
+		document
+			.querySelectorAll<HTMLElement>('[data-per-page-root]')
+			.forEach(setupPerPage);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initAll);
+	} else {
+		initAll();
+	}
+	document.addEventListener('astro:page-load', initAll);
+</script>

@@ -232,6 +232,35 @@ export const ITEM_SUBTYPE_LABELS: Partial<Record<IotHubItemType, Record<string, 
 	},
 };
 
+// --- Sort options ------------------------------------------------------------
+// Shared between the search page, creator page, category pages and any other
+// surface that exposes a sort selector. Each option carries the API query
+// params it maps to (`sortProperty` + `sortOrder`), so consumers can spread
+// them straight into the listings request without a second lookup.
+
+export type IotHubSortId = 'most-installed' | 'newest' | 'name-asc';
+export type IotHubSortProperty = 'installCount' | 'publishedTime' | 'name';
+export type IotHubSortDirection = 'ASC' | 'DESC';
+
+export interface IotHubSortOption {
+	id: IotHubSortId;
+	label: string;
+	sortProperty: IotHubSortProperty;
+	sortOrder: IotHubSortDirection;
+}
+
+export const IOT_HUB_SORT_OPTIONS: ReadonlyArray<IotHubSortOption> = [
+	{ id: 'most-installed', label: 'Most Installed', sortProperty: 'installCount',  sortOrder: 'DESC' },
+	{ id: 'newest',         label: 'Newest',         sortProperty: 'publishedTime', sortOrder: 'DESC' },
+	{ id: 'name-asc',       label: 'Name (A-Z)',     sortProperty: 'name',          sortOrder: 'ASC'  },
+];
+
+export const DEFAULT_IOT_HUB_SORT_ID: IotHubSortId = 'most-installed';
+
+export function getIotHubSortOption(id: string | null | undefined): IotHubSortOption {
+	return IOT_HUB_SORT_OPTIONS.find((o) => o.id === id) ?? IOT_HUB_SORT_OPTIONS[0];
+}
+
 export const getSubtypeLabel = (itemType: IotHubItemType, key: string): string =>
 	ITEM_SUBTYPE_LABELS[itemType]?.[key] ?? key;
 
@@ -318,6 +347,7 @@ export const listingViewSchema = z.object({
 	connectivity: z.array(z.string()).default([]),
 	tags: z.array(z.string()).default([]),
 	installCount: z.number().default(0),
+	createdTime: z.number().nullable().default(null),
 	publishedTime: z.number().nullable(),
 	creatorDisplayName: z.string().nullable(),
 	creatorAvatarUrl: z.string().nullable(),

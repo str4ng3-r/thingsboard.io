@@ -1,6 +1,6 @@
 ---
 import { IOT_HUB_STRINGS, SEARCH_PAGE_SIZE } from '@models/iot-hub';
-import IotHubChevron from './IotHubChevron.astro';
+import IotHubSort from './IotHubSort.astro';
 import PaginationLink from './PaginationLink.astro';
 
 const T = IOT_HUB_STRINGS.searchPage;
@@ -46,11 +46,22 @@ const hasQuery = searchText.length > 0;
 					data-search-input
 				/>
 				<span class="search-bar__search-glyph" aria-hidden="true"></span>
+				<button
+					class="search-bar__search-clear"
+					type="button"
+					aria-label="Clear search"
+					data-search-clear
+				>
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+						<path
+							d="M5 5 19 19M19 5 5 19"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"></path>
+					</svg>
+				</button>
 			</div>
-			<button class="search-bar__sort" type="button" disabled>
-				<span>{T.sortLabel}</span>
-				<IotHubChevron direction="down" />
-			</button>
+			<IotHubSort />
 		</div>
 		<div class="search-bar__row2">
 			<p class="search-bar__count">{totalResults} {resultsWord}</p>
@@ -60,6 +71,7 @@ const hasQuery = searchText.length > 0;
 					totalPages={totalPages}
 					basePath={basePath}
 					perPage={SEARCH_PAGE_SIZE}
+					variant="right"
 				/>
 			)}
 		</div>
@@ -139,6 +151,14 @@ const hasQuery = searchText.length > 0;
 		color: var(--color-text);
 
 		&::placeholder { color: var(--color-text-muted); }
+
+		// Hide the browser's built-in `×` so the custom clear button below
+		// is the only one shown.
+		&::-webkit-search-cancel-button,
+		&::-webkit-search-decoration {
+			-webkit-appearance: none;
+			appearance: none;
+		}
 	}
 
 	.search-bar__search-glyph {
@@ -150,25 +170,37 @@ const hasQuery = searchText.length > 0;
 		mask: url('/icons/iot-hub-search.svg') center / contain no-repeat;
 	}
 
-	.search-bar__sort {
+	.search-bar__search-clear {
+		flex-shrink: 0;
 		display: inline-flex;
 		align-items: center;
-		gap: 4px;
-		padding: 8px;
-		font-family: inherit;
-		font-size: 14px;
-		font-weight: $font-weight-semibold;
-		line-height: 24px;
-		color: var(--color-primary);
-		background: transparent;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		padding: 0;
 		border: none;
-		border-radius: 8px;
-		cursor: not-allowed;
-		flex-shrink: 0;
+		background: transparent;
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: color $transition-fast;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--color-text);
+		}
 
 		svg { display: block; }
+	}
 
-		:global([data-theme='dark']) & { color: #b3c7ff; }
+	// Toggle search-glyph vs clear-button by input state. `:placeholder-shown`
+	// is true only when the input has no value, so when the user types the
+	// glyph hides and the clear button reveals — same trick as IotHubHero.
+	.search-bar__search-input:placeholder-shown ~ .search-bar__search-clear {
+		display: none;
+	}
+
+	.search-bar__search-input:not(:placeholder-shown) ~ .search-bar__search-glyph {
+		display: none;
 	}
 
 	.search-bar__row2 {
@@ -234,7 +266,28 @@ const hasQuery = searchText.length > 0;
 
 		input.addEventListener('input', () => {
 			renderHeading(input.value);
+			// Notify the host (dynamic-search page script) so it can debounce
+			// and refetch. Static surfaces that don't care about the event
+			// ignore it harmlessly.
+			bar.dispatchEvent(
+				new CustomEvent('iot-hub-search-text:change', {
+					detail: { searchText: input.value },
+					bubbles: true,
+				})
+			);
 		});
+
+		// Clear button: empties the input, fires an `input` event so the
+		// heading sync (and any future dynamic-fetch listener) reacts, and
+		// returns focus to the input so the user can keep typing.
+		const clearBtn = bar.querySelector<HTMLButtonElement>('[data-search-clear]');
+		if (clearBtn) {
+			clearBtn.addEventListener('click', () => {
+				input.value = '';
+				input.dispatchEvent(new Event('input', { bubbles: true }));
+				input.focus();
+			});
+		}
 	}
 
 	function initAll() {
