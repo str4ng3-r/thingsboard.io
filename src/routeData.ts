@@ -305,12 +305,6 @@ function updateHead(context: APIContext, isTutorial: boolean) {
 		head.push({ tag: 'meta', attrs: { name: 'robots', content: 'noindex, follow' } });
 	}
 
-	// IoT Hub docs are work-in-progress contribution guides — keep the entire
-	// section out of search results until content stabilizes.
-	if (/^\/(uk\/)?docs\/iot-hub(\/|$)/.test(pathname)) {
-		head.push({ tag: 'meta', attrs: { name: 'robots', content: 'noindex, follow' } });
-	}
-
 	// Canonical: free product versions → professional equivalents, plus explicit
 	// frontmatter overrides. See `getCanonicalPathname` — also drives sitemap
 	// exclusion so the two stay in lockstep.
