@@ -8,7 +8,7 @@ import {
 	isNumericSlug,
 	type ListingView,
 } from '@models/iot-hub';
-import BaseLayout from '@layouts/BaseLayout.astro';
+import BaseStarlightLayout from '@layouts/BaseStarlightLayout.astro';
 import CategorySection from '@components/IotHub/CategorySection.astro';
 import CategorySectionTemplate from '@components/IotHub/CategorySectionTemplate.astro';
 import IotHubBreadcrumbs from '@components/IotHub/IotHubBreadcrumbs.astro';
@@ -82,7 +82,7 @@ const description =
 	'Search the ThingsBoard IoT Hub catalogue of devices, widgets, rule chains and more.';
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseStarlightLayout title={title} description={description}>
 	<main
 		class="iot-hub-search"
 		data-iot-hub-search-root
@@ -133,7 +133,7 @@ const description =
 		<CategorySectionTemplate />
 		<IotHubRuntimeConfig />
 	</main>
-</BaseLayout>
+</BaseStarlightLayout>
 
 <style lang="scss">
 	@use '../../../styles/_variables.scss' as *;

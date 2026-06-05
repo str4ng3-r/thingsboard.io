@@ -1,0 +1,21 @@
+---
+import Default from '@astrojs/starlight/components/ContentPanel.astro';
+
+// Proxy in front of Starlight's content panel. Pages rendered through
+// `BaseStarlightLayout` set `Astro.locals.bsl = true` to drop the
+// `.content-panel` / `.sl-container` wrappers entirely — marketing
+// pages own their full-bleed layout, so the panel's padding,
+// hairline-divider, and `max-width: var(--sl-content-width)` would
+// fight it. Everything else gets the stock Starlight panel.
+const isBaseStarlight = (Astro.locals as unknown as Record<string, unknown>).bsl === true;
+---
+
+{
+	isBaseStarlight ? (
+		<slot />
+	) : (
+		<Default>
+			<slot />
+		</Default>
+	)
+}

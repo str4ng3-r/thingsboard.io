@@ -14,6 +14,13 @@ interface Props {
 }
 
 const { platformQuery = '', gitHubPlatform } = Astro.props;
+
+// `BaseStarlightLayout` pages with `forceLightTheme={true}` lock the
+// page to light mode (see `starlight/ThemeProvider.astro`). The toggle
+// would let the user override that, so skip rendering it on those
+// routes — the bytes for `<ThemeToggle />` also stay out of the bundle.
+const locals = Astro.locals as unknown as Record<string, unknown>;
+const hideThemeToggle = locals.bsl === true && locals.bslForceLight === true;
 ---
 
 <div class="logo-burger">
@@ -28,7 +35,7 @@ const { platformQuery = '', gitHubPlatform } = Astro.props;
 	<a href="/" class="logo" aria-label="Link to homepage"></a>
 	<div class="burger-group">
 		<div class="icon-buttons">
-			<ThemeToggle />
+			{!hideThemeToggle && <ThemeToggle />}
 			<SearchButton />
 		</div>
 		<div class="divider"></div>
@@ -49,7 +56,7 @@ const { platformQuery = '', gitHubPlatform } = Astro.props;
      with `order` in the header layout below. -->
 <div class="head-buttons">
 	<div class="icon-buttons">
-		<ThemeToggle />
+		{!hideThemeToggle && <ThemeToggle />}
 		<SearchButton />
 	</div>
 	<div class="divider"></div>

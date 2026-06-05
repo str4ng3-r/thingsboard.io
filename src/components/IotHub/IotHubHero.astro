@@ -11,12 +11,6 @@ import calcFieldsCluster from '@root/assets/iot-hub/hero-calculated-field-cluste
 import alarmRulesCluster from '@root/assets/iot-hub/hero-alarm-rule-cluster.svg';
 import ruleChainsCluster from '@root/assets/iot-hub/hero-rule-chain-cluster.svg';
 
-// Each highlight is an anchor to its category index (same routing as the
-// tiles below), and hovering one immediately makes it the active accent.
-// Colors per the design; slugs mirror IOT_HUB_CATEGORIES.
-// `clusterTop` is the cluster's `y` inside the design hero frame;
-// since the hero frame starts at y=80 (header height), this is also the gap
-// from the header bottom — added to `$header-height` in the CSS.
 const highlights = [
 	{ slug: 'devices', label: 'Devices,', color: '#4c63cc', cluster: devicesCluster, clusterTop: 57 },
 	{ slug: 'solution-templates', label: 'Solution Templates,', color: '#2c6cb4', cluster: solutionsCluster, clusterTop: 40 },
@@ -124,17 +118,12 @@ const highlights = [
 
 	.iot-hub-hero {
 		position: relative;
-		// Override the global `:where(section)` white fill so the dotted pattern
-		// and blobs behind the top section show through (the design: transparent hero).
 		background-color: transparent;
-		// The fixed header ($header-height) overlays page content with no global
-		// offset, so add it to the 180px the design gap between header and title top.
-		// Bottom padding is 80px per the design (search input -> hero bottom gap).
-		padding: calc(#{$header-height} + 180px) 1rem 80px;
+		padding: 180px 1rem 80px;
 		text-align: center;
 
 		@include media-down(sm) {
-			padding: calc(#{$header-height} + 140px) 0.75rem 40px;
+			padding: 140px 0.75rem 40px;
 		}
 	}
 
@@ -197,10 +186,7 @@ const highlights = [
 
 	.iot-hub-hero__cluster-img {
 		position: absolute;
-		// Per-cluster `--cluster-top` is set inline per highlight (its `y`
-		// inside the design hero frame, which itself starts at $header-height).
-		// Fallback matches the Devices state, which is the initial active.
-		top: calc(#{$header-height} + var(--cluster-top, 57px));
+  	top: var(--cluster-top, 57px);
 		left: 50%;
 		transform: translateX(-50%);
 		width: min(890px, calc(100% - 80px));
@@ -209,18 +195,18 @@ const highlights = [
 		pointer-events: none;
 
 		@include media-down(lg) {
-			top: calc(#{$header-height} + 80px);
+			top: 80px;
 		}
 
 		@include media-down(md) {
 			// Mobile uses a single top for all clusters (the design node is
 			// desktop-only); the per-cluster var is intentionally overridden.
-			top: calc(#{$header-height} + 90px);
+			top: 90px;
 			width: calc(100% - 32px);
 		}
 
 		@include media-down(sm) {
-			top: calc(#{$header-height} + 50px);
+			top: 50px;
 		}
 
 	}

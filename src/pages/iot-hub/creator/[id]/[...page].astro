@@ -12,7 +12,7 @@ import {
 	type CreatorView,
 	type ListingView,
 } from '@models/iot-hub';
-import BaseLayout from '@layouts/BaseLayout.astro';
+import BaseStarlightLayout from '@layouts/BaseStarlightLayout.astro';
 import CategorySection from '@components/IotHub/CategorySection.astro';
 import CategorySectionTemplate from '@components/IotHub/CategorySectionTemplate.astro';
 import CreatorHero from '@components/IotHub/CreatorHero.astro';
@@ -134,7 +134,7 @@ const description =
 // /thingsboard-og.png (creator pages aren't in MARKETING_ALLOWLIST).
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseStarlightLayout title={title} description={description}>
 	<main
 		class="iot-hub-creator"
 		data-iot-hub-search-root
@@ -193,7 +193,7 @@ const description =
 		<CategorySectionTemplate />
 		<IotHubRuntimeConfig />
 	</main>
-</BaseLayout>
+</BaseStarlightLayout>
 
 <style lang="scss">
 	@use '../../../../styles/_variables.scss' as *;

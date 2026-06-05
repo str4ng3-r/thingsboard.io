@@ -7,7 +7,7 @@ import {
 	type IotHubNodeInfo,
 	type ListingDetail,
 } from '@models/iot-hub';
-import BaseLayout from '@layouts/BaseLayout.astro';
+import BaseStarlightLayout from '@layouts/BaseStarlightLayout.astro';
 import CreatorCTA from '@components/IotHub/CreatorCTA.astro';
 import DetailHero from '@components/IotHub/DetailHero.astro';
 import DetailMeta from '@components/IotHub/DetailMeta.astro';
@@ -69,7 +69,7 @@ const ruleNodes: IotHubNodeInfo[] =
 		: [];
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImageUrl}>
+<BaseStarlightLayout title={title} description={description} ogImage={ogImageUrl}>
 	<main class="iot-hub-detail">
 		{
 			detail ? (
@@ -104,7 +104,7 @@ const ruleNodes: IotHubNodeInfo[] =
 			)
 		}
 	</main>
-</BaseLayout>
+</BaseStarlightLayout>
 
 <style lang="scss">
 	@use '../../../styles/_variables.scss' as *;

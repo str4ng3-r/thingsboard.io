@@ -1,0 +1,21 @@
+---
+import Default from '@astrojs/starlight/components/ThemeProvider.astro';
+
+// Proxy in front of Starlight's ThemeProvider. BSL pages opt out of
+// the docs theme switcher when they pass `forceLightTheme={true}` —
+// instead we inline a tiny script that locks the page to light mode
+// before paint, dropping the `<template id="theme-icons">`, the
+// `<starlight-theme-select>` updater, and the localStorage / OS-pref
+// resolution along with their bytes. Every other route (including
+// BSL pages that *don't* force light) keeps the stock ThemeProvider.
+const locals = Astro.locals as unknown as Record<string, unknown>;
+const forceLight = locals.bsl === true && locals.bslForceLight === true;
+---
+
+{
+	forceLight ? (
+		<script is:inline>(function(){document.documentElement.dataset.theme = 'light';})()</script>
+	) : (
+		<Default />
+	)
+}

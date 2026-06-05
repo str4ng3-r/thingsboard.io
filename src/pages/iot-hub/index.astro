@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
+import BaseStarlightLayout from '@layouts/BaseStarlightLayout.astro';
 import IotHubHero from '@components/IotHub/IotHubHero.astro';
 import CategoryTilesGrid from '@components/IotHub/CategoryTilesGrid.astro';
 import CategorySection from '@components/IotHub/CategorySection.astro';
@@ -28,7 +28,7 @@ const description =
 	'Discover devices, solution templates, widgets, calculated fields, alarm rules, and rule chains published to the ThingsBoard IoT Hub.';
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseStarlightLayout title={title} description={description}>
 	<main class="iot-hub-home">
 		<section class="iot-hub-home__top">
 			<div class="iot-hub-home__bg" aria-hidden="true">
@@ -68,7 +68,7 @@ const description =
 			</div>
 		</div>
 	</main>
-</BaseLayout>
+</BaseStarlightLayout>
 
 <style lang="scss">
 	@use '../../styles/_variables.scss' as *;

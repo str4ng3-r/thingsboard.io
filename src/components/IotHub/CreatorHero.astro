@@ -85,12 +85,10 @@ const initials = getInitials(name) || '?';
 		display: flex;
 		flex-direction: column;
 		gap: 40px;
-		// Top padding clears the fixed site header ($header-height), mirroring
-		// DetailHero — otherwise the breadcrumb (first element) slides under it.
-		padding: calc(#{$header-height} + 40px) 16px 40px;
+		padding: 40px 16px 40px;
 
 		@include media-down(sm) {
-			padding: calc(#{$header-height} + 40px) 12px 40px;
+			padding: 40px 12px 40px;
 		}
 	}
 

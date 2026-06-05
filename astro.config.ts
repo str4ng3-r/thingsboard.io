@@ -101,10 +101,12 @@ export default defineConfig({
         tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
         components: {
             EditLink: './src/components/starlight/EditLink.astro',
+            ContentPanel: './src/components/starlight/ContentPanel.astro',
             Hero: './src/components/starlight/Hero.astro',
             Head: './src/components/starlight/Head.astro',
             Header: './src/components/starlight/Header.astro',
             SkipLink: './src/components/starlight/SkipLink.astro',
+            ThemeProvider: './src/components/starlight/ThemeProvider.astro',
             MarkdownContent: './src/components/starlight/MarkdownContent.astro',
             MobileTableOfContents: './src/components/starlight/MobileTableOfContents.astro',
             TableOfContents: './src/components/starlight/TableOfContents.astro',

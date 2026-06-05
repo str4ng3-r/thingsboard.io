@@ -12,7 +12,14 @@ function getGitHubPlatform(path: string): Products {
 	return Products.CE;
 }
 
-const gitHubPlatform = getGitHubPlatform(pathname);
+// `BaseStarlightLayout` passes the page's product via Astro.locals so
+// the GitHub button targets the right repo; everywhere else the
+// platform is inferred from the URL (docs routes carry the product as
+// a path prefix).
+const override = (Astro.locals as unknown as Record<string, unknown>).bslGitHubPlatform as
+	| Products
+	| undefined;
+const gitHubPlatform = override ?? getGitHubPlatform(pathname);
 ---
 
 <HeaderContent gitHubPlatform={gitHubPlatform} />

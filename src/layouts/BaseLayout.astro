@@ -17,8 +17,6 @@ interface Props {
 	description?: string;
 	pageId?: string;
 	customTitle?: boolean;
-	githubLink?: string;
-	githubLabel?: string;
 	platformQuery?: string;
 	noCanonical?: boolean;
 	gitHubPlatform?: import('@models/site.models').Products;
@@ -44,8 +42,6 @@ const {
 	description,
 	pageId = 'common',
 	customTitle = false,
-	githubLink = 'https://github.com/thingsboard/thingsboard',
-	githubLabel = 'Star thingsboard/thingsboard on GitHub',
 	platformQuery = '',
 	noCanonical = false,
 	gitHubPlatform,
@@ -121,7 +117,7 @@ const ogImage = ogImageProp ?? getOgImageUrl(Astro.url.pathname);
 	<body>
 		<GtmNoscript />
 
-		<Header githubLink={githubLink} githubLabel={githubLabel} platformQuery={platformQuery} gitHubPlatform={gitHubPlatform} />
+		<Header platformQuery={platformQuery} gitHubPlatform={gitHubPlatform} />
 		<CookieBanner />
 		<UtmTracker />
 
