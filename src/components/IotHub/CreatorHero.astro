@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { getInitials, getWebsiteLabel, IOT_HUB_STRINGS } from '@models/iot-hub';
+import { normalizeSiteUrl } from '@util/site-links';
 import IotHubBreadcrumbs from './IotHubBreadcrumbs.astro';
 import '@fontsource/material-icons';
 
@@ -46,7 +47,7 @@ const initials = getInitials(name) || '?';
 			{bio && <p class="creator-hero__bio">{bio}</p>}
 			<div class="creator-hero__actions">
 				{website && (
-					<a class="creator-hero__website" href={website} target="_blank" rel="noopener">
+					<a class="creator-hero__website" href={normalizeSiteUrl(website)} target="_blank" rel="noopener">
 						<Icon name="tabler:world" size={24} />
 						<span>{getWebsiteLabel(website)}</span>
 					</a>

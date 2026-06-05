@@ -127,9 +127,9 @@ function extractImageGalleries(src: string, slots: Slot[]): string {
 }
 
 // Callouts: `${note(…)}`, `${warn(…)}`, `${error(…)}` → Starlight <Aside>
-// with type note / caution / danger. Content can include inline HTML
-// (e.g. `<span style="…">`, `<b>…</b>`) so we render via set:html. Lazy
-// `[\s\S]*?` paired with `\)\s*}` skips over nested `(…)` parens.
+// with type note / caution / danger. Bodies are markdown — rendered in the
+// pipeline below, then spliced into the Aside via set:html. Lazy `[\s\S]*?`
+// paired with `\)\s*}` skips over nested `(…)` parens.
 const CALLOUT_RE = /\$\{(note|warn|error)\(([\s\S]*?)\)\s*}/g;
 const CALLOUT_TYPE_TO_ASIDE: Record<string, AsideType> = {
 	note: 'note',
@@ -201,9 +201,20 @@ if (markdown && markdown.trim().length > 0) {
 	src = extractDocLinks(src, slots, listingDetail);
 	src = extractListingLinks(src, slots);
 
-	// 4. Markdown → HTML.
+	// 4. Markdown → HTML. The processor's rehype plugin normalizes absolute
+	//    `https://thingsboard.io/...` URLs (listing readmes use them — the same
+	//    content renders inside the platform too) to site-relative form.
 	const processor = await getMarkdownProcessor();
 	const { code: html } = await processor.render(src);
+
+	// Callout bodies were extracted before the main render, so run them through
+	// the same processor — markdown works and hrefs get the same normalization.
+	await Promise.all(
+		slots.map(async (slot) => {
+			if (slot.kind !== 'aside') return;
+			slot.props.content = (await processor.render(slot.props.content)).code;
+		})
+	);
 
 	// 5. Walk the HTML, alternating between html chunks and slot invocations.
 	SLOT_RE.lastIndex = 0;
