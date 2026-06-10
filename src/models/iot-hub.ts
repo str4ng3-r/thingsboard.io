@@ -321,7 +321,7 @@ export const CREATOR_PAGE_SIZE = 16;
 // without disturbing the creator route.
 export const SEARCH_PAGE_SIZE = 16;
 export const HOME_PER_CATEGORY = 4;
-export const API_FETCH_PAGE_SIZE = 100;
+export const API_FETCH_PAGE_SIZE = 128;
 
 export const resolveImage = (path: string | null | undefined): string | null =>
 	path ? `${IOT_HUB_API_URL}${path}` : null;
@@ -446,7 +446,6 @@ export const creatorViewSchema = z.object({
 	linkedinUrl: z.string().nullable().default(null),
 	twitterUrl: z.string().nullable().default(null),
 	youtubeUrl: z.string().nullable().default(null),
-	affiliateId: z.string().nullable().default(null),
 	verified: z.boolean().default(false),
 	// `publishedCount`: published item-version count across all the creator's
 	// items. `publishedListingCount`: number of the creator's listings whose
