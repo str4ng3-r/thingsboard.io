@@ -4,7 +4,7 @@ import {
 	IOT_HUB_SORT_OPTIONS,
 	getIotHubSortOption,
 } from '@models/iot-hub';
-import IotHubChevron from './IotHubChevron.astro';
+import Chevron from '@components/Chevron.astro';
 import IotHubIcon from './IotHubIcon.astro';
 
 // Sort selector reused across the IoT Hub filter bars. Renders a button
@@ -44,7 +44,7 @@ const initial = getIotHubSortOption(initialSortId);
 		aria-expanded="false"
 	>
 		<span class="iot-hub-sort__label" data-sort-label>{initial.label}</span>
-		<IotHubChevron direction="down" />
+		<Chevron direction="down" />
 	</button>
 	<div
 		class="iot-hub-sort__popup"

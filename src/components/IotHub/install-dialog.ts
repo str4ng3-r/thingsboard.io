@@ -32,7 +32,7 @@ let unlockTimer: number | undefined;
 const CLOSE_FADE_MS = 200;
 
 // --- Icons ---------------------------------------------------------------
-// Lucide-style 24×24 stroke icons (matching the IotHubChevron convention).
+// Lucide-style 24×24 stroke icons (matching the Chevron convention).
 // Keys hold the inner SVG markup; `icon()` wraps them in a sized <svg>.
 
 const ICON_PATHS: Record<string, string> = {

@@ -1,5 +1,5 @@
 ---
-import IotHubChevron from './IotHubChevron.astro';
+import Chevron from '@components/Chevron.astro';
 import {
 	getSubtypeLabel,
 	IOT_HUB_STRINGS,
@@ -205,7 +205,7 @@ if (filterInfo.useCases.length > 0) {
 							data-iot-hub-filter-section-toggle
 						>
 							<span class="iot-hub-filter-section__label">{section.label}</span>
-							<IotHubChevron
+							<Chevron
 								direction="down"
 								class="iot-hub-filter-section__chevron"
 							/>

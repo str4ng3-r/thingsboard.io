@@ -1,5 +1,5 @@
 ---
-import IotHubChevron from './IotHubChevron.astro';
+import Chevron from '@components/Chevron.astro';
 
 interface Props {
 	direction: 'left' | 'right';
@@ -16,7 +16,7 @@ const isDisabled = disabled || !href;
 {
 	isDisabled ? (
 		<span class="iot-hub-pagination__chevron is-disabled" aria-hidden="true">
-			<IotHubChevron direction={direction} size={24} />
+			<Chevron direction={direction} size={24} />
 		</span>
 	) : (
 		<a
@@ -25,7 +25,7 @@ const isDisabled = disabled || !href;
 			rel={rel}
 			aria-label={label}
 		>
-			<IotHubChevron direction={direction} size={24} />
+			<Chevron direction={direction} size={24} />
 		</a>
 	)
 }

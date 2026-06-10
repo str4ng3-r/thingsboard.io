@@ -12,10 +12,11 @@ $color-primary-hover: #4f97f8;
 $color-primary-dark: #305680;
 $color-primary-darker: #0d2743;
 
-// Brand indigo — header/footer CTA + promo banner (single brand colour, no per-page variants).
-// Adapts per theme: vivid indigo in light, light lavender in dark (mirrors --color-product-cloud).
-$color-brand-indigo: #3d50f5;
-$color-brand-indigo-dark: #b3c7ff;
+// Brand indigo — the single ThingsBoard brand accent (header/footer CTA + promo banner).
+// Source of truth for the indigo; the Cloud product token aliases this in _theme.scss.
+// Adapts per theme: vivid indigo in light, light lavender in dark.
+$color-brand: #3d50f5;
+$color-brand-dark: #b3c7ff;
 
 // Colors - Neutral
 $color-white: #ffffff;

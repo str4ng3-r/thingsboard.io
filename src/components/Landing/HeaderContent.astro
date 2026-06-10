@@ -254,11 +254,11 @@ const needsScrollState = variant === 'transparent' || variant === 'transparent-h
 				// Brand-indigo "Try it now" — one fill everywhere; hover darkens via
 				// NButton's filled overlay, like the pricing "Get started" buttons.
 				&.try {
-					background-color: var(--color-brand-indigo);
-					color: var(--color-brand-indigo-contrast);
+					background-color: var(--color-brand);
+					color: var(--color-brand-contrast);
 
 					&:hover {
-						color: var(--color-brand-indigo-contrast);
+						color: var(--color-brand-contrast);
 					}
 				}
 			}
@@ -371,7 +371,7 @@ const needsScrollState = variant === 'transparent' || variant === 'transparent-h
 	// Responsive styles
 	@media screen and (max-width: 1280px) {
 		header.header {
-			display: block; // header isn't fixed at this width; `unset` would resolve to inline and break it
+			display: block; // stays position:fixed (base rule); block keeps it a proper box — `unset` would resolve to inline and break it
 			height: unset !important;
 			transition-property: height; // `top` follows --promo-cur; don't transition it here
 

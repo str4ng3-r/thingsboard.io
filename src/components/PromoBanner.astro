@@ -113,9 +113,9 @@ const showBanner = Astro.url.pathname.replace(/\/+$/, '') !== TARGET_PATH;
 
 	#promo-banner {
 		// Brand indigo, theme-adaptive: vivid indigo strip in light, light lavender
-		// in dark (--color-brand-indigo + its contrast text colour).
-		--promo-bg: var(--color-brand-indigo, #3d50f5);
-		--promo-fg: var(--color-brand-indigo-contrast, #fff); // message text
+		// in dark (--color-brand + its contrast text colour).
+		--promo-bg: var(--color-brand, #3d50f5);
+		--promo-fg: var(--color-brand-contrast, #fff); // message text
 		--promo-pill-bg: #fff;
 		--promo-pill-fg: #305680; // pill text + star
 
@@ -182,7 +182,7 @@ const showBanner = Astro.url.pathname.replace(/\/+$/, '') !== TARGET_PATH;
 
 	// Dark theme: on the light lavender strip, flip the NEW pill to saturated indigo.
 	[data-theme='dark'] #promo-banner {
-		--promo-pill-bg: #{$color-brand-indigo};
+		--promo-pill-bg: #{$color-brand};
 		--promo-pill-fg: #fff;
 	}
 

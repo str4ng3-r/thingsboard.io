@@ -1,6 +1,6 @@
 ---
 import { PAGE_SIZE, IOT_HUB_STRINGS, formatPageSummary } from '@models/iot-hub';
-import IotHubChevron from './IotHubChevron.astro';
+import Chevron from '@components/Chevron.astro';
 import IotHubIcon from './IotHubIcon.astro';
 import PaginationChevron from './PaginationChevron.astro';
 
@@ -127,7 +127,7 @@ const perPageOptions = [perPage, perPage * 2, perPage * 3];
 			aria-labelledby="iot-hub-per-page-label"
 		>
 			<span data-per-page-label>{perPage}</span>
-			<IotHubChevron direction="down" />
+			<Chevron direction="down" />
 		</button>
 		<div
 			class="iot-hub-pagination__per-page-popup"

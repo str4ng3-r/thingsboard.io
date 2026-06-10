@@ -1,5 +1,5 @@
 ---
-import IotHubChevron from '@components/IotHub/IotHubChevron.astro';
+import Chevron from '@components/Chevron.astro';
 
 // Shared breadcrumb row used across the site (IoT Hub, blog, case studies,
 // partners, device library, …). The component owns only the inline row
@@ -53,7 +53,7 @@ const breadcrumbSchema = jsonLd
 <nav class:list={['breadcrumbs', wrap && 'breadcrumbs--wrap']} aria-label="Breadcrumb">
 	{items.map((crumb, i) => (
 		<Fragment>
-			{i > 0 && <IotHubChevron direction="right" class="breadcrumbs__sep" />}
+			{i > 0 && <Chevron direction="right" class="breadcrumbs__sep" />}
 			{crumb.href ? (
 				<a class="breadcrumbs__link" href={crumb.href}>{crumb.label}</a>
 			) : (
@@ -95,7 +95,8 @@ const breadcrumbSchema = jsonLd
 		}
 
 		:global([data-theme='dark']) & {
-			color: #b3c7ff;
+			// Light lavender on dark — matches the brand indigo's dark value.
+			color: var(--color-brand);
 		}
 	}
 
