@@ -524,7 +524,7 @@ export const itemTypeFilterInfoSchema = z.object({
 export const iotHubCategorySchema = z.object({
 	itemType: itemTypeEnum,
 	label: z.string(),
-	items: z.array(listingViewSchema),
+	items: z.array(listingDetailSchema),
 	filterInfo: itemTypeFilterInfoSchema,
 });
 

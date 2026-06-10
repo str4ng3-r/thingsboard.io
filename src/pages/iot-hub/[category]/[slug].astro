@@ -32,23 +32,7 @@ export const getStaticPaths = (async () => {
 const { item } = Astro.props;
 const { category } = Astro.params;
 
-async function loadDetail(slug: string): Promise<ListingDetail | null> {
-	try {
-		const res = await fetchWithRetry(
-			`${IOT_HUB_API_URL}/api/listings/public/by-slug/${slug}`
-		);
-		return (await res.json()) as ListingDetail;
-	} catch (e) {
-		if (import.meta.env.DEV) {
-			const msg = e instanceof Error ? e.message : String(e);
-			console.warn(`[iot-hub] detail fetch failed in dev for ${slug}: ${msg}`);
-			return null;
-		}
-		throw e;
-	}
-}
-
-const detail = await loadDetail(item.slug);
+const detail = item;
 
 const title = detail?.seoTitle ?? detail?.name ?? item.name;
 const description =

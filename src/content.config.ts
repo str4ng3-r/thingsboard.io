@@ -14,6 +14,7 @@ import {
 	itemTypeFilterInfoSchema,
 	type ListingView,
 	type ItemTypeFilterInfo,
+	type ListingDetail,
 } from '@models/iot-hub';
 import { fetchWithRetry } from '@util/fetch-utils';
 
@@ -336,17 +337,17 @@ export const collections = {
 	}),  
 	iotHubCategories: defineCollection({
 		loader: async () => {
-			const fetchCategory = async (itemType: string): Promise<ListingView[]> => {
-				const items: ListingView[] = [];
+			const fetchCategory = async (itemType: string): Promise<ListingDetail[]> => {
+				const items: ListingDetail[] = [];
 				let page = 0;
 				while (true) {
 					const url =
-						`${IOT_HUB_API_URL}/api/listings/published` +
+						`${IOT_HUB_API_URL}/api/listings/published/details` +
 						`?pageSize=${API_FETCH_PAGE_SIZE}&page=${page}` +
 						`&type=${itemType}` +
 						`&sortProperty=installCount&sortOrder=DESC`;
 					const res = await fetchWithRetry(url);
-					const body = (await res.json()) as { data: ListingView[]; hasNext: boolean };
+					const body = (await res.json()) as { data: ListingDetail[]; hasNext: boolean };
 					items.push(...body.data);
 					if (!body.hasNext) break;
 					page++;
