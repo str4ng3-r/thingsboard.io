@@ -346,6 +346,15 @@ Sometimes after configuring OAuth you cannot see the button for logging in with 
 
 For OAuth2 configuration, see <DocLink product={props.product} path="user-guide/security/oauth-2-support">OAuth 2.0 Support</DocLink>.
 
+## Forgot Password
+
+There are cases when the “Forgot my password” email is not sent. This can happen for one of the following reasons:
+- **User is not activated:** If the user account is not activated, the “Forgot my password” email will not be sent. You must <DocLink product={props.product} path="user-guide/users/#create-a-new-user" useTbDocs>activate the user</DocLink> first.
+- **SMTP is not configured:** If SMTP is not set up on your ThingsBoard instance, password recovery emails cannot be delivered. <DocLink product={props.product} path="user-guide/ui/mail-settings" useTbDocs>Make sure SMTP is configured correctly.</DocLink>
+- **Case sensitivity of email login:** By default, email login in ThingsBoard is case-sensitive for security reasons. To disable case sensitivity,
+update the <DocLink product={props.product} path="reference/configuration/core-rule-engine-config/#security-parameters" useTbDocs>SECURITY_USER_LOGIN_CASE_SENSITIVE</DocLink> 
+parameter to **false** in your <DocLink product={props.product} path="reference/configuration/how-to-change-config" useTbDocs>configuration</DocLink> file. After that, you must restart your ThingsBoard service to apply the changes.
+
 ## Getting Help
 
 - <a href="https://github.com/thingsboard/thingsboard" target="_blank" rel="noopener noreferrer">GitHub Project</a> — check out the project and consider contributing.
