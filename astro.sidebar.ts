@@ -4150,6 +4150,25 @@ export const licenseSidebar: SidebarConfig = [
 	},
 ];
 
+/** IoT Hub sidebar (pages at /docs/iot-hub/) */
+export const iotHubSidebar: SidebarConfig = [
+	{
+		label: 'Getting Started',
+		items: [{ label: 'Overview', slug: 'docs/iot-hub' }],
+	},
+	{
+		label: 'Contribution guides',
+		items: [
+			{ label: 'Alarm rule', slug: 'docs/iot-hub/guides/alarm-rule' },
+			{ label: 'Calculated fields', slug: 'docs/iot-hub/guides/calculated-field' },
+			{ label: 'Device', slug: 'docs/iot-hub/guides/device' },
+			{ label: 'Rule chain', slug: 'docs/iot-hub/guides/rule-chain' },
+			{ label: 'Solution template', slug: 'docs/iot-hub/guides/solution-template' },
+			{ label: 'Widgets', slug: 'docs/iot-hub/guides/widget' },
+		],
+	},
+];
+
 /** Maps tab group label → URL to navigate when the tab is clicked (optional per-group). */
 export type SidebarTabLinks = Partial<Record<string, string>>;
 export const opensourceSidebarTabLinks: SidebarTabLinks = {
@@ -4251,6 +4270,10 @@ export const licenseSidebarTabLinks: SidebarTabLinks = {
 	'License Management': '/docs/license-server/subscription/',
 	'Account & Billing': '/docs/license-server/billing-info/',
 };
+export const iotHubSidebarTabLinks: SidebarTabLinks = {
+	'Getting Started': '/docs/iot-hub/',
+	'Contribution guides': '/docs/iot-hub/guides/alarm-rule/',
+};
 
 /**
  * Maps URL prefix → tab navigation links for that product's sidebar.
@@ -4269,6 +4292,7 @@ export const sidebarTabLinksByPrefix: ReadonlyArray<[string, SidebarTabLinks]> =
 	['/docs/trendz/', trendzSidebarTabLinks],
 	['/docs/iot-gateway/', gwSidebarTabLinks],
 	['/docs/license-server/', licenseSidebarTabLinks],
+	['/docs/iot-hub/', iotHubSidebarTabLinks],
 	['/docs/', opensourceSidebarTabLinks],
 ];
 
@@ -4291,4 +4315,5 @@ export const sidebar: SidebarConfig = [
 	...mobilePeSidebar,
 	...trendzSidebar,
 	...licenseSidebar,
+	...iotHubSidebar,
 ];

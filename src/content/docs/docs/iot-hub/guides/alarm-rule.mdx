@@ -1,9 +1,6 @@
 ---
-title: IoT Hub Alarm Rule Contribution Guide
-description: Publish an alarm rule to ThingsBoard IoT Hub by uploading a single exported JSON.
-head:
-  - tag: title
-    content: Alarm Rule Contribution Guide | Docs | IoT Hub
+title: Alarm rule contribution guide
+description: Contribute an alarm rule to the ThingsBoard IoT Hub so end users install ready-made alerting logic on their instance in a single click.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -14,31 +11,31 @@ Welcome to **ThingsBoard IoT Hub**. This guide walks you through contributing an
 
 An alarm rule contribution is a **single JSON file** that you export from ThingsBoard and upload through IoT Hub. When a user clicks **Install** on your alarm rule, the platform imports it onto a device, asset, or profile of their choice, where it starts evaluating live telemetry and raising alarms.
 
-## How Users Install Your Alarm Rule
+## How users install your alarm rule
 
 When a user installs your alarm rule from IoT Hub:
 
 1. The platform downloads your alarm rule JSON file.
 2. The user picks the target — a device, an asset, or a device/asset profile — directly in the install dialog.
-3. The rule is created on that target and immediately starts evaluating live telemetry — raising and clearing alarms according to its conditions.
+3. The rule is created on that target and immediately starts evaluating live telemetry, raising and clearing alarms according to its conditions.
 
-An alarm rule contribution is self-contained — the trigger conditions, severities, thresholds, and clear condition are entirely in the `configuration` object. When the thresholds read from server attributes with default values, the rule works out of the box and users can tune it per entity without editing the rule.
+An alarm rule contribution is self-contained: the trigger conditions, severities, thresholds, and clear condition are entirely in the `configuration` object. When the thresholds read from server attributes with default values, the rule works out of the box and users can tune it per entity without editing the rule.
 
-## Quick Start
+## Quick start
 
 <Steps>
 1. In your ThingsBoard instance, create and test your alarm rule on a device, asset, or profile.
-2. Export it as a JSON file — see [Exporting an Alarm Rule from ThingsBoard](#exporting-an-alarm-rule-from-thingsboard).
+2. Export it as a JSON file — see [Export the alarm rule](#export-the-alarm-rule).
 3. Go to **IoT Hub → + Add new item**. A four-step wizard walks you through the rest:
     - **Upload** — upload your exported JSON. The platform recognizes it as an alarm rule automatically and pre-fills the Name.
-    - **Listing** — fill in the listing metadata (see [The Listing Step](#the-listing-step)). Name is pre-filled from the JSON, Icon and Color are filled with the default alarm icon (you can change them), and Description contains a fill-in template. Categories, Use Cases, and the supported ThingsBoard version must be selected manually.
-    - **Readme** — the editor is pre-filled with the recommended readme structure. Replace each placeholder section with your documentation (see [Readme Content](#readme-content)).
+    - **Listing** — fill in the listing metadata (see [Fill in the listing](#fill-in-the-listing)). Name is pre-filled from the JSON, Icon and Color are filled with the default alarm icon (you can change them), and Description contains a fill-in template. Categories, Use Cases, and the supported ThingsBoard version must be selected manually.
+    - **Readme** — the editor is pre-filled with the recommended readme structure. Replace each placeholder section with your documentation (see [Readme content](#readme-content)).
     - **Review & Submit** — verify everything and submit the version for review.
 </Steps>
 
 The sections below are a complete reference for each step.
 
-## Exporting an Alarm Rule from ThingsBoard
+## Export the alarm rule
 
 <Steps>
 1. In your ThingsBoard instance, go to the **Alarms** page and open the **Alarm rules** tab.
@@ -49,9 +46,9 @@ The sections below are a complete reference for each step.
 
 The exported file is a complete alarm rule definition and requires no further editing to be valid.
 
-## Alarm Rule JSON Structure
+## Alarm rule JSON structure
 
-A valid alarm rule file is a JSON object with three required fields — `name`, `type`, and `configuration`. The `type` is always `ALARM`. The export also includes a few auxiliary fields. Leave `configurationVersion` as exported. In `debugSettings`, make sure `failuresEnabled` is `true` and `allEnabled` is `false` — every installed copy of your rule then automatically records a debug event when an evaluation fails, without the overhead of tracking every evaluation.
+A valid alarm rule file is a JSON object with three required fields: `name`, `type`, and `configuration`. The `type` is always `ALARM`. The export also includes a few auxiliary fields. Leave `configurationVersion` as exported. In `debugSettings`, make sure `failuresEnabled` is `true` and `allEnabled` is `false` — every installed copy of your rule then automatically records a debug event when an evaluation fails, without the overhead of tracking every evaluation.
 
 ```json
 {
@@ -143,7 +140,7 @@ A valid alarm rule file is a JSON object with three required fields — `name`, 
 }
 ```
 
-### Required Fields
+### Required fields
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -151,7 +148,7 @@ A valid alarm rule file is a JSON object with three required fields — `name`, 
 | `type` | string | Always `ALARM` |
 | `configuration` | object | The rule definition — arguments, trigger conditions per severity, clear condition, and propagation flags |
 
-### Configuration Structure
+### Configuration structure
 
 | Field | Description |
 |-------|-------------|
@@ -162,72 +159,39 @@ A valid alarm rule file is a JSON object with three required fields — `name`, 
 
 See the <DocLink product={Products.CE} path="user-guide/alarm-rules">ThingsBoard Alarm Rules documentation</DocLink> for the full configuration schema, condition types, and schedules.
 
-## The Listing Step
+## Fill in the listing
 
-The Listing step of the upload wizard collects the fields shown on the browse card and detail page. Name, Icon, Color, and a Description template are pre-filled. The rest are manual.
+The Listing step of the upload wizard collects the fields shown on the browse card and detail page. Name, Icon, and Color are auto-filled from your JSON; everything else you set here. Version and changelog are set per upload — see [Versioning and checksum](#versioning-and-checksum).
+
+### Listing fields
 
 | Field | Required | Source | Notes |
 |-------|:--------:|--------|-------|
 | Name | yes | `name` in JSON | Editable |
-| Icon | yes | Default alarm icon | Editable — see [Icon and Color](#icon-and-color) |
+| Icon | yes | Default alarm icon | Editable — see [Icon and color](#icon-and-color) |
 | Color | yes | Default alarm color | Editable — hex color for the icon background |
 | Description | yes | Template | Pre-filled with a fill-in template. One-sentence summary, max 512 chars |
-| Categories | yes | Manual | Pick from [Alarm Rule Categories](#alarm-rule-categories) |
-| Use Cases | yes | Manual | Pick from [Use Cases](#use-cases) |
+| Categories | yes | Manual | Pick from [Alarm rule categories](#alarm-rule-categories) |
+| Use Cases | yes | Manual | Pick from [Use cases](#use-cases) |
 | Supported ThingsBoard version | no | Manual | Min (`≥`) and optional max (`<`) version |
 | Professional Edition | no | Manual | Toggle if the alarm rule requires PE |
-| Tags | no | Manual | Free-form keywords |
+| Tags | no | Manual | Free-form keywords used for search |
 
-## What's Auto-Derived vs What You Provide
-
-### Auto-Derived from Alarm Rule JSON
-
-| Listing Field | Source |
-|-------------------|--------|
-| Name | `name` |
-| Icon | Default alarm icon (editable) |
-| Color | Default alarm color (editable) |
-
-### You Provide via the Listing Form
-
-| Field | Purpose |
-|-------|---------|
-| Description | One-sentence summary shown on browse cards (a fill-in template is pre-filled) |
-| Categories | Browse filtering |
-| Use Cases | Browse filtering |
-| Supported ThingsBoard version | Compatibility constraints |
-| Professional Edition | Edition targeting |
-| Tags | Free-form keywords used for search |
-
-### You Provide in the Readme Step
-
-Long-form documentation following the pre-filled readme structure. See [Readme Content](#readme-content).
-
-### Set Per Version
-
-Version (semver) and changelog — bumped every time you upload a changed JSON.
-
-## Allowed Values
-
-### Alarm Rule Categories
+### Alarm rule categories
 
 Pick one or more categories that describe what your alarm rule monitors. Allowed values: `Threshold`, `Connectivity`, `Equipment Health`, `Environmental`, `Energy`, `Safety`, `Geofencing`, `Other`.
 
-### Use Cases
+### Use cases
 
 Pick one or more IoT domains where your alarm rule is useful. These are shared across the whole marketplace.
 
 Allowed values: `Air Quality Monitoring`, `Asset Tracking`, `Cold Chain`, `Drones`, `Environment Monitoring`, `Fleet Tracking`, `Health Care`, `Industrial Automation`, `Predictive Maintenance`, `Robotics`, `SCADA`, `Smart Building`, `Smart City`, `Smart Energy`, `Smart Farming`, `Smart Home`, `Smart Metering`, `Smart Office`, `Smart Retail`, `Solar Monitoring`, `Tank Level Monitoring`, `Waste Management`.
 
-## Icon and Color
+### Icon and color
 
 Alarm rules are displayed in the catalog with a **Material Icon** on a **colored background** instead of a preview image. When you upload your JSON, the platform pre-fills the default alarm icon and color. You can keep the default or change it in the Listing step.
 
-### Icon
-
-Prefer an icon that shows **what is being monitored** over a generic alert symbol — a catalog full of identical warning triangles tells users nothing. The icon picker offers a curated list of alarm-relevant icons plus the full Material and MDI icon sets.
-
-**Good icon choices from the catalog:**
+**Icon.** Prefer an icon that shows what is being monitored over a generic alert symbol — a catalog full of identical warning triangles tells users nothing. The icon picker offers a curated list of alarm-relevant icons plus the full Material and MDI icon sets. Good choices from the catalog:
 
 - Temperature → `mdi:thermometer-high`, `thermostat`
 - Connectivity and offline detection → `mdi:lan-disconnect`, `mdi:access-point-off`
@@ -236,13 +200,9 @@ Prefer an icon that shows **what is being monitored** over a generic alert symbo
 - Air quality → `mdi:molecule-co2`
 - Energy → `mdi:transmission-tower`, `bolt`
 
-### Color
+**Color.** Pick a hex color for the icon background. The picker provides 24 presets and a custom color picker. The catalog convention for alarm rules is the red-orange-amber family — deeper reds for safety-critical alarms, oranges and ambers for warnings and efficiency monitoring. Keep your custom color in that family so the catalog stays visually consistent.
 
-Pick a hex color for the icon background. The picker provides 24 presets and a custom color picker.
-
-The catalog convention for alarm rules is the red-orange-amber family — deeper reds for safety-critical alarms, oranges and ambers for warnings and efficiency monitoring. Keep your custom color in that family so the catalog stays visually consistent.
-
-## Readme Content
+## Readme content
 
 The Readme step of the upload wizard collects the long-form documentation shown on your alarm rule's detail page. It is written in standard Markdown. The editor comes pre-filled with the recommended structure — the same four sections all official ThingsBoard templates follow. Replace each placeholder with your content.
 
@@ -290,9 +250,9 @@ automatically. Single-device installs are also supported.
   **Schedule** on the **Trigger condition**.
 ````
 
-## Versioning & Checksum
+## Versioning and checksum
 
-Each alarm rule version is identified by a semver string (e.g. `1.0.0`) and a SHA-256 **checksum** computed from:
+Each alarm rule version is identified by a semver string (e.g. `1.0.0`) plus a changelog entry, and a SHA-256 **checksum** computed from:
 
 - `name`
 - `type`
@@ -302,9 +262,9 @@ This means any change to the arguments, trigger conditions, clear condition, or 
 
 **Always bump the version** when uploading a changed alarm rule JSON.
 
-## Pre-Upload Checklist
+## Pre-upload checklist
 
-### Alarm Rule JSON
+### Alarm rule JSON
 
 - [ ] `name` is non-empty and descriptive
 - [ ] `type` is `ALARM`
@@ -313,12 +273,12 @@ This means any change to the arguments, trigger conditions, clear condition, or 
 - [ ] A `clearRule` is present, unless the alarm is meant to stay active until an operator clears it
 - [ ] `debugSettings` has `failuresEnabled: true` and `allEnabled: false`
 
-### Listing Form
+### Listing
 
 - [ ] The icon shows what is being monitored, and any custom color stays in the catalog's alarm color family
 - [ ] Description is one sentence, under 512 characters, with all template placeholders replaced
-- [ ] At least one value selected from the [Alarm Rule Categories](#alarm-rule-categories) list
-- [ ] At least one value selected from the [Use Cases](#use-cases) list
+- [ ] At least one value selected from the [Alarm rule categories](#alarm-rule-categories) list
+- [ ] At least one value selected from the [Use cases](#use-cases) list
 - [ ] Minimum ThingsBoard version is set appropriately
 - [ ] Professional Edition toggle matches whether the rule uses PE-only features (e.g. owner-hierarchy propagation)
 
@@ -330,7 +290,7 @@ This means any change to the arguments, trigger conditions, clear condition, or 
 - [ ] `How to set up` states the install target and any prerequisites
 - [ ] Every `How to customize` bullet starts with the user's goal and names the exact setting to change
 
-### Content Quality
+### Content quality
 
 - [ ] Alarm rule has been tested on a real ThingsBoard instance — both the trigger and the clear transition
 - [ ] Version follows semver (e.g. `1.0.0`)

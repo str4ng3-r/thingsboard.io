@@ -1,9 +1,6 @@
 ---
-title: IoT Hub Solution Template Contribution Guide
-description: Build a complete ThingsBoard IoT Hub solution template that end users install in one click.
-head:
-  - tag: title
-    content: Solution Template Contribution Guide | Docs | IoT Hub
+title: Solution template contribution guide
+description: Build a complete ThingsBoard IoT Hub solution template — device profiles, dashboards, rule chains, and emulated telemetry — that end users install in one click.
 ---
 import { CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
 
@@ -13,7 +10,7 @@ A solution template is the most powerful contribution type in IoT Hub: a ZIP arc
 
 Solution templates are ideal for showcasing a vertical use case (smart office, fleet tracking, swimming pool SCADA, fuel monitoring) end-to-end.
 
-## How Users Install Your Solution Template
+## How users install your solution template
 
 When a user clicks **Install** on your solution template in IoT Hub:
 
@@ -27,7 +24,7 @@ When a user clicks **Install** on your solution template in IoT Hub:
 
 Your job as a creator is to describe the complete solution declaratively in the archive so that a single install produces a working end-to-end demo.
 
-## Quick Start
+## Quick start
 
 The fastest way to start is to grab a sample template, adapt it, and upload. Pick the one closest to the solution you want to build:
 
@@ -61,7 +58,7 @@ Then:
 
 The sections below are a complete reference for every part of a solution template package.
 
-## Package Structure
+## Package structure
 
 A solution template is a ZIP archive with a fixed layout. File names matter — the platform validates the archive against this structure.
 
@@ -95,7 +92,7 @@ my-solution.zip
     └── gallery-1.png
 ```
 
-### Required Top-Level Files
+### Required top-level files
 
 The ZIP archive must contain all three of these at the root. The platform rejects the package if any are missing.
 
@@ -105,14 +102,14 @@ The ZIP archive must contain all three of these at the root. The platform reject
 | `description.md` | Long-form marketplace description shown on the detail page and install screen |
 | `instructions.md` | Post-install guide shown after the user's solution is provisioned |
 
-### Required Top-Level Folders
+### Required top-level folders
 
 | Folder | Purpose |
 |--------|---------|
 | `entities/` | Declarations of every entity the solution creates (devices, assets, customers, dashboards, rule chains, device emulators) |
 | `dashboards/` | Dashboard JSON files referenced from `entities/dashboards.json` |
 
-### Optional Top-Level Folders
+### Optional top-level folders
 
 | Folder | Purpose |
 |--------|---------|
@@ -126,14 +123,14 @@ The ZIP archive must contain all three of these at the root. The platform reject
 
 ThingsBoard has two editions: Community Edition (CE) and Professional Edition (PE). When you upload a template in IoT Hub, the upload form asks which edition (or both) it targets. The selection determines where the template appears in the catalog and constrains which features your template may use.
 
-### What Each Edition Supports
+### What each edition supports
 
 - **CE** supports: devices, assets, customers, dashboards, rule chains, device profiles, asset profiles, calculated fields, ChirpStack integration.
 - **PE** adds: role-based access control (RBAC), white-label branding, scheduler, converters, most integrations (TTN, LORIOT), advanced dashboard states, custom translations, reporting.
 
 If your template uses only CE features but also offers a richer PE experience (e.g. leveraging roles), publish a CE version and a separate PE version.
 
-## `solution.json` — The Package Manifest
+## solution.json manifest
 
 `solution.json` at the ZIP root is the minimal manifest the platform needs to render your catalog card and unpack the installation.
 
@@ -150,14 +147,14 @@ If your template uses only CE features but also offers a richer PE experience (e
 }
 ```
 
-### Required Fields
+### Required fields
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `title` | string | Human-readable solution name shown on the catalog card |
 | `previewImageUrl` | string | Main preview image shown on browse cards and the detail page header. Accepts an external URL (e.g. `https://img.thingsboard.io/...`), a relative path to a file in the ZIP's `images/` folder (e.g. `images/hp-swimming-pool-preview.png`), or an inline data URI (`data:image/png;base64,...`) |
 
-### Optional Fields
+### Optional fields
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -166,7 +163,7 @@ If your template uses only CE features but also offers a richer PE experience (e
 
 At install time the platform resolves every image, saves it as a ThingsBoard image resource, and rewrites dashboard and profile references to point at the new resource IDs — so the solution keeps working even if the original image host goes down later.
 
-### Image Best Practices
+### Image best practices
 
 - **Preview image** — 16:9 aspect ratio, 1600×900 px, under 200 KB after compression.
 - **Gallery images** — 16:9 or 4:3 aspect, 800×600 px minimum, showing different screens or views of the dashboard.
@@ -174,7 +171,7 @@ At install time the platform resolves every image, saves it as a ThingsBoard ima
 - Always include at least 2–3 gallery images — users browse the gallery before clicking install.
 - Crop to show dashboard content, not surrounding chrome (toolbars, navigation).
 
-## `entities/` — The Heart of Your Template
+## entities/ declarations
 
 The `entities/` folder declares every instance your template creates. Each file is a JSON array.
 
@@ -344,7 +341,7 @@ Emulators are defined as a JSON array in `entities/device_emulators.json`:
 ]
 ```
 
-#### Top-Level Emulator Fields
+**Top-level emulator fields.**
 
 | Field | Description |
 |-------|-------------|
@@ -355,7 +352,7 @@ Emulators are defined as a JSON array in `entities/device_emulators.json`:
 | `activityPeriodInMillis` | Length of each simulated activity burst |
 | `telemetryProfiles` | Array of per-key generation profiles |
 
-#### Telemetry Profile — `valueStrategy.type`
+**Telemetry profile — `valueStrategy.type`.**
 
 | Strategy | Use for |
 |----------|---------|
@@ -364,7 +361,7 @@ Emulators are defined as a JSON array in `entities/device_emulators.json`:
 | `constant` | Values that stay fixed |
 | `step` | Values that transition between levels on a schedule |
 
-#### Why Emulators Matter
+**Why emulators matter.**
 
 Without emulators, your user installs the template, opens the dashboard, and sees empty widgets. With emulators, the user sees a realistic live system within seconds, which is the difference between a compelling demo and a confusing one.
 
@@ -372,7 +369,7 @@ Without emulators, your user installs the template, opens the dashboard, and see
 
 Each dashboard is a ThingsBoard dashboard export (JSON) with entity aliases rewritten to use **named references** instead of hardcoded UUIDs. The platform resolves those names to the newly-created entities at install time.
 
-### Exporting a Dashboard
+### Exporting a dashboard
 
 <Steps>
 1. Open the dashboard in ThingsBoard.
@@ -380,7 +377,7 @@ Each dashboard is a ThingsBoard dashboard export (JSON) with entity aliases rewr
 3. Save to `dashboards/<file>.json`.
 </Steps>
 
-### Rewriting Entity Aliases
+### Rewriting entity aliases
 
 Downloaded dashboards have hardcoded UUIDs in every entity alias. You must replace each hardcoded UUID with a name reference that matches an entity in `entities/*.json`:
 
@@ -423,7 +420,7 @@ Downloaded dashboards have hardcoded UUIDs in every entity alias. You must repla
 
 The `entityNameFilter` must exactly match a device `name` from `entities/devices.json` (or an asset `name` from `entities/assets.json`, depending on the `entityType`).
 
-## Device Profiles and Asset Profiles
+## Device profiles and asset profiles
 
 Each profile is a single JSON file exported from ThingsBoard. File names are referenced from the `type` field in `entities/devices.json` or `entities/assets.json`.
 
@@ -454,11 +451,11 @@ device_profiles/
 
 If you reference a rule chain via `defaultRuleChainId`, the `id` must match the `jsonId` of an entry in `entities/rule_chains.json`. The platform rewrites this reference to the actual UUID after the rule chain is created.
 
-## Rule Chains and Calculated Fields
+## Rule chains and calculated fields
 
 Rule chains and calculated fields are exported as JSON files from ThingsBoard and dropped into `rule_chains/` and `calculated_fields/` respectively. The exports require no post-edit — wiring happens through `entities/` and device profiles.
 
-### Rule Chains
+### Rule chains
 
 <Steps>
 1. In ThingsBoard, open **Rule Chains** and export the rule chain.
@@ -467,7 +464,7 @@ Rule chains and calculated fields are exported as JSON files from ThingsBoard an
 4. If a device profile uses this rule chain as its default, set its `defaultRuleChainId.id` to the same `jsonId`. The platform rewrites both to the real UUID at install time.
 </Steps>
 
-### Calculated Fields
+### Calculated fields
 
 <Steps>
 1. In ThingsBoard, go to the **Calculated fields** page and click the **Export** button (download icon) in the field's row.
@@ -475,7 +472,7 @@ Rule chains and calculated fields are exported as JSON files from ThingsBoard an
 3. Reference the file from the owning profile's configuration — no separate entry in `entities/` is required.
 </Steps>
 
-## `description.md` — Marketplace Description
+## Readme content
 
 `description.md` is the long-form description shown on the solution's detail page and inside the install dialog. Standard Markdown is supported.
 
@@ -505,7 +502,7 @@ System** solution template...
 ...
 ```
 
-### The `Solution Description` Section
+### The `Solution Description` section
 
 - The first heading that matches the pattern `# Solution Description` (any heading level, case-insensitive) marks the start of the short description.
 - Everything after that heading and before the next heading of the **same or higher level** is considered the description.
@@ -514,7 +511,7 @@ System** solution template...
 
 Keep the first paragraph under 512 characters — it's shown in a card.
 
-### What to Include
+### What to include
 
 1. **Solution Description** section — one paragraph, one sentence, used for cards.
 2. **Highlights** — what the solution achieves (bullet points).
@@ -523,7 +520,7 @@ Keep the first paragraph under 512 characters — it's shown in a card.
 5. **Key features** — technical capabilities.
 6. **Real-world applications** — industries and use cases that match.
 
-## `instructions.md` — Post-Install Instructions
+## Post-install instructions
 
 `instructions.md` is shown to the user **after** the solution has been installed. It should walk them through their new setup: what was created, how to view it, how to connect real hardware, how to customize.
 
@@ -569,7 +566,7 @@ visualize and interact with the data from multiple pool components.
 [dashboard development guide](${DOCS_BASE_URL}/user-guide/dashboards/).
 ````
 
-### Supported Placeholders
+### Supported placeholders
 
 These placeholders are resolved at install time:
 
@@ -580,7 +577,7 @@ These placeholders are resolved at install time:
 | `${DOCS_BASE_URL}` | Base URL of the ThingsBoard documentation — use for links that should work on both ThingsBoard Cloud and on-prem |
 | `${item-link:<item-uuid>}` | Renders a link card pointing at another IoT Hub item (widget, dashboard, rule chain, etc.) the user can install in one click. Use for dependencies your template relies on |
 
-### Code Block Tags
+### Code block tags
 
 Add `{:copy-code}` after a fenced code block to render a **copy-to-clipboard** button:
 
@@ -611,7 +608,7 @@ A good `instructions.md` follows this flow:
 6. **Historical analysis / remote control / customization** — show off the dashboard's features.
 7. **Connecting real devices** — bridge from demo to production.
 
-## `edge_instructions.md` — Optional Edge Setup
+## Optional edge setup
 
 Some solution templates work on **ThingsBoard Edge** instances as well as on the main server. If your template includes edge-compatible rule chains and a user installs it on an edge-enabled instance, the platform shows a separate `edge_instructions.md` file.
 
@@ -619,43 +616,19 @@ Use `edge_instructions.md` to explain edge-specific setup: how to assign the rul
 
 If you don't provide `edge_instructions.md`, the platform shows the regular `instructions.md`.
 
-## Allowed Values
+## Allowed values
 
-### Solution Template Categories
+### Solution template categories
 
 Pick one or more categories that describe your solution. These are distinct from widget, dashboard, or rule chain categories.
 
 Allowed values: `Agriculture`, `Analytics`, `Asset Management`, `Device Management`, `Energy`, `Industrial`, `Monitoring`, `Smart City`.
 
-### Use Cases
+### Use cases
 
 Pick one or more IoT domains the solution addresses. These are shared across the whole marketplace — a user filtering by a use case sees your solution alongside matching widgets, dashboards, and devices.
 
 Allowed values: `Air Quality Monitoring`, `Asset Tracking`, `Cold Chain`, `Drones`, `Environment Monitoring`, `Fleet Tracking`, `Health Care`, `Industrial Automation`, `Predictive Maintenance`, `Robotics`, `SCADA`, `Smart Building`, `Smart City`, `Smart Energy`, `Smart Farming`, `Smart Home`, `Smart Metering`, `Smart Office`, `Smart Retail`, `Solar Monitoring`, `Tank Level Monitoring`, `Waste Management`.
-
-## What's Auto-Derived vs What You Provide
-
-### Auto-Derived from the Package
-
-| Catalog field | Source |
-|-------------------|--------|
-| Item name | `solution.json` → `title` |
-| Short description (browse cards) | First paragraph of the `## Solution Description` section in `description.md` |
-| Readme (detail page) | Full `description.md` |
-| Preview image | `solution.json` → `previewImageUrl` (resolved from URL or ZIP path) |
-| Gallery images | `solution.json` → `imageUrls` (resolved) |
-| Install timeout | `solution.json` → `installTimeoutMs` |
-
-### You Provide via the Upload Form
-
-| Field | Purpose |
-|-------|---------|
-| Edition | CE, PE, or both — determines where your template appears |
-| Version | Semver — bump for every content change |
-| Categories | Browse filtering — from [Solution Template Categories](#solution-template-categories) |
-| Use Cases | Browse filtering — from [Use Cases](#use-cases) |
-| Changelog | Version-specific notes |
-| Min / max ThingsBoard version | Compatibility constraints |
 
 ## Versioning
 
@@ -665,7 +638,18 @@ Every upload creates a new version of your template. Bump the version in the upl
 - Always write a changelog entry explaining what changed.
 - Older versions are automatically archived when a new version is published.
 
-## Pre-Upload Checklist
+**You provide via the upload form.**
+
+| Field | Purpose |
+|-------|---------|
+| Edition | CE, PE, or both — determines where your template appears |
+| Version | Semver — bump for every content change |
+| Categories | Browse filtering — from [Solution template categories](#solution-template-categories) |
+| Use Cases | Browse filtering — from [Use cases](#use-cases) |
+| Changelog | Version-specific notes |
+| Min / max ThingsBoard version | Compatibility constraints |
+
+## Pre-upload checklist
 
 ### `solution.json`
 
@@ -706,12 +690,12 @@ Every upload creates a new version of your template. Bump the version in the upl
 - [ ] Dashboard titles match the names in `entities/dashboards.json`
 - [ ] Every widget displays data from a telemetry key that an emulator actually produces — nothing should be empty after install
 
-### Device Profiles and Asset Profiles
+### Device profiles and asset profiles
 
 - [ ] `defaultRuleChainId.id` values match `jsonId` of entries in `entities/rule_chains.json`
 - [ ] Alarm rules, attributes, and transport configurations are complete for the template's use case
 
-### Upload Form
+### Upload form
 
 - [ ] Edition (CE, PE, or both) matches the features your template actually uses
 - [ ] Version follows semver
@@ -720,7 +704,7 @@ Every upload creates a new version of your template. Bump the version in the upl
 - [ ] Minimum ThingsBoard version is set appropriately (e.g. `4.2.0`)
 - [ ] Changelog describes what changed in this version
 
-### Content Quality
+### Content quality
 
 - [ ] Solution has been installed end-to-end on a fresh ThingsBoard instance and the main dashboard shows live data
 - [ ] Emulated telemetry is realistic (ranges, frequencies, correlations between keys)

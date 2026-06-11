@@ -62,6 +62,11 @@ export const productVersions: Partial<Record<Products, { label: string; prefix: 
 		prefix: 'license-server/',
 		titleName: 'ThingsBoard License Server',
 	},
+	[Products.IOT_HUB]: {
+		label: 'IoT Hub',
+		prefix: 'iot-hub/',
+		titleName: 'ThingsBoard IoT Hub',
+	},
 };
 
 /** Detect language from a URL pathname. */
@@ -112,6 +117,7 @@ export function getVersionFromURL(pathname: string): Products {
 	if (p.startsWith('mobile/pe/')) return Products.MOBILE_PE;
 	if (p.startsWith('mobile/')) return Products.MOBILE;
 	if (p.startsWith('license-server/')) return Products.LICENSE;
+	if (p.startsWith('iot-hub/')) return Products.IOT_HUB;
 	return Products.CE;
 }
 
@@ -140,6 +146,7 @@ export function getVersionFromSlug(slug: string): Products {
 	if (p.startsWith('mobile/pe/')) return Products.MOBILE_PE;
 	if (p.startsWith('mobile/')) return Products.MOBILE;
 	if (p.startsWith('license-server/')) return Products.LICENSE;
+	if (p.startsWith('iot-hub/')) return Products.IOT_HUB;
 	return Products.CE;
 }
 
@@ -194,6 +201,7 @@ export function getPageSlugFromURL(pathname: string): string {
 		'mobile/pe/',
 		'mobile/',
 		'license-server/',
+		'iot-hub/',
 	];
 	for (const prefix of prefixes) {
 		if (path.startsWith(prefix)) {

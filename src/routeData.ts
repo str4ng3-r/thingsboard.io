@@ -143,6 +143,7 @@ function linkMatchesVersion(href: string, version: Products): boolean {
 	if (version === Products.MOBILE)
 		return path.startsWith('mobile/') && !path.startsWith('mobile/pe/');
 	if (version === Products.LICENSE) return path.startsWith('license-server/');
+	if (version === Products.IOT_HUB) return path.startsWith('iot-hub/');
 	// CE: everything that doesn't belong to other products
 	return (
 		!path.startsWith('pe/') &&
@@ -152,7 +153,8 @@ function linkMatchesVersion(href: string, version: Products): boolean {
 		!path.startsWith('iot-gateway/') &&
 		!path.startsWith('mqtt-broker/') &&
 		!path.startsWith('mobile/') &&
-		!path.startsWith('license-server/')
+		!path.startsWith('license-server/') &&
+		!path.startsWith('iot-hub/')
 	);
 }
 

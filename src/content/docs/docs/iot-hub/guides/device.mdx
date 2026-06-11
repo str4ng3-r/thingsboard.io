@@ -1,9 +1,6 @@
 ---
-title: IoT Hub Device Contribution Guide
-description: Build a ThingsBoard IoT Hub device package that end users install in one click.
-head:
-  - tag: title
-    content: Device Contribution Guide | Docs | IoT Hub
+title: Device contribution guide
+description: Package a device for the ThingsBoard IoT Hub — bundle setup forms, entity templates, and instructions so end users provision the hardware in one click.
 ---
 import { CardGrid, LinkCard, Steps, Aside } from '@astrojs/starlight/components';
 import ProductBadge from '~/components/ProductBadge.astro';
@@ -12,7 +9,7 @@ Welcome to **ThingsBoard IoT Hub**. This guide walks you through building a devi
 
 A device package is a ZIP file that bundles everything the installation wizard needs: configuration forms, setup instructions, ThingsBoard entity templates (device profiles, dashboards, rule chains), and images. When a user selects your device in IoT Hub, the wizard runs through your package step-by-step to provision the device, create a dashboard, and show the user how to connect the hardware.
 
-## How Users Install Your Device
+## How users install your device
 
 When a user clicks **Install** on your device in IoT Hub, the installation wizard performs these actions in order:
 
@@ -24,7 +21,7 @@ When a user clicks **Install** on your device in IoT Hub, the installation wizar
 
 Your job as a creator is to describe all of this declaratively in `device-info.json`.
 
-## Quick Start
+## Quick start
 
 The fastest way to start is to grab a sample package, edit a few fields, and upload. Pick the one whose connectivity matches your device:
 
@@ -56,13 +53,13 @@ Then:
 5. Re-zip the contents (not the folder itself) and upload via **IoT Hub → + Add new item**.
 </Steps>
 
-See [Package Structure](#package-structure) if your device supports multiple connectivity options.
+See [Package structure](#package-structure) if your device supports multiple connectivity options.
 
 The sections below are a complete reference for every part of a device package.
 
-## Package Structure
+## Package structure
 
-### Layout A — Single Install Method
+### Layout A — single install method
 
 Use this layout when your device supports only one way of connecting. All files live at the ZIP root.
 
@@ -81,7 +78,7 @@ my-device.zip
 └── post-install.md           (shown after install)
 ```
 
-### Layout B — Multiple Install Methods
+### Layout B — multiple install methods
 
 Use this layout when your device supports several ways of connecting (e.g. a LoRaWAN sensor that works with ChirpStack, TTN, and LORIOT). Shared files go in `common/`; method-specific files go in per-method subfolders.
 
@@ -116,7 +113,7 @@ my-device.zip
     └── post-install.md
 ```
 
-### Folder Names for Install Methods
+### Folder names for install methods
 
 When using Layout B, each install method has a conventional subfolder name. The folder name is referenced from the `file` and `template` paths in `installSteps` — **you must match it exactly**.
 
@@ -192,7 +189,7 @@ The folder name is purely a path reference — what matters is that the `file` a
 | `INTEGRATION_TUYA` | `tuya/` |
 | `INTEGRATION_UDP` | `integration_udp/` |
 
-### Shared Files in `common/`
+### Shared files in `common/`
 
 Any file referenced from multiple install methods should live in `common/` to avoid duplication:
 
@@ -211,7 +208,7 @@ Any file referenced from multiple install methods should live in `common/` to av
 }
 ```
 
-## `device-info.json` — The Package Manifest
+## device-info.json manifest
 
 The `device-info.json` file at the ZIP root is the single source of truth for your package. The wizard reads it first and uses it to drive everything else.
 
@@ -238,43 +235,41 @@ The `device-info.json` file at the ZIP root is the single source of truth for yo
 }
 ```
 
-### Required Fields
+### Required fields
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `name` | string | Device model name as shown on the marketplace card |
 | `description` | string | One-sentence description (max 512 chars) shown on the card |
 | `vendor` | string | Manufacturer name |
-| `hardwareType` | string | One value from [Hardware Types](#hardware-types) |
-| `installMethods` | string[] | One or more values from [Install Methods](#install-methods) |
+| `hardwareType` | string | One value from [Hardware types](#hardware-types) |
+| `installMethods` | string[] | One or more values from [Install methods](#install-methods) |
 | `installSteps` | object | Ordered steps per install method — keys must match `installMethods` |
 
-### Optional Fields
+### Optional fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `connectivity` | string[] | Tags from [Connectivity Tags](#connectivity-tags) — used for browse filtering |
-| `useCases` | string[] | Tags from [Use Cases](#use-cases) — used for browse filtering |
+| `connectivity` | string[] | Tags from [Connectivity tags](#connectivity-tags) — used for browse filtering |
+| `useCases` | string[] | Tags from [Use cases](#use-cases) — used for browse filtering |
 | `image` | string | Path to the device photo in the ZIP (e.g. `images/device.png`) |
-| `productURL` | string | Manufacturer's product page URL — backs `${product.button}` (see [Documentation Links](#documentation-links)) |
-| `datasheetURL` | string | Datasheet URL — backs `${datasheet.button}` (see [Documentation Links](#documentation-links)) |
+| `productURL` | string | Manufacturer's product page URL — backs `${product.button}` (see [Documentation links](#documentation-links)) |
+| `datasheetURL` | string | Datasheet URL — backs `${datasheet.button}` (see [Documentation links](#documentation-links)) |
 
-### Critical Rules
+### Critical rules
 
 - Every key in `installSteps` must exactly match a value in `installMethods`.
 - All `file` and `template` paths are **relative to the ZIP root**, not to `device-info.json`.
 - The `name` on `DEVICE_PROFILE` and `DASHBOARD` steps must be **specific to your device** (e.g. `"ESP32 PICO KIT"`, not `"Default"`; `"ESP32 PICO KIT Monitor"`, not `"Check and control device data dashboard"`). Users see these names in their ThingsBoard instance.
 - The `DEVICE` step name should use `${deviceName}` so the device is named from the form input.
 
-## Allowed Values
-
-### Hardware Types
+### Hardware types
 
 Pick the one that best describes your device. Allowed values: `Actuator`, `AI Accelerator`, `Analyzer`, `Camera`, `Controller`, `Data Logger`, `Development Board`, `Display`, `Gateway`, `Meter`, `PLC`, `Relay`, `Sensor`, `Single Board Computer`, `Tracker`.
 
 If your device doesn't fit any of these, pick the closest match and contact support to request a new type.
 
-### Connectivity Tags
+### Connectivity tags
 
 List every physical interface and protocol your device supports. The more accurate your tags, the easier users can find your device when browsing.
 
@@ -284,13 +279,13 @@ List every physical interface and protocol your device supports. The more accura
 
 **Protocols:** `MQTT`, `HTTP`, `HTTPS`, `CoAP`, `REST`, `SNMP`, `Modbus RTU`, `Modbus TCP`, `OPC-UA`, `BACnet`, `KNX`, `WebSocket`, `TCP/IP`, `UDP`, `CANopen`, `DNP3`, `EtherCAT`, `Foundation Fieldbus`, `HART`, `IEC 61850`, `PROFINET`, `Wireless M-Bus`.
 
-### Use Cases
+### Use cases
 
 Tag your device with all applicable IoT use cases. These are shared across the whole marketplace (widgets, dashboards, devices), so users browsing by use case will find your device alongside matching content.
 
 Allowed values: `Air Quality Monitoring`, `Asset Tracking`, `Cold Chain`, `Drones`, `Environment Monitoring`, `Fleet Tracking`, `Health Care`, `Industrial Automation`, `Predictive Maintenance`, `Robotics`, `SCADA`, `Smart Building`, `Smart City`, `Smart Energy`, `Smart Farming`, `Smart Home`, `Smart Metering`, `Smart Office`, `Smart Retail`, `Solar Monitoring`, `Tank Level Monitoring`, `Waste Management`.
 
-### Install Methods
+### Install methods
 
 Choose one or more methods that describe how the device connects to ThingsBoard. Each method you list must have a matching entry in `installSteps`.
 
@@ -364,11 +359,11 @@ Choose one or more methods that describe how the device connects to ThingsBoard.
 | `INTEGRATION_TUYA` | Tuya integration | no | yes |
 | `INTEGRATION_UDP` | UDP integration | no | yes |
 
-## Install Steps Reference
+## Install steps and forms
 
 Steps are executed top-to-bottom. The wizard shows an instruction or form to the user, creates a ThingsBoard entity, or both. Output from earlier steps (form values, created entity IDs) becomes available as `${variable}` placeholders in later steps.
 
-### `SHOW_INSTRUCTION` — Display Markdown
+### SHOW_INSTRUCTION — display Markdown
 
 Shows a markdown page to the user. Use for prerequisites, setup guides, wiring instructions, and post-install verification.
 
@@ -376,7 +371,7 @@ Shows a markdown page to the user. Use for prerequisites, setup guides, wiring i
 {"type": "SHOW_INSTRUCTION", "name": "Prerequisites", "file": "prerequisites.md"}
 ```
 
-### `SHOW_FORM` — Collect User Input
+### SHOW_FORM — collect user input
 
 Shows a dynamic form. Every field's `key` becomes a `${key}` variable in all subsequent steps.
 
@@ -384,7 +379,7 @@ Shows a dynamic form. Every field's `key` becomes a `${key}` variable in all sub
 {"type": "SHOW_FORM", "name": "Device Settings", "file": "form.json"}
 ```
 
-### Entity Steps — Create ThingsBoard Resources
+### Entity steps — create ThingsBoard resources
 
 Each entity step takes a `template` (a JSON file that matches the ThingsBoard REST API format for that entity) and creates the entity. The created entity's ID, name, and other properties become available as variables (`${device.id}`, `${dashboard.name}`, etc.).
 
@@ -400,9 +395,7 @@ Each entity step takes a `template` (a JSON file that matches the ThingsBoard RE
 | `DOWNLINK_CONVERTER` | Downlink converter <ProductBadge>PE only</ProductBadge> | no |
 | `INTEGRATION` | Integration <ProductBadge>PE only</ProductBadge> | no |
 
-#### Converter / Integration ordering
-
-Any `UPLINK_CONVERTER` or `DOWNLINK_CONVERTER` step **must appear before** the `INTEGRATION` step in the same install method's array. The validator rejects packages that put converters after the integration.
+**Converter / integration ordering.** Any `UPLINK_CONVERTER` or `DOWNLINK_CONVERTER` step **must appear before** the `INTEGRATION` step in the same install method's array. The validator rejects packages that put converters after the integration.
 
 This ordering is what makes the wiring automatic: the wizard runs the converter steps first, captures their generated IDs as `${uplinkConverter.id}` / `${uplinkConverter.name}` and `${downlinkConverter.id}` / `${downlinkConverter.name}`, then resolves those placeholders in the integration template before creating the integration. The creator does not need to wire converter IDs by hand. Referencing `${uplinkConverter.id}` and `${downlinkConverter.id}` in the integration template is enough; the wizard fills them in at install time.
 
@@ -421,22 +414,20 @@ This ordering is what makes the wiring automatic: the wizard runs the converter 
 }
 ```
 
-For the recommended way to author the converter and integration files, see [Integration Packages — Export-Driven Format](#integration-packages--export-driven-format) below.
+For the recommended way to author the converter and integration files, see [Integration packages](#integration-packages) below.
 
-#### Optional Fields on Entity Steps
+**Optional fields on entity steps.**
 
 | Field | Applies to | Description |
 |-------|-----------|-------------|
 | `serverAttributes` | All entity types | Path to a JSON file with key-value pairs saved as server attributes |
 | `sharedAttributes` | All entity types | Path to a JSON file with key-value pairs saved as shared attributes |
-| `credentials` | `DEVICE`, `GATEWAY` | Path to a JSON file with device credentials (see [Device Credentials](#device-credentials)) |
-| `dockerCompose` | `GATEWAY` | Path to a YAML template for a custom docker-compose file (see [Gateway Docker-Compose Templates](#gateway-docker-compose-templates)) |
-
-## Form Definitions
+| `credentials` | `DEVICE`, `GATEWAY` | Path to a JSON file with device credentials (see [Device credentials](#device-credentials)) |
+| `dockerCompose` | `GATEWAY` | Path to a YAML template for a custom docker-compose file (see [Gateway Docker Compose templates](#gateway-docker-compose-templates)) |
 
 Form files are JSON arrays of field definitions. Every `key` becomes a `${key}` variable after the user submits the form.
 
-### Field Types
+### Field types
 
 ```json
 [
@@ -495,7 +486,7 @@ Form files are JSON arrays of field definitions. Every `key` becomes a `${key}` 
 | `SELECT` | Dropdown — value picked from `options[].value` | string |
 | `STRING_AUTOCOMPLETE` | Free-text input with autocomplete suggestions from `options` | string |
 
-### Field Properties
+### Field properties
 
 | Property | Description |
 |----------|-------------|
@@ -515,9 +506,7 @@ Form files are JSON arrays of field definitions. Every `key` becomes a `${key}` 
 | `randomSize` | `STRING`/`PASSWORD` only: length of the generated value (default: `20`) |
 | `randomByDefault` | `STRING`/`PASSWORD` only: if `true`, the field is pre-filled with a random value when the form opens (overrides `defaultValue`) |
 
-#### Reserved keys
-
-These keys are populated by step output and cannot be used as form field keys:
+**Reserved keys.** These keys are populated by step output and cannot be used as form field keys:
 `uplinkConverter.id`, `uplinkConverter.name`, `downlinkConverter.id`, `downlinkConverter.name`, `integration.id`, `integration.name`, `integration.httpEndpoint`. The validator rejects packages that try to define them.
 
 ### Validators
@@ -538,7 +527,7 @@ Add regex validators with custom error messages:
 
 Multiple validators can be applied to one field — all must pass for the form to be valid.
 
-## Integration Packages — Export-Driven Format
+## Integration packages
 
 ThingsBoard PE generates a complete integration package via the **Export to IoT Hub** button on the integration detail page. The exported ZIP is self-describing: drop the files into your device package and let the install wizard substitute placeholders at install time. Hand-authoring the integration JSON works, but exporting from a real PE integration is the canonical path because it produces the right shape and naming on the first try.
 
@@ -644,11 +633,11 @@ Some integration types (notably LORIOT) currently emit a redundant legacy `confi
 The `httpEndpoint` field on Loriot configurations contains the source integration's UUID. PE rewrites it on save, so the value in the template is harmless.
 </Aside>
 
-## Entity Templates
+## Entity templates
 
 Entity templates are JSON files that match the ThingsBoard REST API format for that entity. Export an entity from ThingsBoard, add `${variable}` placeholders for any values that must be dynamic, and save the result.
 
-### Device Profile Template
+### Device profile template
 
 ```json
 {
@@ -667,7 +656,7 @@ Entity templates are JSON files that match the ThingsBoard REST API format for t
 }
 ```
 
-### Device Template
+### Device template
 
 Always reference the created device profile via `${deviceProfile.id}`:
 
@@ -683,7 +672,7 @@ Always reference the created device profile via `${deviceProfile.id}`:
 }
 ```
 
-### Dashboard Template
+### Dashboard template
 
 Export a dashboard from ThingsBoard (**Dashboards → Export**), then replace any hardcoded device UUIDs in entity aliases with `${device.id}`:
 
@@ -711,7 +700,7 @@ Export a dashboard from ThingsBoard (**Dashboards → Export**), then replace an
 Every entity alias in the downloaded dashboard JSON will reference a specific UUID from your test device. You must replace each hardcoded UUID with `${device.id}` (or the relevant entity variable), or the dashboard will show "entity not found" errors when installed.
 </Aside>
 
-### Non-String Template Variables
+### Non-string template variables
 
 For boolean and integer values, use bare `${variable}` (no quotes):
 
@@ -731,7 +720,7 @@ For string values inside quotes, use `${variable}` as normal:
 }
 ```
 
-## Device Credentials
+## Device credentials
 
 By default, ThingsBoard auto-generates an access token for each new device, available as `${device.token}`. This works for most use cases and requires no credentials file.
 
@@ -746,7 +735,7 @@ To override the default, add a `credentials` field to the `DEVICE` or `GATEWAY` 
 }
 ```
 
-### MQTT Basic Credentials
+### MQTT Basic credentials
 
 ```json
 {
@@ -759,7 +748,7 @@ To override the default, add a `credentials` field to the `DEVICE` or `GATEWAY` 
 }
 ```
 
-### Access Token (explicit)
+### Access token (explicit)
 
 ```json
 {
@@ -768,7 +757,7 @@ To override the default, add a `credentials` field to the `DEVICE` or `GATEWAY` 
 }
 ```
 
-### X.509 Certificate
+### X.509 certificate
 
 ```json
 {
@@ -777,7 +766,7 @@ To override the default, add a `credentials` field to the `DEVICE` or `GATEWAY` 
 }
 ```
 
-## Gateway Docker-Compose Templates
+## Gateway Docker Compose templates
 
 By default, `${gateway.downloadButton}` in post-install markdown generates a standard `docker-compose.yml` from the ThingsBoard backend with the gateway's host, port, and access token pre-filled.
 
@@ -792,7 +781,7 @@ To provide a **custom template** with additional ports, volumes, environment var
 }
 ```
 
-### Template File
+### Template file
 
 The template is a standard YAML file with `${variable}` placeholders. All variables (form values, transport config, entity outputs) are resolved after the gateway is created:
 
@@ -821,14 +810,14 @@ volumes:
   tb-gw-extensions:
 ```
 
-### When to Use a Custom Template
+### When to use a custom template
 
 - Your gateway needs **extra ports** (e.g. Modbus TCP, BACnet, Socket connector).
 - You need **additional volumes** or bind mounts.
 - You want **custom environment variables** beyond `host`, `port`, and `accessToken`.
 - Your gateway uses **MQTT Basic credentials** and needs to pass `clientId`, `userName`, `password`.
 
-### MQTT Basic Credentials Example
+### MQTT Basic credentials example
 
 ```yaml
 services:
@@ -842,7 +831,7 @@ services:
       - password=${mqttPassword}
 ```
 
-### How It Works
+### How it works
 
 When a `dockerCompose` field is present on the `GATEWAY` step:
 
@@ -853,7 +842,7 @@ When a `dockerCompose` field is present on the `GATEWAY` step:
 
 When no `dockerCompose` field is set, the download button falls back to the standard ThingsBoard-generated `docker-compose.yml`.
 
-### Post-Install Example
+### Post-install example
 
 ````markdown
 ## Launch Gateway
@@ -871,11 +860,11 @@ docker compose up -d
 The gateway will connect to **${mqtt.host}:${mqtt.port}**.
 ````
 
-## Writing Markdown Instructions
+## Instructions and images
 
 Instruction files use standard Markdown with two extensions: `${variable}` placeholders and image-gallery helpers.
 
-### Headings, Lists, and Notes
+### Headings, lists, and notes
 
 ```markdown
 ## Prerequisites
@@ -895,7 +884,7 @@ Connect the board to your computer via USB as shown:
 > **Note:** Make sure the USB cable supports data transfer, not just charging.
 ```
 
-### Using Variables in Markdown
+### Using variables in Markdown
 
 Variables are resolved before rendering. Use them to show user-provided values, created resource names, and platform settings:
 
@@ -913,9 +902,9 @@ Open the [${dashboard.name}](${dashboard.url}) dashboard to see telemetry.
 The device is connected to **${mqtt.host}:${mqtt.port}** via MQTT.
 ```
 
-See the full [Variable Reference](#variable-reference) for all available variables.
+See the full [Variable reference](#variable-reference) for all available variables.
 
-### Variables Inside Code Blocks
+### Variables inside code blocks
 
 Variables are resolved inside fenced code blocks, which is especially useful for firmware snippets:
 
@@ -934,9 +923,7 @@ curl -o docker-compose.yml "${gateway.dockerComposeUrl}"
 docker compose up -d
 ```
 
-## Images
-
-### Adding Images to the ZIP
+### Adding images to the ZIP
 
 Place images anywhere in the ZIP — the `images/` folder is recommended.
 
@@ -952,7 +939,7 @@ my-device.zip
 
 Supported formats: `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`.
 
-### Referencing Images in Markdown
+### Referencing images in Markdown
 
 Use standard Markdown with paths relative to the ZIP root:
 
@@ -962,7 +949,7 @@ Use standard Markdown with paths relative to the ZIP root:
 
 The wizard resolves these paths to inline base64 data URIs from the ZIP — no external hosting needed.
 
-### Image Gallery
+### Image gallery
 
 Display multiple images side-by-side as clickable thumbnails using the gallery helper:
 
@@ -975,7 +962,7 @@ ${images.gallery(images/step1-tools.png, images/step2-upload.png, images/step3-v
 - Clicking a thumbnail expands it full-size; clicking again collapses.
 - Useful for multi-step visual instructions (e.g. IDE menu navigation screenshots).
 
-### Images as Form Field Help
+### Images as form field help
 
 Form fields can show a help image alongside the help text:
 
@@ -992,7 +979,7 @@ Form fields can show a help image alongside the help text:
 
 The user clicks a help icon next to the field to expand the image.
 
-### Image Best Practices
+### Image best practices
 
 - Keep images under **500 KB** each — the whole ZIP is stored as a single file.
 - **PNG** for screenshots and diagrams; **JPG** for device photos.
@@ -1000,7 +987,7 @@ The user clicks a help icon next to the field to expand the image.
 - Annotate with arrows or highlights to point out important UI elements.
 - Use descriptive filenames: `chirpstack-api-key.png`, not `screenshot1.png`.
 
-## `overview.md` — The Long Description
+## Readme content
 
 `overview.md` is an optional file at the ZIP root that provides the full description for your device's detail page on IoT Hub. It complements the short `description` in `device-info.json`:
 
@@ -1033,11 +1020,11 @@ featuring a dual-core processor with Wi-Fi and Bluetooth connectivity.
 | Flash | 4 MB |
 ```
 
-## Variable Reference
+## Variable reference
 
 Variables are resolved at the time of step execution and are available in all subsequent markdown files, entity templates, and form help text.
 
-### From Form Fields
+### From form fields
 
 Every form field `key` is exposed as `${key}`. Common examples:
 
@@ -1051,7 +1038,7 @@ Every form field `key` is exposed as `${key}`. Common examples:
 | `${mqttUsername}` | MQTT Basic username |
 | `${mqttPassword}` | MQTT Basic password |
 
-### From Created Entities
+### From created entities
 
 | Variable | Step type | Description |
 |----------|-----------|-------------|
@@ -1077,7 +1064,7 @@ Every form field `key` is exposed as `${key}`. Common examples:
 | `${integration.name}` | `INTEGRATION` | Integration name <ProductBadge>PE only</ProductBadge> |
 | `${integration.httpEndpoint}` | `INTEGRATION` | The webhook URL the integration listens on <ProductBadge>PE only</ProductBadge>. Reference it in `post-install.md` to display the URL the customer registers with their LoRaWAN provider, MQTT broker, etc. |
 
-### Transport Connectivity
+### Transport connectivity
 
 These come from the ThingsBoard platform settings of the installing instance:
 
@@ -1091,7 +1078,7 @@ These come from the ThingsBoard platform settings of the installing instance:
 | `${coap.host}` | from `baseUrl` | CoAP host |
 | `${coap.port}` | `5683` | CoAP port |
 
-### Documentation Links
+### Documentation links
 
 Two placeholders render as inline buttons that link to the device's manufacturer resources. They work in `overview.md` and in any `SHOW_INSTRUCTION` markdown.
 
@@ -1110,7 +1097,7 @@ Download datasheets and manuals for the FMC130.
 ${product.button} ${datasheet.button}
 ```
 
-## Pre-Upload Checklist
+## Pre-upload checklist
 
 Before uploading your ZIP, verify each item below.
 
@@ -1124,7 +1111,7 @@ Before uploading your ZIP, verify each item below.
 - Every `file` and `template` path in `installSteps` points to a file that actually exists in the ZIP
 - `image` points to an existing file (if provided)
 
-### Entity Names
+### Entity names
 
 - The `DEVICE_PROFILE` step `name` includes the device model (e.g. `"Acme Temperature Sensor"`, not `"Default"`)
 - The `DASHBOARD` step `name` includes the device model (e.g. `"Acme Sensor Monitor"`, not generic text)
@@ -1137,7 +1124,7 @@ Before uploading your ZIP, verify each item below.
 - `dashboard.json` replaces every hardcoded entity UUID with `${device.id}` (or relevant entity variable)
 - Non-string variables in templates are unquoted: `"port": ${mqtt.port}` (not `"port": "${mqtt.port}"`)
 
-### Instructions and Code
+### Instructions and code
 
 - Post-install firmware code uses `${device.token}`, not placeholders like `YOUR_ACCESS_TOKEN`
 - Post-install firmware code uses `${mqtt.host}` / `${mqtt.port}`, not hardcoded `demo.thingsboard.io` or `1883`
@@ -1159,7 +1146,7 @@ Before uploading your ZIP, verify each item below.
 - Image paths in markdown are relative (e.g. `images/photo.png`), not absolute URLs
 - Images are under 500 KB each
 
-### Multiple Install Methods
+### Multiple install methods
 
 - Shared files live in `common/`, method-specific files live in their respective subfolder
 - Each install method key in `installSteps` matches an entry in `installMethods`

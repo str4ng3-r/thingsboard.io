@@ -1,9 +1,6 @@
 ---
-title: IoT Hub Widget Contribution Guide
-description: Publish a widget to ThingsBoard IoT Hub by uploading a single exported JSON.
-head:
-  - tag: title
-    content: Widget Contribution Guide | Docs | IoT Hub
+title: Widget contribution guide
+description: Contribute a custom widget to the ThingsBoard IoT Hub so end users add it to their dashboard widget library in a single click.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -12,7 +9,7 @@ Welcome to **ThingsBoard IoT Hub**. This guide walks you through contributing a 
 
 A widget contribution is a **single JSON file** that you export from ThingsBoard and upload through IoT Hub. When a user clicks **Install** on your widget, the platform imports it directly into their widget library where they can drop it onto any dashboard.
 
-## How Users Install Your Widget
+## How users install your widget
 
 When a user installs your widget from IoT Hub:
 
@@ -22,21 +19,21 @@ When a user installs your widget from IoT Hub:
 
 Your widget is self-contained — its HTML template, CSS, controller script, settings form, and default configuration all live inside the JSON. The end user does not need to install any dependencies or run any code outside ThingsBoard.
 
-## Quick Start
+## Quick start
 
 <Steps>
 1. In your ThingsBoard instance, build and test your widget in the Widget Library editor.
-2. Export it as a JSON file — see [Exporting a Widget from ThingsBoard](#exporting-a-widget-from-thingsboard).
+2. Export it as a JSON file — see [Export the widget](#export-the-widget).
 3. Go to **IoT Hub → + Add new item**. A four-step wizard walks you through the rest:
     - **Upload** — upload your exported JSON. The platform recognizes it as a widget automatically and pre-fills several fields.
-    - **Listing** — fill in the listing metadata (see [The Listing Step](#the-listing-step)). Name, Image, Description, and Tags are pre-filled from the JSON; Categories, Use Cases, and the supported ThingsBoard version must be selected manually.
-    - **Readme** — write the long-form widget documentation in Markdown (see [Readme Content](#readme-content)).
+    - **Listing** — fill in the listing metadata (see [Fill in the listing](#fill-in-the-listing)). Name, Image, Description, and Tags are pre-filled from the JSON; Categories, Use Cases, and the supported ThingsBoard version must be selected manually.
+    - **Readme** — write the long-form widget documentation in Markdown (see [Readme content](#readme-content)).
     - **Review & Submit** — verify everything and submit the version for review.
 </Steps>
 
 The sections below are a complete reference for each step.
 
-## Exporting a Widget from ThingsBoard
+## Export the widget
 
 <Steps>
 1. Open **Resources → Widget Library** in your ThingsBoard instance.
@@ -47,22 +44,7 @@ The sections below are a complete reference for each step.
 
 The exported file is a complete widget type definition and requires no further editing to be valid. If you want to override auto-derived fields (description, image, tags), you can edit the JSON directly before uploading.
 
-## Setting the Widget FQN
-
-Every widget published to IoT Hub must use a namespaced `fqn` in the form `nickname.widget_fqn`, where `nickname` is your own identifier — a personal handle (e.g. `john_doe`) or a company name (e.g. `thingsboard`). This keeps your widget unique across the marketplace and prevents collisions with other contributors.
-
-The ThingsBoard widget editor does **not** allow setting a custom namespace prefix in the UI — the exported JSON will contain only the plain widget name (e.g. `air_quality_card`). After exporting, open the `.json` file and prepend your nickname:
-
-```json
-{
-  "fqn": "john_doe.air_quality_card",
-  ...
-}
-```
-
-Pick one nickname and reuse it for every widget you publish.
-
-## Widget JSON Structure
+## Widget JSON structure
 
 A valid widget file is a JSON object with the following structure:
 
@@ -99,16 +81,31 @@ A valid widget file is a JSON object with the following structure:
 }
 ```
 
-### Required Fields
+### Set the widget FQN
+
+Every widget published to IoT Hub must use a namespaced `fqn` in the form `nickname.widget_fqn`, where `nickname` is your own identifier — a personal handle (e.g. `john_doe`) or a company name (e.g. `thingsboard`). This keeps your widget unique across the marketplace and prevents collisions with other contributors.
+
+The ThingsBoard widget editor does **not** allow setting a custom namespace prefix in the UI — the exported JSON will contain only the plain widget name (e.g. `air_quality_card`). After exporting, open the `.json` file and prepend your nickname:
+
+```json
+{
+  "fqn": "john_doe.air_quality_card",
+  ...
+}
+```
+
+Pick one nickname and reuse it for every widget you publish.
+
+### Required fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `fqn` | string | Fully qualified name — a unique identifier across the widget library, in the form `nickname.widget_fqn` (e.g. `john_doe.air_quality_card` or `acme.air_quality_card`). Lowercase and underscores recommended. See [Setting the Widget FQN](#setting-the-widget-fqn) |
+| `fqn` | string | Fully qualified name — a unique identifier across the widget library, in the form `nickname.widget_fqn` (e.g. `john_doe.air_quality_card` or `acme.air_quality_card`). Lowercase and underscores recommended. See [Set the widget FQN](#set-the-widget-fqn) |
 | `name` | string | Human-readable widget name (e.g. `Air quality index card`) |
 | `descriptor` | object | Widget configuration — must include a `type` field |
 | `descriptor.type` | string | One of `timeseries`, `latest`, `rpc`, `alarm`, `static` |
 
-### Optional Fields
+### Optional fields
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -118,7 +115,7 @@ A valid widget file is a JSON object with the following structure:
 | `deprecated` | boolean | Mark `true` to indicate the widget is deprecated |
 | `resources` | array | Embedded resources — images, external CDN scripts (e.g. ECharts), or ThingsBoard extensions. Populated automatically by ThingsBoard export |
 
-### Descriptor Fields
+### Descriptor fields
 
 The `descriptor` object holds the widget's visual and runtime definition. ThingsBoard populates all of these during export — you typically don't need to hand-edit them.
 
@@ -138,58 +135,34 @@ The `descriptor` object holds the widget's visual and runtime definition. Things
 | `basicModeDirective` | Angular directive for basic mode UI |
 | `resources` | Embedded resources (images, external scripts) |
 
-## The Listing Step
+## Fill in the listing
 
-The Listing step of the upload wizard collects the fields shown on the browse card and detail page. Most are pre-filled from the JSON you uploaded in the Upload step.
+The Listing step of the upload wizard collects the fields shown on the browse card and detail page. Name, Image, Description, and Tags are auto-filled from your JSON; everything else you set here. Version and changelog are set per upload — see [Versioning and checksum](#versioning-and-checksum).
+
+### Listing fields
 
 | Field | Required | Source | Notes |
 |-------|:--------:|--------|-------|
 | Name | yes | `name` in JSON | Editable |
 | Image | yes | `image` + `resources` in JSON | Editable — drop a new image to override |
 | Description | yes | `description` in JSON | Editable, max 512 chars |
-| Categories | yes | Manual | Pick from [Widget Categories](#widget-categories) |
-| Use Cases | yes | Manual | Pick from [Use Cases](#use-cases) |
+| Categories | yes | Manual | Pick from [Widget categories](#widget-categories) |
+| Use Cases | yes | Manual | Pick from [Use cases](#use-cases) |
 | Supported ThingsBoard version | no | Manual | Min (`≥`) and optional max (`<`) version |
 | Professional Edition | no | Manual | Toggle if the widget requires PE |
 | Tags | no | `tags` in JSON | Editable |
 
-## What's Auto-Derived vs What You Provide
-
-### Auto-Derived from Widget JSON
-
-| Listing Field | Source in Widget JSON |
-|-------------------|----------------------|
-| Name | `name` |
-| Description | `description` |
-| Tags | `tags` array |
-| Image | `image` field (resolved from `resources` array) |
-
-### You Provide via the Listing Form
-
-| Field | Purpose |
-|-------|---------|
-| Categories | Browse filtering |
-| Use Cases | Browse filtering |
-| Supported ThingsBoard version | Compatibility constraints |
-| Professional Edition | Edition targeting |
-
-### Set Per Version
-
-Version (semver) and changelog — bumped every time you upload a changed JSON.
-
-## Allowed Values
-
-### Widget Categories
+### Widget categories
 
 Pick one or more categories that describe what your widget is. Allowed values: `Cards & Info`, `Charts & Graphs`, `Controls`, `Gauges & Indicators`, `Input Forms`, `Maps & Location`, `SCADA`, `Tables & Lists`.
 
-### Use Cases
+### Use cases
 
 Pick one or more IoT domains where your widget is useful. These are shared across the whole marketplace so users browsing by use case will see your widget alongside matching devices and dashboards.
 
 Allowed values: `Air Quality Monitoring`, `Asset Tracking`, `Cold Chain`, `Drones`, `Environment Monitoring`, `Fleet Tracking`, `Health Care`, `Industrial Automation`, `Predictive Maintenance`, `Robotics`, `SCADA`, `Smart Building`, `Smart City`, `Smart Energy`, `Smart Farming`, `Smart Home`, `Smart Metering`, `Smart Office`, `Smart Retail`, `Solar Monitoring`, `Tank Level Monitoring`, `Waste Management`.
 
-## Widget Preview Image
+### Preview image
 
 The preview image is shown on browse cards and the widget's detail page. A good preview image is critical — it's the single biggest driver of whether users click on your widget.
 
@@ -198,7 +171,7 @@ There are two ways to set it:
 - **From the widget JSON** — exports from ThingsBoard already embed a preview image, so it works out of the box.
 - **From the upload UI** — in the Listing step of the wizard, drop a new file to override whatever came from the JSON.
 
-### Best Practices
+**Best practices.**
 
 - Use **PNG** for clean screenshots and diagrams
 - Capture the widget in a realistic state (with actual data, not placeholder values)
@@ -206,7 +179,7 @@ There are two ways to set it:
 - Target **400–800 px wide**; the file itself should be well under 200 KB
 - Ensure the widget is legible at small card sizes
 
-## Readme Content
+## Readme content
 
 The Readme step of the upload wizard collects the long-form widget documentation — what the widget displays, data keys, configuration, value ranges — shown on your widget's detail page. It is written in standard Markdown.
 
@@ -220,7 +193,7 @@ A good readme always includes:
 Example:
 
 ```markdown
-## Air Quality Index Card
+## Air quality index card
 
 Displays the latest air quality index (AQI) telemetry in a scalable rectangle card.
 
@@ -231,11 +204,11 @@ Displays the latest air quality index (AQI) telemetry in a scalable rectangle ca
 - Auto-scaling layout
 - Last update timestamp
 
-### Data Keys
+### Data keys
 
 - **air** (timeseries) — Air Quality Index value (0–500)
 
-### AQI Ranges
+### AQI ranges
 
 | Range   | Level              | Color   |
 |---------|--------------------|---------|
@@ -247,9 +220,9 @@ Displays the latest air quality index (AQI) telemetry in a scalable rectangle ca
 | 300+    | Hazardous          | Maroon  |
 ```
 
-## Versioning & Checksum
+## Versioning and checksum
 
-Each widget version is identified by a semver string (e.g. `1.0.0`) and a SHA-256 **checksum** computed from:
+Each widget version is identified by a semver string (e.g. `1.0.0`) plus a changelog entry, bumped every time you upload a changed JSON, and a SHA-256 **checksum** computed from:
 
 - `fqn`
 - `name`
@@ -263,7 +236,7 @@ This means:
 
 **Always bump the version** when uploading a changed widget JSON.
 
-## Pre-Upload Checklist
+## Pre-upload checklist
 
 ### Widget JSON
 
@@ -275,10 +248,10 @@ This means:
 - [ ] `tags` array contains relevant search keywords
 - [ ] `image` is set and resolves (usually automatic with `resources` array on export)
 
-### Listing Form
+### Listing
 
-- [ ] At least one value selected from the [Widget Categories](#widget-categories) list
-- [ ] At least one value selected from the [Use Cases](#use-cases) list
+- [ ] At least one value selected from the [Widget categories](#widget-categories) list
+- [ ] At least one value selected from the [Use cases](#use-cases) list
 - [ ] Minimum ThingsBoard version is set appropriately
 - [ ] Professional Edition toggle matches whether the widget uses PE-only features
 
@@ -288,7 +261,7 @@ This means:
 - [ ] Explains every configuration option that affects appearance or behavior
 - [ ] Documents every value range for color-coded widgets
 
-### Content Quality
+### Content quality
 
 - [ ] Widget has been tested on a real dashboard
 - [ ] Preview image shows the widget with realistic data, not placeholders
