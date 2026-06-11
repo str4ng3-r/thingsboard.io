@@ -88,7 +88,6 @@ export const MARKETING_ALLOWLIST: ReadonlyArray<string> = [
 	'/cookie-policy/',
 	'/energy-management/',
 	'/company/*',
-	'/iot-hub/*',
 ];
 
 /** Test whether a marketing pathname is in the allowlist. */

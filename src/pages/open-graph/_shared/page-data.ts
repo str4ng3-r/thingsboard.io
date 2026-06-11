@@ -17,6 +17,7 @@ import { BLOG_AUTHORS } from '@data/blog/authors';
 import { CATEGORY_LABELS } from '@data/blog/categories';
 import { HARDWARE_PARTNERS } from '@data/partners/hardware-partners';
 import { jobs } from '@data/careers/jobs';
+import { IOT_HUB_CATEGORIES } from '@models/iot-hub';
 
 export interface CardInput {
 	/** URL-shaped slug used as the path parameter in the endpoint */
@@ -116,6 +117,46 @@ export async function getBlogCardInputs(): Promise<CardInput[]> {
 			},
 		});
 	}
+
+	return inputs;
+}
+
+export async function getIotHubCardInputs(): Promise<CardInput[]> {
+	const SECTION = 'IoT Hub';
+	const inputs: CardInput[] = [
+		{
+			slug: 'index',
+			props: {
+				variant: 'logo' as const,
+				sectionName: SECTION,
+				title: 'ThingsBoard IoT Hub',
+			},
+		},
+	];
+
+	for (const cat of IOT_HUB_CATEGORIES) {
+		inputs.push({
+			slug: cat.slug,
+			props: {
+				variant: 'logo' as const,
+				sectionName: SECTION,
+				eyebrow: 'Category',
+				// Bare label "Devices" is too generic for a shared OG card.
+				title: cat.slug === 'devices' ? 'IoT Devices' : cat.label,
+			},
+		});
+	}
+
+	inputs.push(
+		{
+			slug: 'search',
+			props: { variant: 'logo' as const, sectionName: SECTION, title: 'Search results' },
+		},
+		{
+			slug: 'creator',
+			props: { variant: 'logo' as const, sectionName: SECTION, title: 'Creators' },
+		},
+	);
 
 	return inputs;
 }
@@ -305,7 +346,7 @@ function walkAstroPages(
 	out: Array<{ slug: string; pathname: string }>
 ): void {
 	const SKIP_DIRS = new Set([
-		'open-graph', 'docs', 'blog', 'case-studies', 'use-cases', 'device-library',
+		'open-graph', 'docs', 'blog', 'case-studies', 'use-cases', 'device-library', 'iot-hub',
 	]);
 	const dir = path.join(root, rel);
 	let entries: fs.Dirent[];

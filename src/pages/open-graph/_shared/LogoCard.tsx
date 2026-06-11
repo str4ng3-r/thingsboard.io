@@ -18,7 +18,8 @@ export interface LogoCardProps {
 	sectionName?: string;
 	/** Use 22 px / 0.14em "tight" version (for two-word labels). */
 	sectionTight?: boolean;
-	eyebrow: string;
+	/** Optional uppercase line above the title. Omit for self-explanatory titles. */
+	eyebrow?: string;
 	title: string;
 	/** Optional small line below the title — used for blog "By {Author}". */
 	authorLine?: string;
@@ -102,17 +103,19 @@ export function LogoCard({ sectionName, sectionTight, eyebrow, title, authorLine
 					flexDirection: 'column',
 				}}
 			>
-				<div
-					style={{
-						fontSize: 21,
-						fontWeight: 700,
-						letterSpacing: '0.16em',
-						textTransform: 'uppercase',
-						opacity: 0.82,
-					}}
-				>
-					{eyebrow}
-				</div>
+				{eyebrow && (
+					<div
+						style={{
+							fontSize: 21,
+							fontWeight: 700,
+							letterSpacing: '0.16em',
+							textTransform: 'uppercase',
+							opacity: 0.82,
+						}}
+					>
+						{eyebrow}
+					</div>
+				)}
 				<div
 					style={{
 						fontSize: titleSize,
