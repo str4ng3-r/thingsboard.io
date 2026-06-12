@@ -5,7 +5,7 @@ description: Contribute a rule chain to the ThingsBoard IoT Hub so end users ins
 
 import { Steps } from '@astrojs/starlight/components';
 import DocLink from '@components/DocLink.astro';
-import { Products } from '~/models/site.models';
+import { Products } from '@models/site.models';
 
 Welcome to **ThingsBoard IoT Hub**. This guide walks you through contributing a rule chain that end users can install on their ThingsBoard instance in a single click.
 
@@ -182,40 +182,40 @@ A valid rule chain file is a JSON object with a `ruleChain` header and a `metada
 
 ### Required structure
 
-| Path | Type | Description |
-|------|------|-------------|
-| `ruleChain` | object | Rule chain header — must be present |
-| `ruleChain.name` | string | Non-empty rule chain name |
-| `ruleChain.type` | string | One of the [Rule Chain Types](#rule-chain-types) |
-| `ruleChain.root` | boolean | Must be `false` — a contributed chain must never declare itself the root chain. Users decide whether to make it the root after install |
-| `metadata` | object | Rule chain body — must be present |
-| `metadata.nodes` | array | The default-processing nodes plus the nodes of your added flow |
-| `metadata.connections` | array | Wiring between nodes — technically optional, but any chain with more than one node needs it |
+| Path                   | Type    | Description                                                                                                                            |
+|------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `ruleChain`            | object  | Rule chain header — must be present                                                                                                    |
+| `ruleChain.name`       | string  | Non-empty rule chain name                                                                                                              |
+| `ruleChain.type`       | string  | One of the [Rule Chain Types](#rule-chain-types)                                                                                       |
+| `ruleChain.root`       | boolean | Must be `false` — a contributed chain must never declare itself the root chain. Users decide whether to make it the root after install |
+| `metadata`             | object  | Rule chain body — must be present                                                                                                      |
+| `metadata.nodes`       | array   | The default-processing nodes plus the nodes of your added flow                                                                         |
+| `metadata.connections` | array   | Wiring between nodes — technically optional, but any chain with more than one node needs it                                            |
 
 ### Node structure
 
 Each entry in `metadata.nodes` represents one rule node on the canvas:
 
-| Field | Description |
-|-------|-------------|
-| `type` | Fully qualified Java class name of the node (e.g. `org.thingsboard.rule.engine.kafka.TbKafkaNode`) |
-| `name` | Display name shown on the canvas |
-| `debugSettings` | Per-node debug configuration — see the recommendation for added nodes above |
-| `singletonMode` | Whether the node runs as a single instance across the cluster |
-| `queueName` | Processing queue override (`null` uses the chain's queue) |
-| `configurationVersion` | Node configuration schema version — set by the export |
-| `configuration` | Node-specific configuration object |
-| `additionalInfo` | Editor metadata (position on canvas, etc.) |
+| Field                  | Description                                                                                        |
+|------------------------|----------------------------------------------------------------------------------------------------|
+| `type`                 | Fully qualified Java class name of the node (e.g. `org.thingsboard.rule.engine.kafka.TbKafkaNode`) |
+| `name`                 | Display name shown on the canvas                                                                   |
+| `debugSettings`        | Per-node debug configuration — see the recommendation for added nodes above                        |
+| `singletonMode`        | Whether the node runs as a single instance across the cluster                                      |
+| `queueName`            | Processing queue override (`null` uses the chain's queue)                                          |
+| `configurationVersion` | Node configuration schema version — set by the export                                              |
+| `configuration`        | Node-specific configuration object                                                                 |
+| `additionalInfo`       | Editor metadata (position on canvas, etc.)                                                         |
 
 ### Connection structure
 
 Each entry in `metadata.connections` wires two nodes together:
 
-| Field | Description |
-|-------|-------------|
-| `fromIndex` | Index of the source node in the `nodes` array |
-| `toIndex` | Index of the target node in the `nodes` array |
-| `type` | Connection label (e.g. `Success`, `Failure`, `True`, `False`) — depends on the source node's output ports |
+| Field       | Description                                                                                               |
+|-------------|-----------------------------------------------------------------------------------------------------------|
+| `fromIndex` | Index of the source node in the `nodes` array                                                             |
+| `toIndex`   | Index of the target node in the `nodes` array                                                             |
+| `type`      | Connection label (e.g. `Success`, `Failure`, `True`, `False`) — depends on the source node's output ports |
 
 ## Fill in the listing
 
@@ -223,25 +223,25 @@ The Listing step of the upload wizard collects the fields shown on the browse ca
 
 ### Listing fields
 
-| Field | Required | Source | Notes |
-|-------|:--------:|--------|-------|
-| Name | yes | `ruleChain.name` in JSON | Editable |
-| Icon | yes | Auto from `ruleChain.type` | Editable — see [Icon and color](#icon-and-color) |
-| Color | yes | Auto from `ruleChain.type` | Editable — hex color for the icon background |
-| Description | yes | Template | Pre-filled with a fill-in template. One-sentence summary, max 512 chars |
-| Categories | yes | Manual | Pick from [Rule Chain Categories](#rule-chain-categories) |
-| Use Cases | yes | Manual | Pick from [Use Cases](#use-cases) |
-| Supported ThingsBoard version | no | Manual | Min (`≥`) and optional max (`<`) version |
-| Professional Edition | no | Manual | Toggle if the rule chain requires PE |
-| Tags | no | Manual | Free-form keywords |
+| Field                         | Required | Source                     | Notes                                                                   |
+|-------------------------------|:--------:|----------------------------|-------------------------------------------------------------------------|
+| Name                          |   yes    | `ruleChain.name` in JSON   | Editable                                                                |
+| Icon                          |   yes    | Auto from `ruleChain.type` | Editable — see [Icon and color](#icon-and-color)                        |
+| Color                         |   yes    | Auto from `ruleChain.type` | Editable — hex color for the icon background                            |
+| Description                   |   yes    | Template                   | Pre-filled with a fill-in template. One-sentence summary, max 512 chars |
+| Categories                    |   yes    | Manual                     | Pick from [Rule Chain Categories](#rule-chain-categories)               |
+| Use Cases                     |   yes    | Manual                     | Pick from [Use Cases](#use-cases)                                       |
+| Supported ThingsBoard version |    no    | Manual                     | Min (`≥`) and optional max (`<`) version                                |
+| Professional Edition          |    no    | Manual                     | Toggle if the rule chain requires PE                                    |
+| Tags                          |    no    | Manual                     | Free-form keywords                                                      |
 
 ### Rule chain types
 
 The `ruleChain.type` field must be one of: `CORE`, `EDGE`.
 
-| Type | Use for |
-|------|---------|
-| `CORE` | A rule chain that runs on the main ThingsBoard server — the common case |
+| Type   | Use for                                                                          |
+|--------|----------------------------------------------------------------------------------|
+| `CORE` | A rule chain that runs on the main ThingsBoard server — the common case          |
 | `EDGE` | A rule chain that runs on a ThingsBoard Edge instance — for edge message routing |
 
 ### Rule chain categories
@@ -368,7 +368,7 @@ Kafka-publishing flow** on the **Post telemetry** path:
 
 ## Versioning and checksum
 
-Each rule chain version is identified by a semver string (e.g. `1.0.0`) plus a changelog entry, and a SHA-256 **checksum** computed from:
+Each rule chain version is identified by a semver string (e.g. `1.0.0`) plus a changelog entry, and an SHA-256 **checksum** computed from:
 
 - `ruleChain.name`
 - `ruleChain.type`

@@ -5,7 +5,7 @@ description: Contribute a calculated field to the ThingsBoard IoT Hub — share 
 
 import { Steps } from '@astrojs/starlight/components';
 import DocLink from '@components/DocLink.astro';
-import { Products } from '~/models/site.models';
+import { Products } from '@models/site.models';
 
 Welcome to **ThingsBoard IoT Hub**. This guide walks you through contributing a calculated field that end users can install on their ThingsBoard instance in a single click.
 
@@ -16,7 +16,7 @@ A calculated field contribution is a **single JSON file** that you export from T
 When a user installs your calculated field from IoT Hub:
 
 1. The platform downloads your calculated field JSON file.
-2. The user picks the target — a device, an asset, or a device/asset profile — directly in the install dialog.
+2. The user picks the target — a device, an asset, or a device/asset profile — directly in the installation dialog.
 3. The calculated field is created on that target and immediately starts processing live telemetry — every incoming message runs through your formula or script and the computed result is saved back as a new telemetry key or attribute.
 
 A calculated field contribution is self-contained — the formula, script, or rule is entirely in the `configuration` object. End users do not need to install dependencies or write code.
@@ -44,7 +44,7 @@ The sections below are a complete reference for each step.
 4. Save the resulting `.json` file — this is your upload file.
 </Steps>
 
-The exported file is a complete calculated field definition and requires no further editing to be valid.
+The exported file is a complete-calculated field definition and requires no further editing to be valid.
 
 ## Calculated field JSON structure
 
@@ -97,55 +97,55 @@ A valid calculated field file is a JSON object with three required fields — `n
 
 ### Required fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Non-empty calculated field name (e.g. `Dew Point`) |
-| `type` | string | One of the [Calculated field types](#calculated-field-types) |
+| Field           | Type   | Description                                                                                                                                                                                                                                                                            |
+|-----------------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`          | string | Non-empty calculated field name (e.g. `Dew Point`)                                                                                                                                                                                                                                     |
+| `type`          | string | One of the [Calculated field types](#calculated-field-types)                                                                                                                                                                                                                           |
 | `configuration` | object | Type-specific configuration object. For `SIMPLE` it holds `arguments`, `output`, and `expression`. For `SCRIPT` it holds `arguments`, `output`, and `script`. Other types have their own structure — the full per-type schemas are linked in the Configuration Structure section below |
 
 ### Configuration structure
 
 The `configuration` object varies by calculated field type. Common fields across most types:
 
-| Field | Description |
-|-------|-------------|
-| `arguments` | Map of argument name → reference (telemetry key, attribute key, or related entity property) the formula reads from. Set `defaultValue` only for tuning parameters like thresholds — a default on an input telemetry argument fabricates readings when data is missing |
-| `output` | Where the result is saved — `type` (`TIME_SERIES` or `ATTRIBUTE`), `name` (key to write), `scope` (for attributes only) |
-| `expression` | For `SIMPLE` type — a math expression referencing argument names |
-| `script` | For `SCRIPT` type — a TBEL function body that returns the computed value |
+| Field        | Description                                                                                                                                                                                                                                                           |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `arguments`  | Map of argument name → reference (telemetry key, attribute key, or related entity property) the formula reads from. Set `defaultValue` only for tuning parameters like thresholds — a default on an input telemetry argument fabricates readings when data is missing |
+| `output`     | Where the result is saved — `type` (`TIME_SERIES` or `ATTRIBUTE`), `name` (key to write), `scope` (for attributes only)                                                                                                                                               |
+| `expression` | For `SIMPLE` type — a math expression referencing argument names                                                                                                                                                                                                      |
+| `script`     | For `SCRIPT` type — a TBEL function body that returns the computed value                                                                                                                                                                                              |
 
 See the <DocLink product={Products.CE} path="user-guide/calculated-fields">ThingsBoard Calculated Fields documentation</DocLink> for full per-type configuration schemas.
 
 ## Fill in the listing
 
-The Listing step of the upload wizard collects the fields shown on the browse card and detail page. Name, Icon, and Color are auto-filled from your JSON (Icon and Color derived from `type`); everything else you set here. Version and changelog are set per upload — see [Versioning and checksum](#versioning-and-checksum).
+The Listing step of the upload wizard collects the fields shown on the browse card and detail page. Name, Icon, and Color are autofilled from your JSON (Icon and Color derived from `type`); everything else you set here. Version and changelog are set per upload — see [Versioning and checksum](#versioning-and-checksum).
 
 ### Listing fields
 
-| Field | Required | Source | Notes |
-|-------|:--------:|--------|-------|
-| Name | yes | `name` in JSON | Editable |
-| Icon | yes | Auto from `type` in JSON | Editable — see [Icon and color](#icon-and-color) |
-| Color | yes | Auto from `type` in JSON | Editable — hex color for the icon background |
-| Description | yes | Template | Pre-filled with a fill-in template. One-sentence summary, max 512 chars |
-| Categories | yes | Manual | Pick from [Calculated field categories](#calculated-field-categories) |
-| Use Cases | yes | Manual | Pick from [Use cases](#use-cases) |
-| Supported ThingsBoard version | no | Manual | Min (`≥`) and optional max (`<`) version |
-| Professional Edition | no | Manual | Toggle if the calculated field requires PE |
-| Tags | no | Manual | Free-form keywords |
+| Field                         | Required | Source                   | Notes                                                                   |
+|-------------------------------|:--------:|--------------------------|-------------------------------------------------------------------------|
+| Name                          |   yes    | `name` in JSON           | Editable                                                                |
+| Icon                          |   yes    | Auto from `type` in JSON | Editable — see [Icon and color](#icon-and-color)                        |
+| Color                         |   yes    | Auto from `type` in JSON | Editable — hex color for the icon background                            |
+| Description                   |   yes    | Template                 | Pre-filled with a fill-in template. One-sentence summary, max 512 chars |
+| Categories                    |   yes    | Manual                   | Pick from [Calculated field categories](#calculated-field-categories)   |
+| Use Cases                     |   yes    | Manual                   | Pick from [Use cases](#use-cases)                                       |
+| Supported ThingsBoard version |    no    | Manual                   | Min (`≥`) and optional max (`<`) version                                |
+| Professional Edition          |    no    | Manual                   | Toggle if the calculated field requires PE                              |
+| Tags                          |    no    | Manual                   | Free-form keywords                                                      |
 
 ### Calculated field types
 
 The `type` field must be one of: `SIMPLE`, `SCRIPT`, `GEOFENCING`, `PROPAGATION`, `RELATED_ENTITIES_AGGREGATION`, `ENTITY_AGGREGATION`.
 
-| Type | Use for |
-|------|---------|
-| `SIMPLE` | Math expressions over telemetry/attribute values (e.g. unit conversion, derived metrics like dew point or enthalpy) |
-| `SCRIPT` | Custom TBEL logic — for formulas too complex for an expression or requiring branching |
-| `GEOFENCING` | Detecting entry/exit of geographical zones based on latitude/longitude telemetry |
-| `PROPAGATION` | Propagating values up or down the entity hierarchy (e.g. from devices to assets) |
-| `RELATED_ENTITIES_AGGREGATION` | Aggregating telemetry across related entities (sum, avg, min, max across devices linked to an asset) |
-| `ENTITY_AGGREGATION` | Aggregating telemetry across entities of a given profile (fleet-wide averages, totals) |
+| Type                           | Use for                                                                                                             |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `SIMPLE`                       | Math expressions over telemetry/attribute values (e.g. unit conversion, derived metrics like dew point or enthalpy) |
+| `SCRIPT`                       | Custom TBEL logic — for formulas too complex for an expression or requiring branching                               |
+| `GEOFENCING`                   | Detecting entry/exit of geographical zones based on latitude/longitude telemetry                                    |
+| `PROPAGATION`                  | Propagating values up or down the entity hierarchy (e.g. from devices to assets)                                    |
+| `RELATED_ENTITIES_AGGREGATION` | Aggregating telemetry across related entities (sum, avg, min, max across devices linked to an asset)                |
+| `ENTITY_AGGREGATION`           | Aggregating telemetry across entities of a given profile (fleet-wide averages, totals)                              |
 
 ### Calculated field categories
 
@@ -216,7 +216,7 @@ above 50%. If either input is missing, no output is produced.
 
 ## Versioning and checksum
 
-Each calculated field version is identified by a semver string (e.g. `1.0.0`) plus a changelog entry, and a SHA-256 **checksum** computed from:
+Each calculated field version is identified by a semver string (e.g. `1.0.0`) plus a changelog entry, and an SHA-256 **checksum** computed from:
 
 - `name`
 - `type`
