@@ -4163,12 +4163,12 @@ export const iotHubSidebar: SidebarConfig = [
 	{
 		label: 'Contribution guides',
 		items: [
-			{ label: 'Alarm rule', slug: 'docs/iot-hub/guides/alarm-rule' },
-			{ label: 'Calculated fields', slug: 'docs/iot-hub/guides/calculated-field' },
-			{ label: 'Device', slug: 'docs/iot-hub/guides/device' },
-			{ label: 'Rule chain', slug: 'docs/iot-hub/guides/rule-chain' },
-			{ label: 'Solution template', slug: 'docs/iot-hub/guides/solution-template' },
+			{ label: 'Device Library', slug: 'docs/iot-hub/guides/device' },
+			{ label: 'Solution Templates', slug: 'docs/iot-hub/guides/solution-template' },
 			{ label: 'Widgets', slug: 'docs/iot-hub/guides/widget' },
+			{ label: 'Calculated Fields', slug: 'docs/iot-hub/guides/calculated-field' },
+			{ label: 'Alarm Rules', slug: 'docs/iot-hub/guides/alarm-rule' },
+			{ label: 'Rule Chains', slug: 'docs/iot-hub/guides/rule-chain' },
 		],
 	},
 ];
@@ -4276,7 +4276,7 @@ export const licenseSidebarTabLinks: SidebarTabLinks = {
 };
 export const iotHubSidebarTabLinks: SidebarTabLinks = {
 	'Getting Started': '/docs/iot-hub/',
-	'Contribution guides': '/docs/iot-hub/guides/alarm-rule/',
+	'Contribution guides': '/docs/iot-hub/guides/device/',
 };
 
 /**
