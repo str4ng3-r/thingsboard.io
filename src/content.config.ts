@@ -402,9 +402,13 @@ export const collections = {
 					filterInfo: perCategoryFilters[i],
 				}));
 			} catch (e) {
-				if (import.meta.env.DEV) {
+				const isProductionBuild = process.argv.includes('build');
+				if (!isProductionBuild) {
+					const command = process.argv[2] ?? 'unknown';
 					const msg = e instanceof Error ? e.message : String(e);
-					console.warn(`[iot-hub] loader failed in dev, using empty collection: ${msg}`);
+					console.warn(
+						`[iot-hub] loader failed in ${command} mode, using empty collection: ${msg}`
+					);
 					return [];
 				}
 				throw e;
