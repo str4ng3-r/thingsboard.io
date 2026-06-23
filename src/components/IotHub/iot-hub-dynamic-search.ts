@@ -177,6 +177,27 @@ export function setupDynamicSearch(): void {
 	// after a fetch error. resetPage=false keeps the page index the user
 	// was on when the failure happened.
 	let lastRefetchOpts: { resetPage?: boolean } = { resetPage: false };
+	let lastTrackedSearch: string | null = null;
+
+	// Push an `iot_hub_search` event to dataLayer once per changed,
+	// non-empty term — pagination/sort/filter on the same query don't re-count.
+	// Marketing owns the GTM trigger + GA4 tag.
+	function trackSearch(term: string, resultsCount: number): void {
+		// Clearing the box resets, so re-entering the same term later counts anew.
+		if (!term) {
+			lastTrackedSearch = null;
+			return;
+		}
+		if (term === lastTrackedSearch) return;
+		lastTrackedSearch = term;
+		window.dataLayer?.push({
+			event: 'iot_hub_search',
+			search_term: term,
+			search_results_count: resultsCount,
+			search_surface: itemType || (creatorId ? 'creator' : 'all'),
+			search_sort: sortId,
+		});
+	}
 
 	function setLoading(loading: boolean): void {
 		itemsWrap!.classList.toggle('is-loading', loading);
@@ -385,6 +406,7 @@ export function setupDynamicSearch(): void {
 				updatePagination(paginationNav, { currentPage, totalPages, hideOnSinglePage: true });
 			}
 			updateResultsCount(countEl!, body.totalElements ?? 0);
+			trackSearch(trimmed, body.totalElements ?? 0);
 		} catch (err) {
 			// Aborts happen on every superseding fetch — don't treat them
 			// as failures or the error panel would flash on every keystroke.

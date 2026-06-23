@@ -111,7 +111,7 @@ function sendPcGTM() {
 				retention: p.retention || 0,
 			});
 		});
-		(window as any).dataLayer?.push(gtm);
+		window.dataLayer?.push(gtm);
 	}, 3000);
 }
 

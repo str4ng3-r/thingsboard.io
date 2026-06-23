@@ -79,7 +79,7 @@ export function initTbPaygCalc() {
 				calculator_extra_storage_cost: null,
 			};
 			for (let i = 0; i <= 9; i++) gtm[`calculator_profile_${i}_json`] = null;
-			(window as any).dataLayer?.push(gtm);
+			window.dataLayer?.push(gtm);
 		}, 3000);
 	}
 
