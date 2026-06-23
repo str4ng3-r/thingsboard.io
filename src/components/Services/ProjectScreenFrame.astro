@@ -1,4 +1,6 @@
 ---
+export type Variant = 'default' | 'hero' | 'compact';
+
 export interface Props {
 	/** Image source URL. Not needed when using the default slot. */
 	src?: string;
@@ -6,26 +8,49 @@ export interface Props {
 	width?: number;
 	height?: number;
 	id?: string;
-	/** Content border-radius. Default `5px`. */
-	borderRadius?: string;
 	/** Loading strategy for the default image. Default `lazy`. */
 	loading?: 'lazy' | 'eager';
-	/** Accent frame color (front layer). Default `#3e9af8`. */
-	accentColor?: string;
-	/** Muted frame color (middle layer). Default `#d1e9ff`. */
-	mutedColor?: string;
-	/** Fill background color (back layer). Default `#f4f8fe`. */
-	fillColor?: string;
-	/** Content opacity transition duration. Default `0.3s`. */
-	transitionDuration?: string;
-	/** CSS inset for the front accent border layer. Default `8% -8% -8% 8%`. */
-	frontInset?: string;
-	/** CSS inset for the middle muted border layer. Default `-6% 6% 6% -6%`. */
-	middleInset?: string;
-	/** CSS inset for the back fill layer. Default `-12% -5% 12% 5%`. */
-	backInset?: string;
+	/** Visual geometry + color preset. Default `default`. */
+	variant?: Variant;
 	class?: string;
 }
+
+type Tokens = {
+	radius: string;
+	frontInset: string;
+	middleInset: string;
+	backInset: string;
+	frontInsetSm: string;
+	middleInsetSm: string;
+	backInsetSm: string;
+	fill?: string;
+};
+
+const base: Tokens = {
+	radius: '5px',
+	frontInset: '8% -8% -8% 8%',
+	middleInset: '-6% 6% 6% -6%',
+	backInset: '-12% -5% 12% 5%',
+	frontInsetSm: '2% -1.5% -2% 1.5%',
+	middleInsetSm: '-3% 2% 3% -2%',
+	backInsetSm: '-3.5% -1.5% 3.5% 1.5%',
+};
+
+const VARIANTS: Record<Variant, Tokens> = {
+	default: base,
+	// Lighter fill, larger radius — used in hero video/image frames
+	hero: { ...base, radius: '8px', fill: '#e5efff' },
+	// Tighter insets — used in constrained panel contexts
+	compact: {
+		...base,
+		frontInset: '2% -2% -2% 2%',
+		middleInset: '-2% 2% 2% -2%',
+		backInset: '-4% -2% 4% 2%',
+		frontInsetSm: '1% -1% -1% 1%',
+		middleInsetSm: '-1% 1% 1% -1%',
+		backInsetSm: '-2% -1% 2% 1%',
+	},
+};
 
 const {
 	src,
@@ -33,25 +58,27 @@ const {
 	width,
 	height,
 	id,
-	borderRadius = '5px',
 	loading = 'lazy',
-	accentColor = '#3e9af8',
-	mutedColor = '#d1e9ff',
-	fillColor = '#f4f8fe',
-	transitionDuration = '0.3s',
-	frontInset = '8% -8% -8% 8%',
-	middleInset = '-6% 6% 6% -6%',
-	backInset = '-12% -5% 12% 5%',
+	variant = 'default',
 	class: className,
 } = Astro.props;
+
+const t = VARIANTS[variant];
+const style = [
+	t.fill ? `--psf-fill:${t.fill}` : '',
+	`--psf-img-radius:${t.radius}`,
+	`--psf-front-inset:${t.frontInset}`,
+	`--psf-middle-inset:${t.middleInset}`,
+	`--psf-back-inset:${t.backInset}`,
+	`--psf-front-inset-sm:${t.frontInsetSm}`,
+	`--psf-middle-inset-sm:${t.middleInsetSm}`,
+	`--psf-back-inset-sm:${t.backInsetSm}`,
+].filter(Boolean).join(';');
 
 const hasSlot = Astro.slots.has('default');
 ---
 
-<div
-	class:list={['project-screen-frame', className]}
-	style={`--psf-accent: ${accentColor}; --psf-muted: ${mutedColor}; --psf-fill: ${fillColor}; --psf-img-radius: ${borderRadius}; --psf-transition: ${transitionDuration}; --psf-front-inset: ${frontInset}; --psf-middle-inset: ${middleInset}; --psf-back-inset: ${backInset};`}
->
+<div class:list={['project-screen-frame', className]} style={style}>
 	<div class="psf-inner">
 		{
 			hasSlot ? (
@@ -83,7 +110,7 @@ const hasSlot = Astro.slots.has('default');
 			width: 100%;
 			height: auto;
 			border-radius: var(--psf-img-radius);
-			transition: opacity var(--psf-transition) ease;
+			transition: opacity 0.3s ease;
 		}
 
 		// Layer 1 (front): accent border, offset down-right
@@ -93,7 +120,7 @@ const hasSlot = Astro.slots.has('default');
 			inset: var(--psf-front-inset);
 			z-index: -1;
 			border-radius: 24px;
-			border: 1.5px solid var(--psf-accent);
+			border: 1.5px solid var(--psf-accent, #3e9af8);
 		}
 
 		// Layer 2 (middle): muted border, offset up-left
@@ -103,7 +130,7 @@ const hasSlot = Astro.slots.has('default');
 			inset: var(--psf-middle-inset);
 			z-index: -2;
 			border-radius: 24px;
-			border: 1.5px solid var(--psf-muted);
+			border: 1.5px solid var(--psf-muted, #d1e9ff);
 		}
 	}
 
@@ -114,22 +141,22 @@ const hasSlot = Astro.slots.has('default');
 		inset: var(--psf-back-inset);
 		z-index: 0;
 		border-radius: 24px;
-		background: var(--psf-fill);
+		background: var(--psf-fill, #f4f8fe);
 	}
 
 	@media (max-width: 959px) {
 		.psf-inner {
 			&::before {
-				inset: var(--psf-front-inset-sm, 2% -1.5% -2% 1.5%);
+				inset: var(--psf-front-inset-sm);
 			}
 
 			&::after {
-				inset: var(--psf-middle-inset-sm, -3% 2% 3% -2%);
+				inset: var(--psf-middle-inset-sm);
 			}
 		}
 
 		.project-screen-frame::before {
-			inset: var(--psf-back-inset-sm, -3.5% -1.5% 3.5% 1.5%);
+			inset: var(--psf-back-inset-sm);
 		}
 	}
 </style>

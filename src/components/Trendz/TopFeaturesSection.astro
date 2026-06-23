@@ -133,14 +133,20 @@ const cards = [
 
 		<div class="tf-grid">
 			{
-				cards.map((card) => (
+				cards.map((card, i) => (
 					<div class="tf-card">
-						<div class="tf-card-header">
-							<span class="tf-card-icon" set:html={card.icon} />
-							<h3 class="tf-card-title">{card.title}</h3>
-							<span class="tf-card-chevron" aria-hidden="true" />
-						</div>
-						<div class="tf-card-body">
+						<h3 class="tf-card-heading">
+							<button
+								class="tf-card-header"
+								aria-expanded="false"
+								aria-controls={`tf-body-${i}`}
+							>
+								<span class="tf-card-icon" set:html={card.icon} />
+								<span class="tf-card-title">{card.title}</span>
+								<span class="tf-card-chevron" aria-hidden="true" />
+							</button>
+						</h3>
+						<div class="tf-card-body" id={`tf-body-${i}`}>
 							<p class="tf-card-subtitle">{card.subtitle}</p>
 							<ul class="tf-card-list">
 								{card.items.map((item) => (
@@ -166,11 +172,14 @@ const cards = [
 	const cards = Array.from(document.querySelectorAll<HTMLElement>('#trendz-top-features .tf-card'));
 
 	cards.forEach((card) => {
-		card.querySelector<HTMLElement>('.tf-card-header')?.addEventListener('click', () => {
+		card.querySelector<HTMLButtonElement>('.tf-card-header')?.addEventListener('click', () => {
 			const rowTop = card.offsetTop;
 			const rowCards = cards.filter((c) => c.offsetTop === rowTop);
 			const isExpanded = card.classList.contains('expanded');
-			rowCards.forEach((c) => c.classList.toggle('expanded', !isExpanded));
+			rowCards.forEach((c) => {
+				c.classList.toggle('expanded', !isExpanded);
+				c.querySelector<HTMLButtonElement>('.tf-card-header')?.setAttribute('aria-expanded', String(!isExpanded));
+			});
 		});
 	});
 
@@ -186,7 +195,10 @@ const cards = [
 		const cols = getColCount();
 		if (cols !== currentCols) {
 			currentCols = cols;
-			cards.forEach((c) => c.classList.remove('expanded'));
+			cards.forEach((c) => {
+				c.classList.remove('expanded');
+				c.querySelector<HTMLButtonElement>('.tf-card-header')?.setAttribute('aria-expanded', 'false');
+			});
 		}
 	});
 </script>
@@ -195,12 +207,12 @@ const cards = [
 	@use '../../styles/trendz' as *;
 
 	#trendz-top-features {
-		background: var(--web-BG, #f4f8fe);
-		padding: 32px 20px;
+		background: var(--color-trendz-surface);
+		padding: 0 20px 32px;
 		box-sizing: border-box;
 
 		@include trendz-up(sm) {
-			padding: 60px 50px;
+			padding: 0 50px 60px;
 		}
 
 		@include trendz-up(lg) {
@@ -242,7 +254,7 @@ const cards = [
 
 		@include trendz-down(xs) {
 			@include trendz-body-s;
-			color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+			color: var(--color-trendz-text-secondary);
 		}
 	}
 
@@ -264,7 +276,6 @@ const cards = [
 		background: #fff;
 		border-radius: 24px;
 		box-shadow: 0 10px 25px -15px rgba(0, 0, 0, 0.08);
-		cursor: pointer;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
@@ -282,12 +293,22 @@ const cards = [
 		}
 	}
 
+	.tf-card-heading {
+		margin: 0;
+	}
+
 	.tf-card-header {
+		width: 100%;
 		padding: 24px;
 		display: flex;
 		align-items: center;
 		gap: 16px;
 		position: relative;
+		background: none;
+		border: none;
+		cursor: pointer;
+		font: inherit;
+		text-align: left;
 
 		&::after {
 			content: '';
@@ -306,7 +327,7 @@ const cards = [
 		align-items: center;
 		gap: 8px;
 		padding: 12px;
-		border: 1px solid #2a7dec;
+		border: 1px solid var(--color-trendz-accent);
 		border-radius: 10px;
 	}
 
@@ -347,7 +368,7 @@ const cards = [
 
 	.tf-card-subtitle {
 		@include trendz-body-m;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		margin: 0;
 	}
 
@@ -360,11 +381,11 @@ const cards = [
 
 		li {
 			@include trendz-body-s;
-			color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+			color: var(--color-trendz-text-secondary);
 			list-style-type: disc;
 
 			&::marker {
-				color: #2a7dec;
+				color: var(--color-trendz-accent);
 			}
 		}
 	}
@@ -372,9 +393,9 @@ const cards = [
 	.tf-card-link {
 		display: block;
 		padding: 10px 24px;
-		border: 1.5px solid #2a7dec;
+		border: 1.5px solid var(--color-trendz-accent);
 		border-radius: 4px;
-		color: #2a7dec;
+		color: var(--color-trendz-accent);
 		@include trendz-body-m-medium;
 		text-decoration: none;
 		text-align: center;
@@ -390,7 +411,7 @@ const cards = [
 		display: block;
 		padding: 10px 24px;
 		@include trendz-body-m-medium;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		text-align: center;
 		margin-top: auto;
 	}

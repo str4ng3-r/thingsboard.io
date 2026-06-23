@@ -1,7 +1,6 @@
 ---
 import Icon from '~/components/starlight/Icon.astro';
-
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mjgzrgwn';
+import { FORMSPREE_FEEDBACK } from '~/data/formspree';
 
 const questions = {
 	yes: [
@@ -22,7 +21,7 @@ const questions = {
 const options = ['yes', 'no'] as const;
 ---
 
-<div class="feedback-prompt not-content" data-feedback-root data-endpoint={FORMSPREE_ENDPOINT}>
+<div class="feedback-prompt not-content" data-feedback-root data-endpoint={FORMSPREE_FEEDBACK}>
 	<p class="feedback-title" data-feedback-title>Was this helpful?</p>
 
 	<div class="feedback-buttons" data-feedback-buttons>

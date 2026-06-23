@@ -1,22 +1,6 @@
 // ============================================
-// TRENDZ LANDING — Design Tokens & Mixins
+// TRENDZ LANDING — Mixins & Breakpoints
 // ============================================
-// Imported once via global.scss — emits html#trendz CSS vars globally.
-// Components @use this file for mixins only (the html#trendz block gets
-// Astro-scoped in component output and is silently ignored there).
-// ============================================
-@use 'variables' as *;
-
-// --------------------------------------------
-// CSS Custom Properties — scoped to Trendz page
-// --------------------------------------------
-
-html#trendz {
-	--color-trendz-accent: #{$color-primary};
-	--color-trendz-accent-hover: #{$color-primary-hover};
-	--color-trendz-text-primary: #212121;
-	--color-trendz-text-secondary: #3d3d3d;
-}
 
 // --------------------------------------------
 // Breakpoints
@@ -69,6 +53,14 @@ $trendz-bp-xl: 1920px;
 		@media (max-width: #{$trendz-bp-xl - 1px}) {
 			@content;
 		}
+	}
+}
+
+// Narrow horizontal padding for full-width buttons on xs screens
+@mixin trendz-btn-narrow-padding {
+	@include trendz-down(xs) {
+		padding-left: 16px;
+		padding-right: 16px;
 	}
 }
 

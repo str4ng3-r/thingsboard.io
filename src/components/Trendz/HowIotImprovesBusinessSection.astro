@@ -1,11 +1,11 @@
 ---
 import ProjectScreenFrame from '../Services/ProjectScreenFrame.astro';
-const kpiImgUrl = '/products/trendz/turning-telemetry-into-clear-kpis.webp';
-const forecastImgUrl = '/products/trendz/forecasting-whats-likely-to-happen-next.webp';
-const anomalyImgUrl = '/products/trendz/anomaly-detection-for-quick-reaction.webp';
-const utilizationImgUrl = '/products/trendz/utilization-and-state-analysis.webp';
-const predictiveImgUrl = '/products/trendz/predictive-maintenance-and-health-scoring.webp';
-const outliersImgUrl = '/products/trendz/find-outliers-across-a-fleet.webp';
+import kpiImg from '~/assets/images/landings/trendz/turning-telemetry-into-clear-kpis.webp';
+import forecastImg from '~/assets/images/landings/trendz/forecasting-whats-likely-to-happen-next.webp';
+import anomalyImg from '~/assets/images/landings/trendz/anomaly-detection-for-quick-reaction.webp';
+import utilizationImg from '~/assets/images/landings/trendz/utilization-and-state-analysis.webp';
+import predictiveImg from '~/assets/images/landings/trendz/predictive-maintenance-and-health-scoring.webp';
+import outliersImg from '~/assets/images/landings/trendz/find-outliers-across-a-fleet.webp';
 
 const items = [
 	{
@@ -14,7 +14,7 @@ const items = [
 		description:
 			'Turn raw sensor data into clear numbers everyone can use — cost, efficiency, output, quality — the same way across every site and customer.',
 		examples: ['Energy per unit', 'Cost per hour', 'Downtime minutes', 'Quality %', 'CO₂ estimate'],
-		imageSrc: kpiImgUrl,
+		imageSrc: kpiImg.src,
 		imageAlt: 'KPI dashboard showing fleet energy and cost data across sites',
 		featureText:
 			'Trendz helps you define a few "business metrics" on top of your ThingsBoard data. Once a KPI is defined, you can reuse it everywhere: dashboards, portfolio views, alerts, and reports.',
@@ -30,7 +30,7 @@ const items = [
 		description:
 			'Forecast the next days/weeks so you can plan work before problems, high-run-outs, threshold breaches, and KPI drift.',
 		examples: ['Tank empty in ~10 days', 'Temperature likely to go out of range tonight', 'Spend trending over plan'],
-		imageSrc: forecastImgUrl,
+		imageSrc: forecastImg.src,
 		imageAlt: 'Forecast charts showing future sensor data with risk ranges',
 		featureText:
 			'Trendz forecasts your charts into the future and verifies the accuracy of predictions. That makes it practical for operations: you don\'t just see "it will happen", you see when it might happen and how risky it is.',
@@ -46,7 +46,7 @@ const items = [
 		description:
 			'See which assets are getting worse over time, so you can service them at the right moment — before failures and before waste becomes expensive.',
 		examples: ['Longer cool-down', 'Rising vibration', 'Higher energy for the same output'],
-		imageSrc: predictiveImgUrl,
+		imageSrc: predictiveImg.src,
 		imageAlt: 'Predictive maintenance health score list and asset degradation chart',
 		featureText:
 			'Trendz tracks how an asset performs over time and compares it to what "good" looks like for that asset or similar assets. When health declines, you can find when it started, review evidence charts, and trigger a maintenance incident.',
@@ -67,7 +67,7 @@ const items = [
 			'Temperature becomes unstable',
 			'Output drops for the same input',
 		],
-		imageSrc: anomalyImgUrl,
+		imageSrc: anomalyImg.src,
 		imageAlt: 'Anomaly detection fleet heatmap and time series comparison chart',
 		featureText:
 			'Some issues don\'t have a clean rule like "over 80 = bad". Trendz can flag when behavior changes from normal and mark the moment it changed, so investigation starts from a real timestamp, not guesses.',
@@ -87,7 +87,7 @@ const items = [
 			'One building spends more for the same size',
 			'One pump is inefficient vs the rest',
 		],
-		imageSrc: outliersImgUrl,
+		imageSrc: outliersImg.src,
 		imageAlt: 'Fleet outlier ranking list and peer comparison charts',
 		featureText:
 			"Trendz compares similar assets and surfaces the ones that stand out — worst efficiency, highest cost, most downtime, slowest recovery. Start from a ranked list, then drill down to see why it's different using clear visuals.",
@@ -99,7 +99,7 @@ const items = [
 		description:
 			'Measure how long assets spend underused, optimal, overloaded, or out-of-control — then use that for capacity planning, SLA reporting, and operational improvements.',
 		examples: ['Too much idle time', 'Frequent overload periods', 'Temperature out of range during peaks'],
-		imageSrc: utilizationImgUrl,
+		imageSrc: utilizationImg.src,
 		imageAlt: 'Utilization dashboard with SLA compliance metrics and weekly heatmap',
 		featureText:
 			'Trendz turns operating states into simple percentages and timelines, so you can spot bottlenecks and recurring waste. Calendar-style views make patterns obvious (after hours, weekends, shift changes) and help teams connect issues to real operations.',
@@ -150,9 +150,7 @@ const items = [
 									alt={item.imageAlt}
 									width={620}
 									loading={i === 0 ? 'eager' : 'lazy'}
-									frontInset="2% -2% -2% 2%"
-									middleInset="-2% 2% 2% -2%"
-									backInset="-4% -2% 4% 2%"
+									variant="compact"
 								/>
 							</div>
 							<p class="panel-text">{item.featureText}</p>
@@ -174,15 +172,13 @@ const items = [
 			<div class="panel-images">
 				{
 					items.map((item, i) => (
-						<div class:list={['panel-image-wrap', { active: i === 0 }]}>
+						<div class:list={['panel-image-wrap', { active: i === 0 }]} aria-hidden={i !== 0 ? 'true' : 'false'}>
 							<ProjectScreenFrame
 								src={item.imageSrc}
 								alt={item.imageAlt}
 								width={620}
 								loading={i === 0 ? 'eager' : 'lazy'}
-								frontInset="2% -2% -2% 2%"
-								middleInset="-2% 2% 2% -2%"
-								backInset="-4% -2% 4% 2%"
+								variant="compact"
 							/>
 						</div>
 					))
@@ -191,7 +187,7 @@ const items = [
 			<div class="panel-texts">
 				{
 					items.map((item, i) => (
-						<div class:list={['panel-text-wrap', { active: i === 0 }]}>
+						<div class:list={['panel-text-wrap', { active: i === 0 }]} aria-hidden={i !== 0 ? 'true' : 'false'}>
 							<p class="panel-text">{item.featureText}</p>
 							<div class="panel-chips">
 								{item.featureChips.map((chip) => (
@@ -216,6 +212,10 @@ const items = [
 		box-sizing: border-box;
 
 		@include trendz-up(sm) {
+			padding: 50px 50px;
+		}
+
+		@include trendz-up(md) {
 			padding: 100px 50px;
 		}
 	}
@@ -225,6 +225,10 @@ const items = [
 		color: var(--color-trendz-text-primary);
 		text-align: center;
 		margin: 0 0 100px;
+
+		@include trendz-down(sm) {
+			margin-bottom: 50px;
+		}
 
 		@include trendz-down(xs) {
 			@include trendz-h3;
@@ -276,13 +280,13 @@ const items = [
 	// Active title: medium weight + primary color
 	.accordion-item.active .accordion-title {
 		@include trendz-h3;
-		color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
-		background: #f4f8fe;
+		color: var(--color-trendz-text-primary);
+		background: var(--color-trendz-surface);
 		border-radius: 24px 24px 0 0;
 	}
 
 	.accordion-item.active .accordion-body {
-		background: #f4f8fe;
+		background: var(--color-trendz-surface);
 		border-radius: 0 0 24px 24px;
 	}
 
@@ -307,7 +311,7 @@ const items = [
 
 	.accordion-title {
 		@include trendz-h3-regular;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		margin: 0;
 
 		@include trendz-down(xs) {
@@ -335,7 +339,7 @@ const items = [
 
 	.item-desc {
 		@include trendz-body-s;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		margin: 0 0 16px;
 
 		@include trendz-down(xs) {
@@ -345,7 +349,7 @@ const items = [
 
 	.examples-label {
 		@include trendz-body-m;
-		color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
+		color: var(--color-trendz-text-primary);
 		margin: 0 0 10px;
 	}
 
@@ -368,7 +372,7 @@ const items = [
 
 	// Inline panel — box 2, visible below lg only
 	.inline-panel {
-		background: #f4f8fe;
+		background: var(--color-trendz-surface);
 		border-radius: 24px;
 		padding: 20px;
 		margin-top: 16px;
@@ -391,18 +395,21 @@ const items = [
 	// Shared: panel text, chips, CTA
 	.panel-text {
 		@include trendz-body-s;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		margin: 0 0 20px;
 	}
 
 	.panel-chips {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		gap: 12px;
 		margin-bottom: 24px;
 
+		@include trendz-down(xs) {
+			flex-direction: column;
+		}
+
 		@include trendz-up(lg) {
-			flex-direction: row;
 			margin-bottom: 0;
 		}
 	}
@@ -413,11 +420,11 @@ const items = [
 
 	.panel-chip {
 		@include trendz-body-s;
-		border: 1px solid #2a7dec;
+		border: 1px solid var(--color-trendz-accent);
 		border-radius: 8px;
 		padding: 10px 16px;
-		background: #d9e9fc;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		background: var(--color-trendz-surface-accent);
+		color: var(--color-trendz-text-secondary);
 		text-align: center;
 
 		@include trendz-up(lg) {
@@ -448,6 +455,7 @@ const items = [
 
 		&:hover {
 			background: var(--color-trendz-accent-hover);
+			color: #fff;
 		}
 	}
 
@@ -465,7 +473,7 @@ const items = [
 			min-width: 0;
 			padding: 32px;
 			border-radius: 24px;
-			background: #f4f8fe;
+			background: var(--color-trendz-surface);
 			position: sticky;
 			top: 80px;
 		}
@@ -538,8 +546,14 @@ const items = [
 			}
 		});
 
-		panelImageWraps.forEach((wrap, i) => wrap.classList.toggle('active', i === index));
-		panelTextWraps.forEach((wrap, i) => wrap.classList.toggle('active', i === index));
+		panelImageWraps.forEach((wrap, i) => {
+			wrap.classList.toggle('active', i === index);
+			wrap.setAttribute('aria-hidden', String(i !== index));
+		});
+		panelTextWraps.forEach((wrap, i) => {
+			wrap.classList.toggle('active', i === index);
+			wrap.setAttribute('aria-hidden', String(i !== index));
+		});
 	}
 
 	accordionItems.forEach((item, i) => {

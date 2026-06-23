@@ -67,7 +67,7 @@ const cards = [
 	@use '../../styles/trendz' as *;
 
 	#trendz-deployment {
-		background: #f4f8fe;
+		background: var(--color-trendz-surface);
 		padding: 32px 20px;
 		box-sizing: border-box;
 
@@ -98,7 +98,7 @@ const cards = [
 
 	.do-title {
 		@include trendz-h2;
-		color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
+		color: var(--color-trendz-text-primary);
 		margin: 0;
 
 		@include trendz-down(xs) {
@@ -108,7 +108,7 @@ const cards = [
 
 	.do-subtitle {
 		@include trendz-h5;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		max-width: 720px;
 		margin: 0;
 
@@ -153,7 +153,7 @@ const cards = [
 
 	.do-card-icon {
 		border-radius: 24px;
-		border: 1.5px solid #3e9af8;
+		border: 1.5px solid var(--color-trendz-accent);
 		display: flex;
 		height: 92px;
 		padding: 8px 16px;
@@ -163,14 +163,14 @@ const cards = [
 
 	.do-card-title {
 		@include trendz-h3;
-		color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
+		color: var(--color-trendz-text-primary);
 		margin: 0;
 		text-align: center;
 	}
 
 	.do-card-desc {
 		@include trendz-body-s;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		margin: 0;
 		flex: 1;
 		text-align: center;
@@ -206,6 +206,7 @@ const cards = [
 			&:hover {
 				background: var(--color-trendz-accent-hover);
 				border-color: var(--color-trendz-accent-hover);
+				color: #fff;
 			}
 		}
 
@@ -216,6 +217,7 @@ const cards = [
 
 			&:hover {
 				background: rgba(0, 0, 0, 0.04);
+				color: var(--color-trendz-accent);
 			}
 		}
 	}

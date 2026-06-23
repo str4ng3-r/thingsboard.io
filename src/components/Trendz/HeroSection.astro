@@ -2,14 +2,14 @@
 import { getImage } from 'astro:assets';
 import ProjectScreenFrame from '../Services/ProjectScreenFrame.astro';
 import TrendzChip from './TrendzChip.astro';
-const sphereImg = await getImage({
-	src: (await import('/src/assets/images/landings/trendz/sphere.png')).default,
+const posterImg = await getImage({
+	src: (await import('/src/assets/images/landings/trendz/trendz-hero-video-preview.webp')).default,
 	quality: 85,
 });
 ---
 
 <section id="trendz-hero">
-	<div class="hero-container" style={`--sphere-url: url(${sphereImg.src})`}>
+	<div class="hero-container">
 		<div id="hero-content">
 			<h1 class="pe-heading fade-in-left">
 				<TrendzChip label="Trendz Analytics" />
@@ -40,7 +40,7 @@ const sphereImg = await getImage({
 		</div>
 
 		<div class="hero-image">
-			<ProjectScreenFrame fillColor="#E5EFFF" borderRadius="8px" class="hero-screen-frame">
+			<ProjectScreenFrame variant="hero" class="hero-screen-frame">
 				<video
 					width="857"
 					height="426"
@@ -48,15 +48,34 @@ const sphereImg = await getImage({
 					muted
 					loop
 					playsinline
-					preload="auto"
+					preload="metadata"
+					poster={posterImg.src}
 					aria-label="Trendz Analytics dashboard demo"
 				>
-					<source src="/products/trendz/hero-video.mp4" type="video/mp4" />
+					<source src="https://video.thingsboard.io/trendz-hero-video.webm" type="video/webm" />
+					<source src="https://video.thingsboard.io/trendz-hero-video.mp4" type="video/mp4" />
 				</video>
 			</ProjectScreenFrame>
 		</div>
 	</div>
 </section>
+
+<script>
+	const section = document.getElementById('trendz-hero');
+	const video = section?.querySelector('video');
+	if (section && video instanceof HTMLVideoElement) {
+		new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					video.play().catch(() => {});
+				} else {
+					video.pause();
+				}
+			},
+			{ threshold: 0 }
+		).observe(section);
+	}
+</script>
 
 <style lang="scss">
 	@use '../../styles/trendz' as *;
@@ -64,7 +83,7 @@ const sphereImg = await getImage({
 		width: 100%;
 		height: auto;
 		padding-top: 100px;
-		background-color: #f4f8fe;
+		background-color: var(--color-trendz-surface);
 		box-sizing: border-box;
 
 		.hero-container {
@@ -140,48 +159,6 @@ const sphereImg = await getImage({
 						0 24px 36px 0 rgba(83, 92, 115, 0.07);
 				}
 			}
-
-			.sphere-icon {
-				position: absolute;
-				opacity: 0;
-				background: var(--sphere-url) no-repeat center / contain;
-				animation-duration: 1.2s;
-				animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-				animation-fill-mode: forwards;
-			}
-
-			#upper-icon-left {
-				display: block;
-				width: 100px;
-				height: 100px;
-				top: 50%;
-				left: -70px;
-				animation-name: fromRight;
-			}
-
-			#upper-icon-center {
-				display: block;
-				animation-name: fromTopLeft;
-			}
-
-			#upper-icon-right {
-				display: block;
-				width: 100px;
-				height: 100px;
-				right: 0;
-				top: 10%;
-				animation-name: fromBottomRight;
-			}
-
-			#down-icon-left {
-				display: none;
-				animation-name: fromBottomLeft;
-			}
-
-			#down-icon-right {
-				display: none;
-				animation-name: fromBottomRight;
-			}
 		}
 	}
 
@@ -208,6 +185,8 @@ const sphereImg = await getImage({
 			border-color: var(--color-trendz-accent-hover);
 			color: #ffffff;
 		}
+
+		@include trendz-btn-narrow-padding;
 	}
 
 	.btn-outline {
@@ -232,6 +211,8 @@ const sphereImg = await getImage({
 			background: var(--color-trendz-accent);
 			color: #ffffff;
 		}
+
+		@include trendz-btn-narrow-padding;
 	}
 
 	// Heading slides in from left on page load (matches Animate.css fadeInLeft)
@@ -242,7 +223,20 @@ const sphereImg = await getImage({
 		animation-fill-mode: both;
 	}
 
-	// 600px+ — hero image visible below content, buttons go horizontal
+	@include trendz-down(xs) {
+		#trendz-hero .hero-container #hero-content {
+			align-items: center;
+			text-align: center;
+
+			padding: 20px 0;
+
+			:global(.trendz-chip) {
+				margin-left: auto;
+				margin-right: auto;
+			}
+		}
+	}
+
 	@include trendz-up(sm) {
 		#trendz-hero .hero-container {
 			margin: 0 40px;
@@ -253,16 +247,6 @@ const sphereImg = await getImage({
 
 				.pe-subTitle {
 					margin-bottom: 40px;
-				}
-
-				.btn-block {
-					padding: 0;
-					flex-direction: row;
-					width: unset;
-
-					div {
-						width: unset;
-					}
 				}
 			}
 
@@ -291,14 +275,6 @@ const sphereImg = await getImage({
 				right: 10%;
 			}
 		}
-
-		.btn-accent {
-			width: auto;
-		}
-
-		.btn-outline {
-			width: auto;
-		}
 	}
 
 	// 960px+ — max-width container, larger fonts, more icons appear
@@ -307,6 +283,18 @@ const sphereImg = await getImage({
 			margin: auto;
 			width: calc(100% - 100px);
 			max-width: 1200px;
+
+			#hero-content {
+				.btn-block {
+					padding: 0;
+					flex-direction: row;
+					width: unset;
+
+					div {
+						width: unset;
+					}
+				}
+			}
 
 			.hero-image {
 				padding: 12% 4% 10% 4%;
@@ -347,6 +335,14 @@ const sphereImg = await getImage({
 				bottom: 20%;
 				right: 0;
 			}
+		}
+
+		.btn-accent {
+			width: auto;
+		}
+
+		.btn-outline {
+			width: auto;
 		}
 	}
 
@@ -391,28 +387,6 @@ const sphereImg = await getImage({
 		to {
 			opacity: 1;
 			transform: translate3d(0, 0, 0);
-		}
-	}
-
-	@keyframes fromTopLeft {
-		from {
-			opacity: 0;
-			transform: translate(-200px, -200px);
-		}
-		to {
-			opacity: 1;
-			transform: translate(0, 0);
-		}
-	}
-
-	@keyframes fromBottomRight {
-		from {
-			opacity: 0;
-			transform: translate(200px, 200px);
-		}
-		to {
-			opacity: 1;
-			transform: translate(0, 0);
 		}
 	}
 

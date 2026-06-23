@@ -154,6 +154,7 @@ const categories = [
 	const section = document.getElementById('trendz-faq');
 	if (section) {
 		const groups = Array.from(section.querySelectorAll<HTMLElement>('.faq-group'));
+		const layout = section.querySelector<HTMLElement>('.faq-layout')!;
 
 		// Category switching
 		groups.forEach((group) => {
@@ -176,7 +177,28 @@ const categories = [
 				catBtn.setAttribute('aria-expanded', 'true');
 				panel.classList.add('active');
 				panel.removeAttribute('hidden');
+				syncMinHeight();
 			});
+		});
+
+		// On desktop, panels are position:absolute so they don't affect grid row sizing.
+		// Always measure the live active panel so expanded Q&A items are accounted for.
+		const LG_BP = 1280;
+
+		function syncMinHeight() {
+			if (window.innerWidth < LG_BP) {
+				layout.style.minHeight = '';
+				return;
+			}
+			const activePanel = section!.querySelector<HTMLElement>('.faq-panel:not([hidden])');
+			layout.style.minHeight = activePanel ? activePanel.scrollHeight + 'px' : '';
+		}
+
+		syncMinHeight();
+		let rafId = 0;
+		window.addEventListener('resize', () => {
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame(syncMinHeight);
 		});
 
 		// Q&A accordion toggle
@@ -190,6 +212,7 @@ const categories = [
 				} else {
 					answer.removeAttribute('hidden');
 				}
+				syncMinHeight();
 			});
 		});
 	}
@@ -200,11 +223,11 @@ const categories = [
 
 	#trendz-faq {
 		background: #fff;
-		padding: 32px 20px;
+		padding: 0 20px 32px;
 		box-sizing: border-box;
 
 		@include trendz-up(sm) {
-			padding: 60px 50px;
+			padding: 0 50px 60px;
 		}
 
 		@include trendz-up(lg) {
@@ -231,10 +254,11 @@ const categories = [
 
 	// ── Layout ────────────────────────────────────────────────────────────────
 	//
-	// Mobile: each .faq-group stacks vertically (button → panel).
+	// Mobile: each .faq-group stacks vertically (button → panel accordion).
 	// Desktop (≥lg): CSS Grid with display:contents on .faq-group unwraps the
-	// pairs so all buttons land in col 1 (auto-placed) and all panels stack in
-	// col 2 row 1 — only the active panel is visible at any time.
+	// pairs so buttons land in col 1 and panels in col 2. Panels are
+	// position:absolute so they never inflate the button column row heights.
+	// JS sets min-height on .faq-layout to match the tallest panel.
 
 	.faq-layout {
 		display: flex;
@@ -248,6 +272,8 @@ const categories = [
 			column-gap: 40px;
 			row-gap: 0;
 			align-items: start;
+			align-content: start;
+			position: relative;
 		}
 	}
 
@@ -293,8 +319,8 @@ const categories = [
 		}
 
 		&.active {
-			color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
-			background: #f4f8fe;
+			color: var(--color-trendz-text-primary);
+			background: var(--color-trendz-surface);
 		}
 
 		// On desktop: snap to col 1, hide the mobile chevron
@@ -326,11 +352,14 @@ const categories = [
 			display: none;
 		}
 
-		// On desktop all panels sit in the same grid cell (col 2, row 1).
-		// display:none/block controlled by JS keeps only one visible.
+		// On desktop: absolutely positioned in the col 2 grid area so the panel
+		// height doesn't inflate the button column rows.
 		@include trendz-up(lg) {
+			position: absolute;
 			grid-column: 2;
 			grid-row: 1 / -1;
+			width: 100%;
+			top: 0;
 		}
 	}
 
@@ -360,7 +389,7 @@ const categories = [
 		cursor: pointer;
 		text-align: left;
 		font-family: inherit;
-		color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
+		color: var(--color-trendz-text-primary);
 
 		@include trendz-body-m-medium;
 
@@ -394,7 +423,7 @@ const categories = [
 
 		p {
 			@include trendz-body-xs;
-			color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+			color: var(--color-trendz-text-secondary);
 			margin: 0;
 		}
 	}

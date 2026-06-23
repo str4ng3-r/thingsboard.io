@@ -1,5 +1,5 @@
 ---
-
+import { FORMSPREE_CONTACT } from '~/data/formspree';
 ---
 
 <div id="trendz-contact-modal" class="tcm-overlay" aria-modal="true" role="dialog" aria-label="Contact form" hidden>
@@ -25,7 +25,7 @@
 			</button>
 		</div>
 
-		<form id="TrendzContactUs" class="tcm-form" method="post" novalidate>
+		<form id="TrendzContactUs" class="tcm-form" action={FORMSPREE_CONTACT} method="post" novalidate>
 			<div class="tcm-body">
 				<div class="tcm-field tcm-field--full">
 					<label class="tcm-label" for="tcm-name">Name</label>
@@ -89,8 +89,20 @@
 <script>
 	const overlay = document.getElementById('trendz-contact-modal') as HTMLElement | null;
 
+	let openerEl: HTMLElement | null = null;
+
+	function getFocusable(): HTMLElement[] {
+		if (!overlay) return [];
+		return Array.from(
+			overlay.querySelectorAll<HTMLElement>(
+				'button:not([disabled]), input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			),
+		).filter((el) => !el.closest('.tcm-hp-container'));
+	}
+
 	function openModal() {
 		if (!overlay) return;
+		openerEl = document.activeElement as HTMLElement;
 		overlay.removeAttribute('hidden');
 		overlay.setAttribute('aria-hidden', 'false');
 		document.body.style.overflow = 'hidden';
@@ -103,6 +115,9 @@
 			hpInput.id = newName;
 			hpLabel.htmlFor = newName;
 		}
+
+		const focusable = getFocusable();
+		(focusable[0] ?? overlay.querySelector<HTMLElement>('.tcm-close'))?.focus();
 	}
 
 	function closeModal() {
@@ -110,6 +125,8 @@
 		overlay.setAttribute('hidden', '');
 		overlay.setAttribute('aria-hidden', 'true');
 		document.body.style.overflow = '';
+		openerEl?.focus();
+		openerEl = null;
 	}
 
 	document.addEventListener('click', (e) => {
@@ -125,7 +142,28 @@
 	});
 
 	document.addEventListener('keydown', (e) => {
-		if (e.key === 'Escape') closeModal();
+		if (overlay?.hasAttribute('hidden')) return;
+		if (e.key === 'Escape') {
+			closeModal();
+			return;
+		}
+		if (e.key === 'Tab') {
+			const focusable = getFocusable();
+			if (focusable.length === 0) return;
+			const first = focusable[0];
+			const last = focusable[focusable.length - 1];
+			if (e.shiftKey) {
+				if (document.activeElement === first) {
+					e.preventDefault();
+					last.focus();
+				}
+			} else {
+				if (document.activeElement === last) {
+					e.preventDefault();
+					first.focus();
+				}
+			}
+		}
 	});
 
 	// ── Form logic ────────────────────────────────────────────────────────────
@@ -229,8 +267,6 @@
 	document.addEventListener('DOMContentLoaded', () => {
 		const form = document.getElementById('TrendzContactUs') as HTMLFormElement | null;
 		if (!form) return;
-
-		form.action = 'https://formspree.io/f/xrbnqnna';
 
 		const renderedAt = form.querySelector<HTMLInputElement>('.tcm-rendered-at');
 		if (renderedAt) renderedAt.value = String(Math.floor(Date.now() / 1000));

@@ -89,7 +89,7 @@
 		gap: 16px;
 		width: 100%;
 
-		@include trendz-up(sm) {
+		@include trendz-up(md) {
 			flex-direction: row;
 			justify-content: center;
 			align-items: center;
@@ -116,12 +116,15 @@
 		border: 1.5px solid #fff;
 		box-sizing: border-box;
 
+		@include trendz-btn-narrow-padding;
+
 		&--primary {
 			background: #fff;
 			color: var(--color-trendz-accent);
 
 			&:hover {
 				background: rgba(255, 255, 255, 0.88);
+				color: var(--color-trendz-accent);
 			}
 		}
 
@@ -132,6 +135,7 @@
 
 			&:hover {
 				background: rgba(255, 255, 255, 0.12);
+				color: #fff;
 			}
 		}
 	}

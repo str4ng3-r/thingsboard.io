@@ -27,11 +27,11 @@ import YouTubeVideo from '../YouTubeVideo.astro';
 
 	#trendz-metric-explorer {
 		background: #fff;
-		padding: 32px 20px;
+		padding: 0 20px 32px;
 		box-sizing: border-box;
 
 		@include trendz-up(sm) {
-			padding: 60px 50px;
+			padding: 0 50px 60px;
 		}
 
 		@include trendz-up(lg) {
@@ -63,7 +63,7 @@ import YouTubeVideo from '../YouTubeVideo.astro';
 
 	.me-title {
 		@include trendz-h2;
-		color: var(--text-text-primary, rgba(0, 0, 0, 0.87));
+		color: var(--color-trendz-text-primary);
 		margin: 0;
 
 		@include trendz-down(xs) {
@@ -73,7 +73,7 @@ import YouTubeVideo from '../YouTubeVideo.astro';
 
 	.me-body {
 		@include trendz-body-s;
-		color: var(--text-text-secondary, rgba(0, 0, 0, 0.76));
+		color: var(--color-trendz-text-secondary);
 		margin: 0;
 	}
 
@@ -82,7 +82,7 @@ import YouTubeVideo from '../YouTubeVideo.astro';
 		padding: 12px 24px;
 		border-radius: 4px;
 		background: var(--color-trendz-accent);
-		color: var(--text-text-white, #fff);
+		color: #fff;
 		@include trendz-body-m-medium;
 		text-align: center;
 		text-decoration: none;
@@ -91,6 +91,7 @@ import YouTubeVideo from '../YouTubeVideo.astro';
 
 		&:hover {
 			background: var(--color-trendz-accent-hover);
+			color: #fff;
 		}
 	}
 
