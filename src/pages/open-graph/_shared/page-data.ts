@@ -61,7 +61,7 @@ function authorName(slug: string): string {
 
 /** blog collection — posts + index + author landings + category landings. */
 export async function getBlogCardInputs(): Promise<CardInput[]> {
-	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	const posts = await getCollection('blog');
 	const inputs: CardInput[] = [];
 
 	// /blog/{post-slug}/

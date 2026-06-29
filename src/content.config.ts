@@ -112,8 +112,8 @@ export const blogSchema = z.object({
 		.transform((v) => (Array.isArray(v) ? v : [v])),
 	featuredImage: z.string(),
 	featuredImageAlt: z.string().default(''),
-	draft: z.boolean().default(false),
 	excludeFromCarousel: z.boolean().default(false),
+	pinned: z.boolean().default(false),
 });
 
 export const docsCollectionSchema = z.union([

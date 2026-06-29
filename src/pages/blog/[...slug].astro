@@ -1,15 +1,11 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getSortedBlogPosts } from '@data/blog/posts';
 import { getAuthor } from '~/data/blog/authors';
 import { CATEGORY_LABELS, type BlogCategory } from '~/data/blog/categories';
 import { Icon } from 'astro-icon/components';
-import type { z } from 'astro/zod';
-import type { blogSchema } from '~/content.config';
-
-type BlogData = z.infer<typeof blogSchema>;
-type BlogPost = { id: string; data: BlogData; collection: 'blog' };
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -19,8 +15,8 @@ export async function getStaticPaths() {
 	}));
 }
 
-const { post } = Astro.props as { post: BlogPost };
-const { Content, headings } = await render(post as any);
+const { post } = Astro.props as { post: CollectionEntry<'blog'> };
+const { Content, headings } = await render(post);
 const author = getAuthor(post.data.author);
 const siteOrigin = new URL(Astro.site!).origin;
 const homeUrl = new URL('/', Astro.site).href;
@@ -29,10 +25,10 @@ const postUrl = new URL(`/blog/${post.id}/`, Astro.site).href;
 // Separate percent-encoded form for social share query params.
 const postUrlEncoded = encodeURIComponent(postUrl);
 const shareTitle = encodeURIComponent(post.data.title);
-const allPosts = (await getCollection('blog', ({ data }) => !(data as BlogData).draft)) as unknown as BlogPost[];
+const allPosts = await getSortedBlogPosts();
+const postCategories = new Set(post.data.categories);
 const relatedPosts = allPosts
-	.filter((p) => p.id !== post.id && p.data.categories.some((c: string) => post.data.categories.includes(c)))
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.filter((p) => p.id !== post.id && p.data.categories.some((c) => postCategories.has(c)))
 	.slice(0, 3);
 
 // Filter headings for TOC — include h2, h3, h4

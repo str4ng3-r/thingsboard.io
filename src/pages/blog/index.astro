@@ -3,7 +3,7 @@ import BlogLayout from '../../layouts/BlogLayout.astro';
 import Pagination from '@components/Pagination/Pagination.astro';
 import Carousel from '@components/Carousel/Carousel.astro';
 import CarouselSlide from '@components/Carousel/CarouselSlide.astro';
-import { getCollection } from 'astro:content';
+import { getSortedBlogPosts } from '@data/blog/posts';
 import { getAuthor } from '~/data/blog/authors';
 import { Icon } from 'astro-icon/components';
 import {
@@ -11,15 +11,18 @@ import {
 	CATEGORY_LABELS,
 	type BlogCategory,
 } from '~/data/blog/categories';
-import type { z } from 'astro/zod';
-import type { blogSchema } from '~/content.config';
+import { recordSitemapLastmod } from '@util/sitemap-lastmod';
+const posts = await getSortedBlogPosts();
 
-type BlogData = z.infer<typeof blogSchema>;
-type BlogPost = { id: string; data: BlogData; collection: 'blog' };
+recordSitemapLastmod(
+	'/blog/',
+	posts.map((p) => (p.data.updatedDate ?? p.data.date).valueOf()),
+);
 
-const allPosts = (await getCollection('blog', ({ data }) => !(data as BlogData).draft)) as unknown as BlogPost[];
-const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const featuredPosts = posts.filter((p) => !p.data.excludeFromCarousel).slice(0, 5);
+const featuredPosts = posts
+	.filter((p) => !p.data.excludeFromCarousel)
+	.sort((a, b) => Number(b.data.pinned) - Number(a.data.pinned))
+	.slice(0, 5);
 
 const siteOrigin = new URL(Astro.site!).origin;
 const blogUrl = new URL('/blog/', Astro.site).href;
