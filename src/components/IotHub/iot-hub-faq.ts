@@ -89,27 +89,36 @@ export function initIotHubFaq(): void {
 		copyFaqLink(copyLink);
 	});
 
-	// Deep-link: open the FAQ item referenced by the URL hash.
-	const hash = window.location.hash.slice(1);
-	if (!hash) return;
-	const item = document.getElementById(hash);
-	if (!item?.classList.contains('faq-item')) return;
+	// Deep-link: open the FAQ item referenced by the URL hash. Deferred to idle
+	// so the hash walk + scrollIntoView never block first paint.
+	const performHashWalk = (): void => {
+		const hash = window.location.hash.slice(1);
+		if (!hash) return;
+		const item = document.getElementById(hash);
+		if (!item?.classList.contains('faq-item')) return;
 
-	const content = item.closest<HTMLElement>('.faq-category-content');
-	const section = item.closest('.faq-section');
-	if (content && section) {
-		const catId = content.dataset.faqCatContent;
-		section.querySelectorAll<HTMLElement>('.faq-cat-tab').forEach((t) => {
-			const isActive = t.dataset.faqCat === catId;
-			t.classList.toggle('active', isActive);
-			t.setAttribute('aria-current', isActive ? 'true' : 'false');
-		});
-		section
-			.querySelectorAll<HTMLElement>('.faq-category-content')
-			.forEach((c) => c.classList.toggle('active', c === content));
+		const content = item.closest<HTMLElement>('.faq-category-content');
+		const section = item.closest('.faq-section');
+		if (content && section) {
+			const catId = content.dataset.faqCatContent;
+			section.querySelectorAll<HTMLElement>('.faq-cat-tab').forEach((t) => {
+				const isActive = t.dataset.faqCat === catId;
+				t.classList.toggle('active', isActive);
+				t.setAttribute('aria-current', isActive ? 'true' : 'false');
+			});
+			section
+				.querySelectorAll<HTMLElement>('.faq-category-content')
+				.forEach((c) => c.classList.toggle('active', c === content));
+		}
+		item.classList.remove('faq-item--hidden');
+		item.classList.add('expanded');
+		item.querySelector('.faq-question')?.setAttribute('aria-expanded', 'true');
+		item.scrollIntoView({ block: 'center' });
+	};
+
+	if ('requestIdleCallback' in window) {
+		requestIdleCallback(performHashWalk);
+	} else {
+		requestAnimationFrame(() => setTimeout(performHashWalk, 0));
 	}
-	item.classList.remove('faq-item--hidden');
-	item.classList.add('expanded');
-	item.querySelector('.faq-question')?.setAttribute('aria-expanded', 'true');
-	item.scrollIntoView({ block: 'center' });
 }

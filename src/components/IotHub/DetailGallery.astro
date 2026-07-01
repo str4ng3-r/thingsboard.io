@@ -302,8 +302,10 @@ const resourceUrl = (id: string) => `${IOT_HUB_API_URL}/api/resources/${id}`;
 				render();
 			}
 
+			let autoplayInitialized = false;
 			function startAutoplay() {
-				if (reduceMotion || timer) return;
+				if (reduceMotion || timer || autoplayInitialized) return;
+				autoplayInitialized = true;
 				timer = window.setInterval(function () {
 					if (!paused) go(idx + 1);
 				}, AUTOPLAY_MS);
@@ -401,7 +403,21 @@ const resourceUrl = (id: string) => `${IOT_HUB_API_URL}/api/resources/${id}`;
 			}
 
 			render();
-			startAutoplay();
+
+			// Start autoplay only when the gallery scrolls into view (or on first
+			// pointer interaction), so the 5s timer never runs below the fold.
+			const ioAuto = new IntersectionObserver(function (entries) {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						startAutoplay();
+						ioAuto.disconnect();
+					}
+				}
+			}, { threshold: 0 });
+			ioAuto.observe(gallery);
+			if (viewport) {
+				viewport.addEventListener('pointerdown', function () { startAutoplay(); }, { once: true });
+			}
 		});
 	})();
 </script>
