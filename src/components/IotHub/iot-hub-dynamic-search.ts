@@ -569,5 +569,4 @@ export function initDynamicSearch(): void {
 	} else {
 		setupDynamicSearch();
 	}
-	document.addEventListener('astro:page-load', setupDynamicSearch);
 }
