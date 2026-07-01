@@ -57,10 +57,13 @@
 			});
 		}
 
+		// Rewriting every outbound link is only needed by the time the user
+		// clicks one, so run it at idle instead of blocking the load path.
+		const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
 		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', patchLinks);
+			document.addEventListener('DOMContentLoaded', () => idle(patchLinks));
 		} else {
-			patchLinks();
+			idle(patchLinks);
 		}
 	})();
 </script>

@@ -32,36 +32,40 @@ const { title, description, features, gtmFormId } = Astro.props;
 </section>
 
 <script is:inline define:vars={{ gtmFormId }}>
-	(function (m, a, i, l, e, r) {
-		m['MailerLiteObject'] = e;
-		function f(...args) {
-			const c = { a: args, q: [] };
-			const r = this.push(c);
-			return 'number' != typeof r ? r : f.bind(c.q);
+	// Defer the MailerLite embed (universal.js + ml('load')) to first user
+	// interaction so it never runs during the initial load / LCP window.
+	(window.__deferOnInteraction || ((cb) => cb()))(function () {
+		(function (m, a, i, l, e, r) {
+			m['MailerLiteObject'] = e;
+			function f(...args) {
+				const c = { a: args, q: [] };
+				const r = this.push(c);
+				return 'number' != typeof r ? r : f.bind(c.q);
+			}
+			f.q = f.q || [];
+			m[e] = m[e] || f.bind(f.q);
+			m[e].q = m[e].q || f.q;
+			r = a.createElement(i);
+			const _ = a.getElementsByTagName(i)[0];
+			r.async = 1;
+			r.src = l + '?v' + ~~(new Date().getTime() / 1000000);
+			_.parentNode.insertBefore(r, _);
+		})(window, document, 'script', 'https://static.mailerlite.com/js/universal.js', 'ml');
+
+		ml('accounts', '1017142', 'w0j5m5g7f5', 'load');
+
+		function waitForForm() {
+			const $form = document.querySelector('form[action$="e2f1u0"]');
+			if ($form) {
+				$form.id = gtmFormId;
+				$form.classList.add('gtm_form');
+			} else {
+				setTimeout(waitForForm, 150);
+			}
 		}
-		f.q = f.q || [];
-		m[e] = m[e] || f.bind(f.q);
-		m[e].q = m[e].q || f.q;
-		r = a.createElement(i);
-		const _ = a.getElementsByTagName(i)[0];
-		r.async = 1;
-		r.src = l + '?v' + ~~(new Date().getTime() / 1000000);
-		_.parentNode.insertBefore(r, _);
-	})(window, document, 'script', 'https://static.mailerlite.com/js/universal.js', 'ml');
 
-	ml('accounts', '1017142', 'w0j5m5g7f5', 'load');
-
-	function waitForForm() {
-		const $form = document.querySelector('form[action$="e2f1u0"]');
-		if ($form) {
-			$form.id = gtmFormId;
-			$form.classList.add('gtm_form');
-		} else {
-			setTimeout(waitForForm, 150);
-		}
-	}
-
-	document.addEventListener('DOMContentLoaded', waitForForm);
+		document.addEventListener('DOMContentLoaded', waitForForm);
+	});
 </script>
 
 <style lang="scss">
