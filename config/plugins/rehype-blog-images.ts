@@ -24,9 +24,10 @@ interface Dims {
 	height: number;
 }
 
-// Module-level cache: many posts reuse images, and metadata reads are
-// repeated across the 56 posts on every build. `null` marks a failed read so
-// broken paths aren't retried per occurrence.
+// Module-level cache: many posts reuse images, and metadata reads repeat
+// across dozens of posts on every build. `null` marks a failed read so broken
+// paths aren't retried per occurrence. The cache is never invalidated, so in
+// `pnpm dev` an edited image serves stale width/height until a server restart.
 const dimsCache = new Map<string, Dims | null>();
 
 async function readDims(absPath: string): Promise<Dims | null> {
@@ -49,7 +50,7 @@ export function rehypeBlogImages(): Plugin<[], Root> {
 		if (!sourcePath.includes('/src/content/blog/')) return;
 
 		// Collect in document order first; async work inside a visitor is unsafe.
-		const images: { properties: NonNullable<Record<string, unknown>> }[] = [];
+		const images: { properties: Record<string, unknown> }[] = [];
 		visit(tree, 'element', (node) => {
 			if (node.tagName !== 'img') return;
 			node.properties ??= {};
@@ -73,7 +74,15 @@ export function rehypeBlogImages(): Plugin<[], Root> {
 			if (!src.startsWith('/') || src.startsWith('//')) continue;
 			if (props.width != null || props.height != null) continue;
 
-			const cleanPath = decodeURIComponent(src.split(/[?#]/)[0] ?? '');
+			// Malformed percent-encoding (a literal `%` in a filename) makes
+			// decodeURIComponent throw — degrade to skipping dimensions, like
+			// every other failure path here.
+			let cleanPath: string;
+			try {
+				cleanPath = decodeURIComponent(src.split(/[?#]/)[0] ?? '');
+			} catch {
+				continue;
+			}
 			const dims = await readDims(join(process.cwd(), 'public', cleanPath));
 			if (dims) {
 				props.width = dims.width;
