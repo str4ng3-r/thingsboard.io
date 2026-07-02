@@ -16,7 +16,7 @@ import { lockScroll, unlockScroll } from '@util/scroll-lock';
 
 const S = IOT_HUB_STRINGS.installDialog;
 
-interface OpenContext {
+export interface OpenContext {
 	slug: string;
 	itemType: string;
 	affiliateId: string | null;
@@ -342,37 +342,17 @@ function open(ctx: OpenContext): void {
 	dialog.showModal();
 }
 
-function onDocClick(e: MouseEvent): void {
-	const trigger = (e.target as Element).closest<HTMLElement>(
-		'[data-iot-hub-install-trigger]'
-	);
-	if (!trigger) return;
-	// The card button is nested inside the card's <a> — block navigation.
-	e.preventDefault();
-	e.stopPropagation();
-	open({
-		slug: trigger.dataset.slug ?? '',
-		itemType: trigger.dataset.itemType ?? '',
-		affiliateId: trigger.dataset.affiliateId || null,
-	});
-}
+// Lazy one-time init: the local base is read from storage the first time the
+// dialog is actually opened, not at page load. The boot module owns the
+// delegated click listener, so this module no longer wires its own.
+let localBaseLoaded = false;
 
-function init(): void {
-	localBase = readLocalBase();
-	document.addEventListener('click', onDocClick);
-}
-
-declare global {
-	interface Window {
-		__tbInstallDialogInit?: boolean;
+// Entry point invoked by install-dialog-boot on the first trigger click.
+// `open()` already no-ops on a missing slug, so this preserves current behavior.
+export function openFor(ctx: OpenContext): void {
+	if (!localBaseLoaded) {
+		localBaseLoaded = true;
+		localBase = readLocalBase();
 	}
-}
-
-if (typeof window !== 'undefined' && !window.__tbInstallDialogInit) {
-	window.__tbInstallDialogInit = true;
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', init, { once: true });
-	} else {
-		init();
-	}
+	open(ctx);
 }
