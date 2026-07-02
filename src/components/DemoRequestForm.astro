@@ -34,6 +34,9 @@ const { title, description, features, gtmFormId } = Astro.props;
 <script is:inline define:vars={{ gtmFormId }}>
 	// Defer the MailerLite embed (universal.js + ml('load')) to first user
 	// interaction so it never runs during the initial load / LCP window.
+	// Explicit 2500ms fallback: deliberately ahead of GTM's 5s — the visible
+	// demo form should embed promptly, and GTM form tracking attaches to the
+	// form whenever GTM arrives (see DeferredLoadTrigger for the schedule).
 	(window.__deferOnInteraction || ((cb) => cb()))(function () {
 		(function (m, a, i, l, e, r) {
 			m['MailerLiteObject'] = e;
@@ -64,8 +67,15 @@ const { title, description, features, gtmFormId } = Astro.props;
 			}
 		}
 
-		document.addEventListener('DOMContentLoaded', waitForForm);
-	});
+		// This callback usually runs AFTER DOMContentLoaded (first interaction
+		// or the idle fallback), so a DCL listener here would never fire —
+		// gate on readyState instead.
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', waitForForm);
+		} else {
+			waitForForm();
+		}
+	}, 2500);
 </script>
 
 <style lang="scss">
