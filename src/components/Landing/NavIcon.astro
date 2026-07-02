@@ -5,16 +5,14 @@
 // while `currentColor` still inherits into the sprite content, so CSS
 // `color:` theming (e.g. menu primary in dark mode) keeps working.
 //
-// The sprite is generated from `src/assets/images/landings/nav/*.svg` —
-// after adding or editing an icon, re-run `pnpm generate:nav-sprite`.
+// Symbol id and viewBox come from the manifest that is generated TOGETHER
+// with the sprite (scripts/generate-nav-sprite.mjs, run automatically before
+// builds), so the reference and the geometry can't drift apart. After adding
+// or editing an icon in dev, re-run `pnpm generate:nav-sprite`.
 //
 // Sizing matches the previous inline rendering: `width` is set, height is
-// left to the browser to compute from the icon's own viewBox aspect ratio.
-const icons = import.meta.glob<string>('/src/assets/images/landings/nav/*.svg', {
-	eager: true,
-	query: '?raw',
-	import: 'default',
-});
+// left to the browser to compute from the icon's viewBox aspect ratio.
+import spriteManifest from '../../assets/images/landings/nav-sprite.manifest.json';
 
 interface Props {
 	src: string | undefined;
@@ -24,26 +22,21 @@ interface Props {
 
 const { src, size = 32, alt } = Astro.props;
 
-let viewBox: string | undefined;
-let symbolId = '';
-if (src && icons[src]) {
-	viewBox = icons[src].match(/viewBox="([^"]+)"/)?.[1];
-	const name = src.split('/').pop()?.replace(/\.svg$/, '') ?? '';
-	if (name) symbolId = `nav-${name}`;
-}
+const name = src?.split('/').pop()?.replace(/\.svg$/, '') ?? '';
+const entry = (spriteManifest.icons as Record<string, { id: string; viewBox: string }>)[name];
 ---
 
 {
-	symbolId && (
+	entry && (
 		<svg
 			class="nav-icon"
 			width={size}
-			viewBox={viewBox}
+			viewBox={entry.viewBox}
 			role={alt ? 'img' : undefined}
 			aria-label={alt || undefined}
 			aria-hidden={alt ? undefined : 'true'}
 		>
-			<use href={`/nav-sprite.svg#${symbolId}`} />
+			<use href={`/nav-sprite.svg#${entry.id}`} />
 		</svg>
 	)
 }
