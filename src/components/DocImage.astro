@@ -21,10 +21,11 @@ interface Props {
 const { src, alt, width, align = 'center', product } = Astro.props;
 
 // First content image on the page is the likely LCP element — load it
-// eagerly at high priority; everything after stays lazy.
+// eagerly; everything after stays lazy. Deliberately no fetchpriority boost:
+// on text-first pages the first image can sit far below the fold, where a
+// high-priority fetch would compete with the resources painting the fold.
 const isFirst = claimFirstContentImage(Astro.locals);
 const loading = isFirst ? 'eager' : 'lazy';
-const fetchpriority = isFirst ? 'high' : undefined;
 
 const numericWidth = typeof width === 'number' ? width : undefined;
 const styleWidth = typeof width === 'string' ? width : undefined;
@@ -115,27 +116,12 @@ const optimized =
 				width={optimized.attributes.width}
 				height={optimized.attributes.height}
 				loading={loading}
-				fetchpriority={fetchpriority}
 				decoding="async"
 			/>
 		) : mod ? (
-			<img
-				src={mod.default.src}
-				alt={alt}
-				width={numericWidth}
-				loading={loading}
-				fetchpriority={fetchpriority}
-				decoding="async"
-			/>
+			<img src={mod.default.src} alt={alt} width={numericWidth} loading={loading} decoding="async" />
 		) : (
-			<img
-				src={src}
-				alt={alt}
-				width={numericWidth}
-				loading={loading}
-				fetchpriority={fetchpriority}
-				decoding="async"
-			/>
+			<img src={src} alt={alt} width={numericWidth} loading={loading} decoding="async" />
 		)
 	}
 </figure>

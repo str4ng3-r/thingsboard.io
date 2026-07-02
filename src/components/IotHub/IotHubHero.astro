@@ -650,7 +650,9 @@ const highlights = [
 		});
 
 		// Start the 3s auto-cycle only once the hero is in view, so the timer
-		// never runs on pages where the hero is off-screen.
+		// never runs on pages where the hero is off-screen. Same
+		// run-once-on-first-visibility shape as DetailGallery's autoplay gate —
+		// keep the two in sync.
 		const io = new IntersectionObserver((entries) => {
 			for (const entry of entries) {
 				if (entry.isIntersecting) {

@@ -302,10 +302,10 @@ const resourceUrl = (id: string) => `${IOT_HUB_API_URL}/api/resources/${id}`;
 				render();
 			}
 
-			let autoplayInitialized = false;
 			function startAutoplay() {
-				if (reduceMotion || timer || autoplayInitialized) return;
-				autoplayInitialized = true;
+				// `timer` is never cleared (pausing uses the `paused` flag), so it
+				// doubles as the one-shot guard for both start triggers below.
+				if (reduceMotion || timer) return;
 				timer = window.setInterval(function () {
 					if (!paused) go(idx + 1);
 				}, AUTOPLAY_MS);
@@ -406,6 +406,8 @@ const resourceUrl = (id: string) => `${IOT_HUB_API_URL}/api/resources/${id}`;
 
 			// Start autoplay only when the gallery scrolls into view (or on first
 			// pointer interaction), so the 5s timer never runs below the fold.
+			// Same run-once-on-first-visibility shape as IotHubHero's highlight
+			// cycle — keep the two in sync.
 			const ioAuto = new IntersectionObserver(function (entries) {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {

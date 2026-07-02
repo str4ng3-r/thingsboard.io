@@ -264,13 +264,11 @@ const processed = await Promise.all(
 const isSingle = processed.length === 1;
 
 // This gallery's leading thumb is the page's likely LCP element when it is
-// the first content image on the page — load it eagerly at high priority.
-// A `hasDark` pair eager-loads both variants (a display:none <img> is still
-// fetched when eager), but only the light one gets the priority boost.
+// the first content image on the page — load it eagerly (a `hasDark` pair
+// eager-loads both variants; a display:none <img> is still fetched when
+// eager). Deliberately no fetchpriority boost — see DocImage for why.
 const isFirstContentImage = processed.length > 0 && claimFirstContentImage(Astro.locals);
 const thumbLoading = (i: number) => (i === 0 && isFirstContentImage ? 'eager' : 'lazy');
-const thumbPriority = (i: number, dark: boolean) =>
-	i === 0 && isFirstContentImage && !dark ? 'high' : undefined;
 const useCardMode = cardMode && isSingle;
 ---
 
@@ -313,7 +311,6 @@ const useCardMode = cardMode && isSingle;
 							width={processed[0].fullWidth}
 							height={processed[0].fullHeight}
 							loading={thumbLoading(0)}
-							fetchpriority={thumbPriority(0, false)}
 							decoding="async"
 						/>
 						{processed[0].hasDark && (
@@ -324,7 +321,6 @@ const useCardMode = cardMode && isSingle;
 								width={processed[0].fullWidth}
 								height={processed[0].fullHeight}
 								loading={thumbLoading(0)}
-								fetchpriority={thumbPriority(0, true)}
 								decoding="async"
 							/>
 						)}
@@ -350,7 +346,6 @@ const useCardMode = cardMode && isSingle;
 								src={img.thumbSrc}
 								alt={img.alt}
 								loading={thumbLoading(i)}
-								fetchpriority={thumbPriority(i, false)}
 								decoding="async"
 							/>
 							{img.hasDark && (
@@ -359,7 +354,6 @@ const useCardMode = cardMode && isSingle;
 									src={img.darkThumbSrc}
 									alt={img.alt}
 									loading={thumbLoading(i)}
-									fetchpriority={thumbPriority(i, true)}
 									decoding="async"
 								/>
 							)}

@@ -26,6 +26,7 @@
 		} else {
 			// 5s idle fallback (vs the 2.5s default) so tag-manager JS lands
 			// after the LCP paint window for visitors who never interact.
+			// Full tier schedule: DeferredLoadTrigger.astro.
 			(window.__deferOnInteraction || ((cb) => cb()))(loadGtm, 5000);
 		}
 	}

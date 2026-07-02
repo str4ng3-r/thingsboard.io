@@ -116,9 +116,12 @@ export function initIotHubFaq(): void {
 		item.scrollIntoView({ block: 'center' });
 	};
 
+	// Bounded idle: a #hash deep-link should still open promptly even on a
+	// busy main thread, and the later the scrollIntoView lands the more
+	// jarring it is.
 	if ('requestIdleCallback' in window) {
-		requestIdleCallback(performHashWalk);
+		requestIdleCallback(performHashWalk, { timeout: 500 });
 	} else {
-		requestAnimationFrame(() => setTimeout(performHashWalk, 0));
+		setTimeout(performHashWalk, 200);
 	}
 }
