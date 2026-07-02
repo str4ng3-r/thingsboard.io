@@ -23,26 +23,26 @@ function onTriggerClick(e: MouseEvent): void {
 	// never lost to a page navigation.
 	e.preventDefault();
 	e.stopPropagation();
-	void import('@components/IotHub/install-dialog').then((m) =>
-		m.openFor({
-			slug: trigger.dataset.slug ?? '',
-			itemType: trigger.dataset.itemType ?? '',
-			affiliateId: trigger.dataset.affiliateId || null,
-		})
-	);
+	import('@components/IotHub/install-dialog')
+		.then((m) =>
+			m.openFor({
+				slug: trigger.dataset.slug ?? '',
+				itemType: trigger.dataset.itemType ?? '',
+				affiliateId: trigger.dataset.affiliateId || null,
+			})
+		)
+		.catch((err: unknown) => {
+			// Navigation was already prevented, so surface the failure instead
+			// of silently swallowing the click.
+			console.error('install dialog failed to load', err);
+		});
 }
 
-function boot(): void {
-	document.addEventListener('click', onTriggerClick);
-}
-
+// A document-level delegated listener is safe to register at any parse stage —
+// no DOM-ready gate needed.
 if (typeof window !== 'undefined' && !window.__tbInstallDialogInit) {
 	window.__tbInstallDialogInit = true;
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', boot, { once: true });
-	} else {
-		boot();
-	}
+	document.addEventListener('click', onTriggerClick);
 }
 
 export {};

@@ -23,7 +23,9 @@ export interface OpenContext {
 }
 
 let dialog: HTMLDialogElement | null = null;
-let localBase = INSTALL_LOCAL_DEFAULT;
+// Reading storage at module scope is already lazy: the only consumer is the
+// boot module's dynamic import(), so evaluation happens on first trigger click.
+let localBase = readLocalBase();
 let current: OpenContext | null = null;
 let copyResetTimer: number | undefined;
 let flashedCopyBtn: HTMLElement | null = null;
@@ -334,6 +336,9 @@ function saveEdit(): void {
 function open(ctx: OpenContext): void {
 	if (!ctx.slug) return;
 	if (!dialog) dialog = buildDialog();
+	// Two rapid clicks can race the dynamic import and both reach here —
+	// showModal() on an already-open dialog throws.
+	if (dialog.open) return;
 	window.clearTimeout(unlockTimer);
 	current = ctx;
 	cancelEdit();
@@ -342,17 +347,8 @@ function open(ctx: OpenContext): void {
 	dialog.showModal();
 }
 
-// Lazy one-time init: the local base is read from storage the first time the
-// dialog is actually opened, not at page load. The boot module owns the
-// delegated click listener, so this module no longer wires its own.
-let localBaseLoaded = false;
-
 // Entry point invoked by install-dialog-boot on the first trigger click.
 // `open()` already no-ops on a missing slug, so this preserves current behavior.
 export function openFor(ctx: OpenContext): void {
-	if (!localBaseLoaded) {
-		localBaseLoaded = true;
-		localBase = readLocalBase();
-	}
 	open(ctx);
 }
