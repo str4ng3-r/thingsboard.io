@@ -51,7 +51,7 @@ export const PE_FULL_VER = '4.3.1.3PE';
 export const PE_PKG_VER = `${CE_PKG_VER}pe`;
 
 /** Trendz Analytics */
-export const TRENDZ_VER = '1.15.2';
+export const TRENDZ_VER = '1.15.2.1';
 
 /** Edge */
 export const EDGE_VER = '4.3.1.1';
