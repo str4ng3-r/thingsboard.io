@@ -116,6 +116,10 @@ export function initIotHubFaq(): void {
 		item.scrollIntoView({ block: 'center' });
 	};
 
+	// Only deep-link visits need the walk at all — skip scheduling (and the
+	// deferred scroll jump) entirely when there's no hash.
+	if (!window.location.hash) return;
+
 	// Bounded idle: a #hash deep-link should still open promptly even on a
 	// busy main thread, and the later the scrollIntoView lands the more
 	// jarring it is.

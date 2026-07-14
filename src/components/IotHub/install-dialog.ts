@@ -333,7 +333,8 @@ function saveEdit(): void {
 
 // --- Open + global wiring ------------------------------------------------
 
-function open(ctx: OpenContext): void {
+// Entry point invoked by install-dialog-boot on the first trigger click.
+export function openFor(ctx: OpenContext): void {
 	if (!ctx.slug) return;
 	if (!dialog) dialog = buildDialog();
 	// Two rapid clicks can race the dynamic import and both reach here —
@@ -345,10 +346,4 @@ function open(ctx: OpenContext): void {
 	refresh();
 	lockScroll();
 	dialog.showModal();
-}
-
-// Entry point invoked by install-dialog-boot on the first trigger click.
-// `open()` already no-ops on a missing slug, so this preserves current behavior.
-export function openFor(ctx: OpenContext): void {
-	open(ctx);
 }
