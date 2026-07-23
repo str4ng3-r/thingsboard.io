@@ -5,6 +5,7 @@ sidebar:
 description: "Instructions for upgrading ThingsBoard from Community Edition to Professional Edition."
 ---
 import DocLink from '@components/DocLink.astro';
+import ConfigFileNote from '@components/upgrade-instructions/ConfigFileNote.astro';
 import { Aside } from '@astrojs/starlight/components';
 import { Code } from '@astrojs/starlight/components';
 import { k8sCloneCmd } from '~/util/install-commands';
@@ -45,11 +46,7 @@ Install ThingsBoard Web Report component as described in the <DocLink product={P
 
 <Code code={ubuntuInstallCmd} lang="bash" />
 
-<Aside type="note">
-At the `dpkg` configuration-file prompt (`[Y/I/N/O/D/Z]`) there is no "merge" option.
-
-The recommended approach is to use the new configuration file as the base and carry your custom values over from your previous one. Press **Y** to install the package maintainer's version (your previous file is kept as `.dpkg-old`), then copy your custom values from the `.dpkg-old` file into the new one before starting the service.
-</Aside>
+<ConfigFileNote platform="ubuntu" />
 
 Configure the Professional Edition license key as described in the <DocLink product={Products.PE} path="installation/ubuntu">Ubuntu installation guide</DocLink>.
 
@@ -87,11 +84,7 @@ Install ThingsBoard Web Report component as described in the <DocLink product={P
 
 <Code code={centosInstallCmd} lang="bash" />
 
-<Aside type="note">
-`rpm` does not prompt about configuration files: it keeps your current file and writes the new default alongside it as `.rpmnew`.
-
-The recommended approach is to use the new configuration file as the base and carry your custom values over from your previous one. Copy your custom values into the `.rpmnew` file, then replace your current configuration file with it before starting the service.
-</Aside>
+<ConfigFileNote platform="centos" />
 
 Configure the Professional Edition license key as described in the <DocLink product={Products.PE} path="installation/ubuntu">Ubuntu installation guide</DocLink>.
 

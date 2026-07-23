@@ -1,8 +1,11 @@
 ---
 // Shared "config file handling" note for package-based (.deb / .rpm) upgrades.
-// Rendered by LinuxUpgradeSteps and TrendzUpgradeSteps so the guidance stays
-// identical across pages. There is no "merge" option in the package managers;
-// the recommended flow is to base off the new file and carry custom values over.
+// Single source of truth for this guidance, rendered by LinuxUpgradeSteps,
+// TrendzUpgradeSteps, and the CE-to-PE upgrade page. There is no "merge" option
+// in the package managers; the recommended flow is to base off the new file and
+// carry custom values over.
+import { Aside } from '@astrojs/starlight/components';
+
 interface Props {
 	platform: 'ubuntu' | 'centos';
 }
@@ -11,48 +14,18 @@ const { platform } = Astro.props;
 const isUbuntu = platform === 'ubuntu';
 ---
 
-<aside class="starlight-aside starlight-aside--note">
-	<p class="starlight-aside__title" aria-hidden="true">Note</p>
-	<div class="starlight-aside__content">
+<Aside type="note">
+	{isUbuntu ? (
+		<p>At the <code>dpkg</code> configuration-file prompt (<code>[Y/I/N/O/D/Z]</code>) there is no "merge" option.</p>
+	) : (
+		<p><code>rpm</code> does not prompt about configuration files: it keeps your current file and writes the new default alongside it as <code>.rpmnew</code>.</p>
+	)}
+	<p>
+		The recommended approach is to use the new configuration file as the base and carry your custom values over from your previous one.{' '}
 		{isUbuntu ? (
-			<p>At the <code>dpkg</code> configuration-file prompt (<code>[Y/I/N/O/D/Z]</code>) there is no "merge" option.</p>
+			<>Press <strong>Y</strong> to install the package maintainer's version (your previous file is kept as <code>.dpkg-old</code>), then copy your custom values from the <code>.dpkg-old</code> file into the new one before starting the service.</>
 		) : (
-			<p><code>rpm</code> does not prompt about configuration files: it keeps your current file and writes the new default alongside it as <code>.rpmnew</code>.</p>
+			<>Copy your custom values into the <code>.rpmnew</code> file, then replace your current configuration file with it before starting the service.</>
 		)}
-		<p>
-			The recommended approach is to use the new configuration file as the base and carry your custom values over from your previous one.{' '}
-			{isUbuntu ? (
-				<>Press <strong>Y</strong> to install the package maintainer's version (your previous file is kept as <code>.dpkg-old</code>), then copy your custom values from the <code>.dpkg-old</code> file into the new one before starting the service.</>
-			) : (
-				<>Copy your custom values into the <code>.rpmnew</code> file, then replace your current configuration file with it before starting the service.</>
-			)}
-		</p>
-	</div>
-</aside>
-
-<style>
-	.starlight-aside {
-		border-inline-start: 0.25rem solid;
-		padding: 0.75rem 1rem;
-		margin: 1rem 0;
-		border-radius: 0 4px 4px 0;
-	}
-
-	.starlight-aside--note {
-		border-color: var(--sl-color-blue);
-		background: var(--sl-color-blue-low);
-	}
-
-	.starlight-aside__title {
-		font-weight: 700;
-		margin: 0 0 0.25rem;
-	}
-
-	.starlight-aside__content {
-		margin: 0;
-	}
-
-	.starlight-aside__content p {
-		margin: 0.25rem 0;
-	}
-</style>
+	</p>
+</Aside>
