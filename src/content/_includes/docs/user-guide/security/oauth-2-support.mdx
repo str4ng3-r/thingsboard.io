@@ -89,8 +89,8 @@ The Basic mapper handles standard OpenID Connect providers that return `email`, 
 | **Customer Name Pattern** | If set, the user is created under a customer matching this pattern. Supports `%{attribute_key}` placeholders. Examples: `Demo Customer` (hard-coded), `%{email}` (full email), `%{city}` (city from profile). |
 | **Default Dashboard** | Dashboard opened automatically after login. |
 | **Always Full Screen** | Opens the default dashboard in full-screen mode. |
-| **User Groups Name Pattern** | Comma-separated list of user group name patterns. Each pattern is substituted once, and the user is added to every resulting group. Supports `%{attribute_key}` placeholders. <ProductBadge /> |
-| **Parent Customer Name Pattern** | Pattern for an optional parent customer. Creates a customer hierarchy automatically. <ProductBadge /> |
+| **User Groups Name Pattern** | Comma-separated list of user group name patterns. Each pattern is substituted once, and the user is added to every resulting group. Supports `%{attribute_key}` placeholders. <ShowFor product={props.product} show={[Products.PE, Products.PAAS, Products.PAAS_EU]}>See [Group mapping](#group-mapping) below.</ShowFor> <ShowFor product={props.product} show={[Products.CE]}><ProductBadge /></ShowFor> |
+| **Parent Customer Name Pattern** | Pattern for an optional parent customer. Creates a customer hierarchy automatically. <ShowFor product={props.product} show={[Products.CE]}><ProductBadge /></ShowFor> |
 
 <Aside type="caution">
 If the **Customer Name Pattern**, **User Groups Name Pattern**, and **Parent Customer Name Pattern** fields are all left empty, the Tenant user will be created without being assigned to any user group. As a result, the user **will not** have any permissions.
@@ -98,7 +98,7 @@ If the **Customer Name Pattern**, **User Groups Name Pattern**, and **Parent Cus
 
 <ShowFor product={props.product} show={[Products.PE, Products.PAAS, Products.PAAS_EU]}>
 
-<ConditionalHeading level={3} id="group-mapping" showFor="pe,paas,paas-eu">Group mapping</ConditionalHeading>
+<ConditionalHeading level={4} id="group-mapping" showFor="pe,paas,paas-eu">Group mapping</ConditionalHeading>
 
 Every pattern you enter in **User Groups Name Pattern** is substituted once, and the user joins each group that results. The comma-separated list is the list of patterns you configure — nothing is matched against the value of the incoming claim.
 
@@ -591,14 +591,14 @@ This example configures ThingsBoard to authenticate users via their Okta account
    - **Tenant name strategy**: `CUSTOM`
    - **Tenant name pattern**: `%{email}`
 
+   <ShowFor product={props.product} show={[Products.PE, Products.PAAS, Products.PAAS_EU]}>
+
+   To place users into ThingsBoard groups based on their Okta group membership, use the [Custom mapper](#custom-mapper) instead — the Basic mapper cannot expand the multi-valued Okta `groups` claim. See [Group mapping](#group-mapping).
+
+   </ShowFor>
+
 4. Click **Add** to save the client.
 </Steps>
-
-<ShowFor product={props.product} show={[Products.PE, Products.PAAS, Products.PAAS_EU]}>
-
-To place users into ThingsBoard groups based on their Okta group membership, use the [Custom mapper](#custom-mapper) instead — the Basic mapper cannot expand the multi-valued Okta `groups` claim. See [Group mapping](#group-mapping).
-
-</ShowFor>
 
 #### Step 3: Assign the client to a domain
 
