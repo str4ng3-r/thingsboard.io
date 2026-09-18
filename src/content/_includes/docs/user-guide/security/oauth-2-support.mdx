@@ -96,7 +96,7 @@ The Basic mapper handles standard OpenID Connect providers that return `email`, 
 If the **Customer Name Pattern**, **User Groups Name Pattern**, and **Parent Customer Name Pattern** fields are all left empty, the Tenant user will be created without being assigned to any user group. As a result, the user **will not** have any permissions.
 </Aside>
 
-#### Group mapping
+<ConditionalHeading level={4} id="group-mapping" showFor="pe,paas,paas-eu">Group mapping <ProductBadge /></ConditionalHeading>
 
 Every pattern you enter in **User Groups Name Pattern** is substituted once, and the user joins each group that results. The comma-separated list is the list of patterns you configure — nothing is matched against the value of the incoming claim.
 
